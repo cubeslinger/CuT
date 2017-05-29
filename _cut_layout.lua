@@ -9,7 +9,7 @@ cut.addon               =  Inspect.Addon.Detail(Inspect.Addon.Current())["name"]
 cut.gui                 =  {}
 cut.gui.x               =  nil
 cut.gui.y               =  nil
-cut.gui.width           =  300
+cut.gui.width           =  250
 cut.gui.height          =  100
 cut.gui.borders         =  {}
 cut.gui.borders.left    =  4
@@ -84,7 +84,7 @@ function createnewline(currency, value)
 
    -- CUT currency container
    local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
-   currencyframe:SetBackgroundColor(1, 0, 0, .5)
+--    currencyframe:SetBackgroundColor(1, 0, 0, .5)
    currencyframe:SetLayer(2)
 
    -- setup Loot Item's Counter
@@ -95,11 +95,13 @@ function createnewline(currency, value)
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
+   if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
+
    -- setup Loot Item's Counter
    currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFont(cut.addon, cut.gui.font.name)
    currencyvalue:SetFontSize(cut.gui.font.size )
-   currencyvalue:SetText(string.format("%s", value))
+   currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
    cut.shown.objs.currency =  currencyvalue
@@ -110,9 +112,10 @@ end
 
 local function updatecurrencyvalue(currency, value)
 
+   print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
    if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
 
-   cut.shown.objs.currency:SetText(string.format("%s", value), true)
+   cut.shown.objs[currency]:SetText(string.format("%s", value), true)
 
    return
 end
@@ -121,11 +124,11 @@ function cut.updatecurrencies(currency, value)
 
    if not cut.gui.window then cut.gui.window = createwindow() end
 
-   if cut.shown.currency then
---       print("...UPDATING...")
-      updatecurrencyvalue(curreny, value)
+   if cut.shown.objs.currency then
+      print("...UPDATING...")
+      updatecurrencyvalue(currency, value)
    else
---       print("...CREATING...")
+      print("...CREATING...")
       local newline =   createnewline(currency, value)
       if #cut.shown.objs > 0  then
 --          print("NOT First currencies")
