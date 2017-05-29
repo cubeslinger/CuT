@@ -1,0 +1,18 @@
+Identifier  =  "CuT"
+Name        =  { English = "CuT" }
+NameShort   =  "CuT"
+Version     =  "0.00.01"
+Description =  { English = "CUrrency Tracker" }
+Author      =  "marcob@marcob.org"
+Website     =  "https://github.com/cubeslinger/CuT"
+Email       =  "marcob@marcob.org"
+Environment =  "4.0"
+
+RunOnStartup = {
+   "_cut_layout.lua",
+   "CuT.lua",
+}
+
+Dependencies = {
+  LibDraggable = {"required", "before"},
+}
