@@ -14,10 +14,19 @@ function cut.round(num, digits)
 end
 
 function cut.printmoney(money)
+   
+   local sign     =  nil
+   if money < 0 then 
+      sign = "-" 
+      money = money * -1
+   end
+   
    local silver   =  '#c0c0c0'
    local gold     =  '#ffd700'
    local platinum =  '#e5e4e2'
    local white    =  '#ffffff'
+   local red      =  '#ff0000'
+   local green    =  '#00ff00'
    local s        =  money
    local g        =  0
    local p        =  0
@@ -47,6 +56,13 @@ function cut.printmoney(money)
    -- platinum
    if p > 0 then
       t = "<font color=\'"..white.."\'>"..tostring(p).."<font color=\'"..platinum.."\'>p</font>"..t
+   end
+   
+   if sign then
+      t = "<font color=\'"..red.."\'>"..sign.."</font>"..t
+   else
+      t = "<font color=\'"..green.."\'>+</font>"..t
+      
    end
 
    return(t)

@@ -9,7 +9,7 @@ cut.addon               =  Inspect.Addon.Detail(Inspect.Addon.Current())["name"]
 cut.gui                 =  {}
 cut.gui.x               =  nil
 cut.gui.y               =  nil
-cut.gui.width           =  250
+cut.gui.width           =  350
 cut.gui.height          =  100
 cut.gui.borders         =  {}
 cut.gui.borders.left    =  4
@@ -17,11 +17,13 @@ cut.gui.borders.right   =  4
 cut.gui.borders.bottom  =  4
 cut.gui.borders.top     =  4
 cut.gui.font            =  {}
-cut.gui.font.size       =  12
+cut.gui.font.size       =  14
 cut.gui.font.name       =  "fonts/MonospaceTypewriter.ttf"
 --
 cut.shown               =  {}
 cut.shown.objs          =  {}
+cut.shown.objs.count    =  0
+cut.shown.objs.last     =  nil
 cut.frames              =  {}
 
 local function updateguicoordinates(win, x, y)
@@ -80,32 +82,42 @@ local function createwindow()
    return cutwindow
 end
 
-function createnewline(currency, value)
+local function createnewline(currency, value)
 
    -- CUT currency container
    local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
---    currencyframe:SetBackgroundColor(1, 0, 0, .5)
    currencyframe:SetLayer(2)
 
-   -- setup Loot Item's Counter
-   currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
+   local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
    currencylabel:SetFont(cut.addon, cut.gui.font.name)
    currencylabel:SetFontSize(cut.gui.font.size )
    currencylabel:SetText(string.format("%s:", currency))
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
+ 
+   local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. currency, currencyframe)
+   currencyicon:SetTexture("Rift", (cut.coinbase[currency].currencyicon or "reward_gold.png.dds"))
+   currencyicon:SetWidth(cut.gui.font.size)
+   currencyicon:SetHeight(cut.gui.font.size)
+   currencyicon:SetLayer(3)
+   currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 0)    
 
    if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
-
-   -- setup Loot Item's Counter
-   currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
+   
+   local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFont(cut.addon, cut.gui.font.name)
    currencyvalue:SetFontSize(cut.gui.font.size )
    currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
-   currencyvalue:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
-   cut.shown.objs.currency =  currencyvalue
-
+   currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -2)
+   
+   cut.shown.objs[currency]   =  currencyvalue
+   cut.shown.objs.count  = 1 + cut.shown.objs.count   -- last shown by number
+   cut.shown.objs.last =  currency                    -- last shown by currecny name
+   
+--    local a,b = nil, nil
+--    for a,b in pairs(cut.shown.objs) do print(string.format("CuT: cut.shown.objs.%s=%s", a, b)) end
+   
    return currencyframe
 
 end
@@ -130,16 +142,17 @@ function cut.updatecurrencies(currency, value)
    else
       print("...CREATING...")
       local newline =   createnewline(currency, value)
-      if #cut.shown.objs > 0  then
+      if cut.shown.objs.count > 1  then
 --          print("NOT First currencies")
-         newline:SetPoint("TOPLEFT",   cut.shown.objs[#cut.shown.objs], "BOTTOMLEFT")
-         newline:SetPoint("TOPRIGHT",  cut.shown.objs[#cut.shown.objs], "BOTTOMRIGHT")
+         newline:SetPoint("TOPLEFT",   cut.shown.objs[cut.shown.objs.last], "BOTTOMLEFT")
+         newline:SetPoint("TOPRIGHT",  cut.shown.objs[cut.shown.objs.last], "BOTTOMRIGHT")
       else
 --          print("First currencies")
          newline:SetPoint("TOPLEFT",   cut.frames.container,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
          newline:SetPoint("TOPRIGHT",  cut.frames.container,   "TOPRIGHT", -cut.gui.borders.right, cut.gui.borders.top)
       end
-      cut.shown.objs.currency = newline
+--       cut.shown.objs.currency = newline
+      cut.shown.objs[currency] = newline
    end
 
    return
