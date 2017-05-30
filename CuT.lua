@@ -6,16 +6,13 @@
 local addon, cut = ...
 
 local function updateguicoordinates(win, x, y)
-
    if win ~= nil then
       local winname = win:GetName()
-
-      if winName == "cut" then
-         cut.gui.x   =  cD.round(x)
-         cut.gui.y   =  cD.round(y)
+      if winname  == "cut" then
+         cut.gui.x   =  cut.round(x)
+         cut.gui.y   =  cut.round(y)
       end
    end
-
    return
 end
 
@@ -32,7 +29,6 @@ local function createwindow()
    end
    cutwindow:SetLayer(-1)
    cutwindow:SetWidth(cut.gui.width)
-   cutwindow:SetHeight(cut.gui.height)
    cutwindow:SetBackgroundColor(0, 0, 0, .5)
 
    -- EXTERNAL CUT CONTAINER FRAME
@@ -61,58 +57,17 @@ local function createwindow()
    return cutwindow
 end
 
--- local function createnewline(currency, value)
---
---    -- CUT currency container
---    local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
---    currencyframe:SetLayer(2)
---
---    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
---    currencylabel:SetFont(cut.addon, cut.gui.font.name)
---    currencylabel:SetFontSize(cut.gui.font.size )
---    currencylabel:SetText(string.format("%s:", currency))
---    currencylabel:SetLayer(3)
---    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
---
---    if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
---
---    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
---    currencyvalue:SetFont(cut.addon, cut.gui.font.name)
---    currencyvalue:SetFontSize(cut.gui.font.size )
---    currencyvalue:SetText(string.format("%s", value), true)
---    currencyvalue:SetLayer(3)
---    currencyvalue:SetPoint("TOPLEFT",   currencylabel, "TOPRIGHT", cut.gui.borders.left, 0)
---
---    local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. currency, currencyframe)
---    currencyicon:SetTexture("Rift", (cut.coinbase[currency].icon or "reward_gold.png.dds"))
---    currencyicon:SetWidth(cut.gui.font.size)
---    currencyicon:SetHeight(cut.gui.font.size)
---    currencyicon:SetLayer(3)
---    currencyicon:SetPoint("TOPLEFT",   currencyvalue, "TOPRIGHT", -cut.gui.borders.right, 0)
---
---
---    cut.shown.objs[currency]   =  currencyvalue
---
--- --    cut.shown.frames[currency] =  currencyframe
---    cut.shown.frames.count     =  1 + cut.shown.frames.count -- last frame shown by number
--- --    cut.shown.frames.last      =  currencyframe              -- last frame shown by currecny name
---
--- --    local a,b = nil, nil
--- --    for a,b in pairs(cut.shown.objs) do print(string.format("CuT: cut.shown.objs.%s=%s", a, b)) end
---
---    return currencyframe
---
--- end
 
 local function createnewline(currency, value)
 
    -- CUT currency container
    local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
+   currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
 
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
    currencylabel:SetFont(cut.addon, cut.gui.font.name)
-   currencylabel:SetFontSize(cut.gui.font.size )
+   currencylabel:SetFontSize(cut.gui.font.size -2)
    currencylabel:SetText(string.format("%s:", currency))
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
@@ -154,23 +109,26 @@ function cut.updatecurrencies(currency, value)
    if not cut.gui.window then cut.gui.window = createwindow() end
 
    if cut.shown.objs[currency] then
-      print("...UPDATING...")
+--       print("...UPDATING...")
       updatecurrencyvalue(currency, value)
    else
-      print("...CREATING...")
+--       print("...CREATING...")
       local newline =   createnewline(currency, value)
       if cut.shown.frames.count > 1  then
-         print("NOT First currencies")
+--          print("NOT First currencies")
          newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT")
          newline:SetPoint("TOPRIGHT",  cut.shown.frames.last, "BOTTOMRIGHT")
       else
-         print("First currencies")
+--          print("First currencies")
          newline:SetPoint("TOPLEFT",   cut.frames.container,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
          newline:SetPoint("TOPRIGHT",  cut.frames.container,   "TOPRIGHT", -cut.gui.borders.right, cut.gui.borders.top)
       end
 
       cut.shown.frames.last   =  newline
    end
+
+   -- adjust window size
+   cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*2)
 
    return
 end
