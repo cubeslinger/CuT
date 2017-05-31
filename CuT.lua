@@ -39,7 +39,7 @@ local function createwindow()
    windowtitle:SetFontSize(cut.gui.font.size )
    windowtitle:SetText(string.format("%s", title), true)
    windowtitle:SetLayer(3)
-   windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -12)
+   windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
@@ -80,8 +80,16 @@ local function createnewline(currency, value)
    currencylabel:SetFont(cut.addon, cut.gui.font.name)
    currencylabel:SetFontSize(cut.gui.font.size)
    local textcurrency   =  ""
-   if currency == "Platinum, Gold, Silver"   then textcurrency="Money"
-                                             else textcurrency=currency
+   if currency == "Platinum, Gold, Silver" then
+      textcurrency="Money"
+   else
+      -- shorten Crafting Marks label
+      if currency:gmatch("Craftman's")   then
+         textcurrency   =  currency
+         textcurrency:gsub("Craftman's ", "")
+      else
+         textcurrency   =  currency
+      end
    end
    currencylabel:SetText(string.format("%s:", textcurrency))
    currencylabel:SetLayer(3)
@@ -138,8 +146,8 @@ function cut.updatecurrencies(currency, value)
       local newline =   createnewline(currency, value)
       if cut.shown.frames.count > 1  then
 --          print("NOT First currencies")
-         newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, 1)
-         newline:SetPoint("TOPRIGHT",  cut.shown.frames.last, "BOTTOMRIGHT",  0, 1)
+         newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, cut.gui.borders.top)
+         newline:SetPoint("TOPRIGHT",  cut.shown.frames.last, "BOTTOMRIGHT",  0, cut.gui.borders.top)
       else
 --          print("First currencies")
          newline:SetPoint("TOPLEFT",   cut.frames.container,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
@@ -150,40 +158,7 @@ function cut.updatecurrencies(currency, value)
    end
 
    -- adjust window size
-   cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*2)
+   cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
 
    return
 end
-
---[[
-    Error: Incorrect function usage.
-   Parameters: "Text", "window_title", nil
-   Parameter types: string, string, nil
-   Function documentation:
-   Creates a new frame. Frames are the blocks that all addon UIs are made out of. Since all frames must have a parent, you'll need to create a Context before any frames. See UI.CreateContext.
-   List of valid frame types:
-   Frame: The base type. No special capabilities. Useful for spacing, organization, input handling, and solid color squares.
-   Mask: Obscures the contents of child frames that do not fall within the mask boundaries.
-   Text: Displays text.
-   Texture: Displays a static texture image.
-   RiftButton: A standard Rift button widget.
-   RiftCheckbox: A standard Rift checkbox widget.
-   RiftScrollbar: A standard Rift scrollbar widget.
-   RiftSlider: A standard Rift slider widget.
-   RiftTextfield: A standard Rift textfield widget.
-   RiftWindow: A standard Rift window widget.
-   frame = UI.CreateFrame(type, name, parent)   -- Frame <- string, string, Element
-   Parameters:
-   name:	A descriptive name for this element. Used for error reports and performance information. May be shown to end-users.
-   parent:	The new parent for this frame.
-   type:	The type of your new frame. Current supported types: Frame, Text, Texture.
-   Return values:
-   frame:	Your new frame.
-   In CuT / CuT Currency Event, event Event.Currency
-   stack traceback:
-   [C]: ?
-   [C]: in function 'createFrame_core'
-   CuT/CuT.lua:37: in function 'createwindow'
-   CuT/CuT.lua:124: in function 'updatecurrencies'
-   CuT/_cut_init.lua:120: in function <CuT/_cut_init.lua:108>
-    ]]--

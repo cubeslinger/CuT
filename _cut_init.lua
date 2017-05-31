@@ -12,10 +12,10 @@ cut.gui.x               =  nil
 cut.gui.y               =  nil
 cut.gui.width           =  280
 cut.gui.borders         =  {}
-cut.gui.borders.left    =  4
-cut.gui.borders.right   =  4
-cut.gui.borders.bottom  =  4
-cut.gui.borders.top     =  4
+cut.gui.borders.left    =  2
+cut.gui.borders.right   =  2
+cut.gui.borders.bottom  =  2
+cut.gui.borders.top     =  2
 cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
@@ -158,6 +158,6 @@ local function initcoinbase()
    return
 end
 
-Command.Event.Attach(Event.Unit.Availability.Full, initcoinbase, "CuT: Init Coin Base")
-Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   loadvariables,    "Load CuT Session Variables")
-Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, savevariables,    "Save CuT Session Variables")
+Command.Event.Attach(Event.Unit.Availability.Full,          initcoinbase,     "CuT: Init Coin Base")
+Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   loadvariables,    "CuT: Load Variables")
+Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, savevariables,    "CuT: Save Variables")
