@@ -18,7 +18,7 @@ cut.gui.borders.bottom  =  4
 cut.gui.borders.top     =  4
 cut.gui.window          =  nil
 cut.gui.font            =  {}
-cut.gui.font.size       =  14
+cut.gui.font.size       =  12
 cut.gui.font.name       =  "fonts/MonospaceTypewriter.ttf"
 --
 cut.coinbase            =  {}
@@ -38,6 +38,19 @@ cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
 --
 cut.frames              =  {}
+--
+cut.html                =  {}
+cut.html.silver         =  '#c0c0c0'
+cut.html.gold           =  '#ffd700'
+cut.html.platinum       =  '#e5e4e2'
+cut.html.white          =  '#ffffff'
+cut.html.red            =  '#ff0000'
+cut.html.green          =  '#00ff00'
+--
+cut.color               =  {}
+cut.color.black         =  { 0,  0,  0, .5}
+cut.color.darkgrey      =  {.2, .2, .2, .5}
+
 
 
 function loadvariables(_, addonname)

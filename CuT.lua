@@ -29,7 +29,17 @@ local function createwindow()
    end
    cutwindow:SetLayer(-1)
    cutwindow:SetWidth(cut.gui.width)
-   cutwindow:SetBackgroundColor(0, 0, 0, .5)
+--    cutwindow:SetBackgroundColor(0, 0, 0, .5)
+   cutwindow:SetBackgroundColor(unpack(cut.color.black))
+
+   -- Window Title
+   local title =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
+   local windowtitle =  UI.CreateFrame("Text", "window_title", cutwindow)
+   windowtitle:SetFont(cut.addon, cut.gui.font.name)
+   windowtitle:SetFontSize(cut.gui.font.size )
+   windowtitle:SetText(string.format("%s", title), true)
+   windowtitle:SetLayer(3)
+   windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -12)
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
@@ -37,7 +47,8 @@ local function createwindow()
    externalcutframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT",    - cut.gui.borders.right, cut.gui.borders.top)
    externalcutframe:SetPoint("BOTTOMLEFT",  cutwindow, "BOTTOMLEFT",  cut.gui.borders.left,    - cut.gui.borders.bottom)
    externalcutframe:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", - cut.gui.borders.right, - cut.gui.borders.bottom)
-   externalcutframe:SetBackgroundColor(.2, .2, .2, .5)
+--    externalcutframe:SetBackgroundColor(.2, .2, .2, .5)
+   externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))
    externalcutframe:SetLayer(1)
 
    -- MASK FRAME
@@ -67,8 +78,12 @@ local function createnewline(currency, value)
 
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
    currencylabel:SetFont(cut.addon, cut.gui.font.name)
-   currencylabel:SetFontSize(cut.gui.font.size -2)
-   currencylabel:SetText(string.format("%s:", currency))
+   currencylabel:SetFontSize(cut.gui.font.size)
+   local textcurrency   =  ""
+   if currency == "Platinum, Gold, Silver"   then textcurrency="Money"
+                                             else textcurrency=currency
+   end
+   currencylabel:SetText(string.format("%s:", textcurrency))
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
@@ -79,12 +94,19 @@ local function createnewline(currency, value)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
-   if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
+   if currency == "Platinum, Gold, Silver" then
+      value = cut.printmoney(value)
+   else
+      local sign = "+"
+      if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"
+                     else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"
+      end
+   end
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFont(cut.addon, cut.gui.font.name)
    currencyvalue:SetFontSize(cut.gui.font.size )
-   currencyvalue:SetText(string.format("%s", value), true)
+   currencyvalue:SetText(string.format("%s%s", (sign or ""), value), true)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
 
@@ -116,8 +138,8 @@ function cut.updatecurrencies(currency, value)
       local newline =   createnewline(currency, value)
       if cut.shown.frames.count > 1  then
 --          print("NOT First currencies")
-         newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT")
-         newline:SetPoint("TOPRIGHT",  cut.shown.frames.last, "BOTTOMRIGHT")
+         newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, 1)
+         newline:SetPoint("TOPRIGHT",  cut.shown.frames.last, "BOTTOMRIGHT",  0, 1)
       else
 --          print("First currencies")
          newline:SetPoint("TOPLEFT",   cut.frames.container,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
@@ -132,3 +154,36 @@ function cut.updatecurrencies(currency, value)
 
    return
 end
+
+--[[
+    Error: Incorrect function usage.
+   Parameters: "Text", "window_title", nil
+   Parameter types: string, string, nil
+   Function documentation:
+   Creates a new frame. Frames are the blocks that all addon UIs are made out of. Since all frames must have a parent, you'll need to create a Context before any frames. See UI.CreateContext.
+   List of valid frame types:
+   Frame: The base type. No special capabilities. Useful for spacing, organization, input handling, and solid color squares.
+   Mask: Obscures the contents of child frames that do not fall within the mask boundaries.
+   Text: Displays text.
+   Texture: Displays a static texture image.
+   RiftButton: A standard Rift button widget.
+   RiftCheckbox: A standard Rift checkbox widget.
+   RiftScrollbar: A standard Rift scrollbar widget.
+   RiftSlider: A standard Rift slider widget.
+   RiftTextfield: A standard Rift textfield widget.
+   RiftWindow: A standard Rift window widget.
+   frame = UI.CreateFrame(type, name, parent)   -- Frame <- string, string, Element
+   Parameters:
+   name:	A descriptive name for this element. Used for error reports and performance information. May be shown to end-users.
+   parent:	The new parent for this frame.
+   type:	The type of your new frame. Current supported types: Frame, Text, Texture.
+   Return values:
+   frame:	Your new frame.
+   In CuT / CuT Currency Event, event Event.Currency
+   stack traceback:
+   [C]: ?
+   [C]: in function 'createFrame_core'
+   CuT/CuT.lua:37: in function 'createwindow'
+   CuT/CuT.lua:124: in function 'updatecurrencies'
+   CuT/_cut_init.lua:120: in function <CuT/_cut_init.lua:108>
+    ]]--

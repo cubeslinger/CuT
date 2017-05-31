@@ -21,12 +21,6 @@ function cut.printmoney(money)
       money = money * -1
    end
 
-   local silver   =  '#c0c0c0'
-   local gold     =  '#ffd700'
-   local platinum =  '#e5e4e2'
-   local white    =  '#ffffff'
-   local red      =  '#ff0000'
-   local green    =  '#00ff00'
    local s        =  money
    local g        =  0
    local p        =  0
@@ -48,21 +42,20 @@ function cut.printmoney(money)
    end
 
    -- silver
-   t = "<font color=\'"..white.."\'>"..tostring(s).."</font><font color=\'"..silver.."\'>s</font>"
+   t = "<font color=\'"..cut.html.white.."\'>"..tostring(s).."</font><font color=\'"..cut.html.silver.."\'>s</font>"
    -- gold
    if g > 0 then
-      t = "<font color=\'"..white.."\'>"..tostring(g).."</font><font color=\'"..gold.."\'>g</font>"..t
+      t = "<font color=\'"..cut.html.white.."\'>"..tostring(g).."</font><font color=\'"..cut.html.gold.."\'>g</font>"..t
    end
    -- platinum
    if p > 0 then
-      t = "<font color=\'"..white.."\'>"..tostring(p).."<font color=\'"..platinum.."\'>p</font>"..t
+      t = "<font color=\'"..cut.html.white.."\'>"..tostring(p).."<font color=\'"..cut.html.platinum.."\'>p</font>"..t
    end
 
    if sign then
-      t = "<font color=\'"..red.."\'>"..sign.."</font>"..t
+      t = "<font color=\'"..cut.html.red.."\'>"..sign.."</font>"..t
    else
-      t = "<font color=\'"..green.."\'>+</font>"..t
-
+      t = "<font color=\'"..cut.html.green.."\'>+</font>"..t
    end
 
    return(t)
