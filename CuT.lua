@@ -72,8 +72,8 @@ local function createwindow()
                                                                         resizer.pressed = true
                                                                         resizer.mouseStartX = mouse.x
                                                                         resizer.mouseStartY = mouse.y
-                                                                        resizer.backupWidth = cut.gui.width
-                                                                        resizer.backupHeight= cut.gui.width
+--                                                                         resizer.backupWidth = cut.gui.width
+--                                                                         resizer.backupHeight= cut.gui.width
                                                             end,
                                                             "Event.UI.Input.Mouse.Left.Down")
    resizer:EventAttach(Event.UI.Input.Mouse.Cursor.Move,    function()  if resizer.pressed then
@@ -82,14 +82,20 @@ local function createwindow()
 --                                                                            cut.gui.height = math.max(mouse.y - resizer.mouseStartY + resizer.backupHeight, cut.gui.maxheight)
 --                                                                               cut.gui.width  = math.max(mouse.x - resizer.mouseStartX, cut.gui.minwidth)
 --                                                                               cut.gui.height = math.max(mouse.y - resizer.mouseStartY, cut.gui.minheight)
-                                                                              cut.gui.width  = cut.round(mouse.x - resizer.mouseStartX)
-                                                                              cut.gui.height = cut.round(mouse.y - resizer.mouseStartY)
-                                                                              if cut.gui.width  < cut.gui.minwidth   then cut.gui.width  = cut.gui.minwidth   end                                                                                  if cut.gui.width  > cut.gui.maxwidth   then cut.gui.width  = cut.gui.maxwidth   end
-                                                                              if cut.gui.height < cut.gui.minheight  then cut.gui.height = cut.gui.minheight  end
-                                                                              if cut.gui.height > cut.gui.maxheight  then cut.gui.height = cut.gui.maxheight  end
+                                                                           cut.gui.width  = cut.round(mouse.x - resizer.mouseStartX)
+                                                                           cut.gui.height = cut.round(mouse.y - resizer.mouseStartY)
+
+                                                                           if cut.gui.width  < cut.gui.minwidth   then cut.gui.width  = cut.gui.minwidth   end
+
+                                                                           if cut.gui.width  > cut.gui.maxwidth   then cut.gui.width  = cut.gui.maxwidth   end
+
+                                                                           if cut.gui.height < cut.gui.minheight  then cut.gui.height = cut.gui.minheight  end
+
+                                                                           if cut.gui.height > cut.gui.maxheight  then cut.gui.height = cut.gui.maxheight  end
+
                                                                            cut.gui.window:SetWidth(cut.gui.width)
                                                                            cut.gui.window:SetHeight(cut.gui.height)
-                                                                           print(string.format("Width[ %s] Height[%s]", cut.gui.width, cut.gui.height))
+                                                                           print(string.format("Width[%s] Height[%s]", cut.gui.width, cut.gui.height))
                                                                         end
                                                             end,
                                                             "Event.UI.Input.Mouse.Cursor.Move")
