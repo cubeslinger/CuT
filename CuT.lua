@@ -126,9 +126,9 @@ local function createnewline(currency, value)
       textcurrency="Money"
    else
       -- shorten Crafting Marks label
-      if currency:gmatch("Craftman's")   then
+      if currency:gmatch("Craftsman's")   then
          textcurrency   =  currency
-         textcurrency:gsub("Craftman's ", "")
+         textcurrency:gsub("Craftsman's ", "")
       else
          textcurrency   =  currency
       end
@@ -148,15 +148,15 @@ local function createnewline(currency, value)
       value = cut.printmoney(value)
    else
       local sign = "+"
-      if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"
-                     else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"
+      if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
+                     else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
       end
    end
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFont(cut.addon, cut.gui.font.name)
    currencyvalue:SetFontSize(cut.gui.font.size )
-   currencyvalue:SetText(string.format("%s%s", (sign or ""), value), true)
+   currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
 
@@ -204,3 +204,12 @@ function cut.updatecurrencies(currency, value)
 
    return
 end
+
+
+--[[
+    Error: CuT/CuT.lua:88: attempt to compare number with nil
+    In CuT / CuT.resizer:Event.UI.Input.Mouse.Cursor.Move
+stack traceback:
+	[C]: in function '__lt'
+	CuT/CuT.lua:88: in function <CuT/CuT.lua:79>
+   ]]--
