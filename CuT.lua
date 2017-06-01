@@ -62,46 +62,31 @@ local function createwindow()
    cut.frames.container =  cutframe
 
    -- RESIZER WIDGET
-   local resizer = UI.CreateFrame("Texture", "resizer", cutwindow)
-   resizer:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT")
-   resizer:SetWidth(cut.gui.font.size)
-   resizer:SetHeight(cut.gui.font.size)
-   resizer:SetLayer(1)
-   resizer:SetTexture("CuT", "textures\resizer.png")
-   resizer:EventAttach(Event.UI.Input.Mouse.Left.Down,      function()  local mouse = Inspect.Mouse()
-                                                                        resizer.pressed = true
-                                                                        resizer.mouseStartX = mouse.x
-                                                                        resizer.mouseStartY = mouse.y
---                                                                         resizer.backupWidth = cut.gui.width
---                                                                         resizer.backupHeight= cut.gui.width
+   local corner = UI.CreateFrame("Texture", "corner", cutwindow)
+   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT")
+   corner:SetWidth(cut.gui.font.size)
+   corner:SetHeight(cut.gui.font.size)
+   corner:SetLayer(1)
+   corner:SetTexture("CuT", "btn_arrow_(normal).png.dds")
+   corner:EventAttach(Event.UI.Input.Mouse.Left.Down,      function()  local mouse = Inspect.Mouse()
+                                                                        corner.pressed = true
+                                                                        corner.basex   =  cutwindow:GetLeft()
+                                                                        corner.basey   =  cutwindow:GetTop()
                                                             end,
                                                             "Event.UI.Input.Mouse.Left.Down")
-   resizer:EventAttach(Event.UI.Input.Mouse.Cursor.Move,    function()  if resizer.pressed then
+   corner:EventAttach(Event.UI.Input.Mouse.Cursor.Move,    function()  if corner.pressed then
                                                                            local mouse = Inspect.Mouse()
---                                                                            cut.gui.width  = math.max(mouse.x - resizer.mouseStartX + resizer.backupWidth,  cut.gui.maxwidth)
---                                                                            cut.gui.height = math.max(mouse.y - resizer.mouseStartY + resizer.backupHeight, cut.gui.maxheight)
---                                                                               cut.gui.width  = math.max(mouse.x - resizer.mouseStartX, cut.gui.minwidth)
---                                                                               cut.gui.height = math.max(mouse.y - resizer.mouseStartY, cut.gui.minheight)
-                                                                           cut.gui.width  = cut.round(mouse.x - resizer.mouseStartX)
-                                                                           cut.gui.height = cut.round(mouse.y - resizer.mouseStartY)
-
-                                                                           if cut.gui.width  < cut.gui.minwidth   then cut.gui.width  = cut.gui.minwidth   end
-
-                                                                           if cut.gui.width  > cut.gui.maxwidth   then cut.gui.width  = cut.gui.maxwidth   end
-
-                                                                           if cut.gui.height < cut.gui.minheight  then cut.gui.height = cut.gui.minheight  end
-
-                                                                           if cut.gui.height > cut.gui.maxheight  then cut.gui.height = cut.gui.maxheight  end
-
+                                                                           cut.gui.width  = cut.round(mouse.x - corner.basex)
+                                                                           cut.gui.height = cut.round(mouse.y - corner.basey)
                                                                            cut.gui.window:SetWidth(cut.gui.width)
                                                                            cut.gui.window:SetHeight(cut.gui.height)
-                                                                           print(string.format("Width[%s] Height[%s]", cut.gui.width, cut.gui.height))
+--                                                                            print(string.format("POST Width[%s] Height[%s]", cut.gui.width, cut.gui.height))
                                                                         end
                                                             end,
                                                             "Event.UI.Input.Mouse.Cursor.Move")
 
-   resizer:EventAttach(Event.UI.Input.Mouse.Left.Upoutside, function()  resizer.pressed = false end, "Event.UI.Input.Mouse.Left.Upoutside")
-   resizer:EventAttach(Event.UI.Input.Mouse.Left.Up,        function()  resizer.pressed = false end, "Event.UI.Input.Mouse.Left.Up")
+   corner:EventAttach(Event.UI.Input.Mouse.Left.Upoutside, function()  corner.pressed = false end, "Event.UI.Input.Mouse.Left.Upoutside")
+   corner:EventAttach(Event.UI.Input.Mouse.Left.Up,        function()  corner.pressed = false end, "Event.UI.Input.Mouse.Left.Up")
 
 
    -- Enable Dragging
@@ -168,7 +153,7 @@ end
 
 local function updatecurrencyvalue(currency, value)
 
-   print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
+--    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
    if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
 
    cut.shown.objs[currency]:SetText(string.format("%s", value), true)
@@ -204,12 +189,3 @@ function cut.updatecurrencies(currency, value)
 
    return
 end
-
-
---[[
-    Error: CuT/CuT.lua:88: attempt to compare number with nil
-    In CuT / CuT.resizer:Event.UI.Input.Mouse.Cursor.Move
-stack traceback:
-	[C]: in function '__lt'
-	CuT/CuT.lua:88: in function <CuT/CuT.lua:79>
-   ]]--

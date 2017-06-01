@@ -11,7 +11,7 @@ cut.gui                 =  {}
 cut.gui.x               =  nil
 cut.gui.y               =  nil
 cut.gui.width           =  280
-cut.gui.minwidth        =  200
+cut.gui.minwidth        =  100
 cut.gui.minheight       =  20
 cut.gui.maxwidth        =  1000
 cut.gui.maxheight       =  500
@@ -57,20 +57,36 @@ cut.color.darkgrey      =  {.2, .2, .2, .5}
 
 
 
-function loadvariables(_, addonname)
+local function loadvariables(_, addonname)
    if addon.name == addonname then
       if guidata then
-         cut.gui        =  guidata
+--          cut.gui        =  guidata
+         local a  =  guidata
+         local key, val = nil, nil
+         for key, val in pairs(a) do
+            if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight then
+               cut.gui[key]   =  val
+--                print(string.format("Importing %s: %s", key, val))
+            end
+         end
          cut.gui.window =  nil
+
+--          local key, val = nil, nil
+--          for key, val in pairs(cut.gui) do   print(string.format("Importing cut.gui.%s: %s", key, val)) end
+
       end
    end
    return
 end
 
-function savevariables(_, addonname)
+local function savevariables(_, addonname)
    if addon.name == addonname then
       local a = cut.gui
-      a.window =  nil
+      a.window    =  nil
+      a.minwidth  =  nil
+      a.minheight =  nil
+      a.maxwidth  =  nil
+      a.maxheight =  nil
       guidata  =  a
    end
    return
