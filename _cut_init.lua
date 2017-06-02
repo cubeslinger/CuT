@@ -23,7 +23,6 @@ cut.gui.borders.top     =  2
 cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
-cut.gui.font.name       =  "fonts/MonospaceTypewriter.ttf"
 --
 cut.coinbase            =  {}
 cut.baseinit            =  false

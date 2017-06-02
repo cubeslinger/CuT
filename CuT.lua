@@ -35,7 +35,6 @@ local function createwindow()
    -- Window Title
    local title =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
    local windowtitle =  UI.CreateFrame("Text", "window_title", cutwindow)
-   windowtitle:SetFont(cut.addon, cut.gui.font.name)
    windowtitle:SetFontSize(cut.gui.font.size )
    windowtitle:SetText(string.format("%s", title), true)
    windowtitle:SetLayer(3)
@@ -47,7 +46,6 @@ local function createwindow()
    externalcutframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT",    - cut.gui.borders.right, cut.gui.borders.top)
    externalcutframe:SetPoint("BOTTOMLEFT",  cutwindow, "BOTTOMLEFT",  cut.gui.borders.left,    - cut.gui.borders.bottom)
    externalcutframe:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", - cut.gui.borders.right, - cut.gui.borders.bottom)
---    externalcutframe:SetBackgroundColor(.2, .2, .2, .5)
    externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))
    externalcutframe:SetLayer(1)
 
@@ -62,12 +60,16 @@ local function createwindow()
    cut.frames.container =  cutframe
 
    -- RESIZER WIDGET
-   local corner = UI.CreateFrame("Texture", "corner", cutwindow)
-   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT")
-   corner:SetWidth(cut.gui.font.size)
-   corner:SetHeight(cut.gui.font.size)
-   corner:SetLayer(1)
-   corner:SetTexture("CuT", "btn_arrow_(normal).png.dds")
+--    local corner = UI.CreateFrame("Texture", "corner", cutwindow)
+--    corner:SetTexture("CuT", "indicator_player_ping.png.dds")   
+   local corner=  UI.CreateFrame("Text", "corner", cutwindow)
+   local text  =  "<font color=\'"..cut.html.red.."\'>o</font>"
+   corner:SetText(text, true)
+--    corner:SetWidth(cut.gui.font.size)
+--    corner:SetHeight(cut.gui.font.size)
+   corner:SetFontSize(cut.gui.font.size -2 )
+   corner:SetLayer(4)   
+   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", 6, 7)   
    corner:EventAttach(Event.UI.Input.Mouse.Left.Down,      function()  local mouse = Inspect.Mouse()
                                                                         corner.pressed = true
                                                                         corner.basex   =  cutwindow:GetLeft()
@@ -104,7 +106,6 @@ local function createnewline(currency, value)
    currencyframe:SetLayer(2)
 
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
-   currencylabel:SetFont(cut.addon, cut.gui.font.name)
    currencylabel:SetFontSize(cut.gui.font.size)
    local textcurrency   =  ""
    if currency == "Platinum, Gold, Silver" then
@@ -139,7 +140,6 @@ local function createnewline(currency, value)
    end
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
-   currencyvalue:SetFont(cut.addon, cut.gui.font.name)
    currencyvalue:SetFontSize(cut.gui.font.size )
    currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
@@ -154,7 +154,14 @@ end
 local function updatecurrencyvalue(currency, value)
 
 --    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
-   if currency == "Platinum, Gold, Silver" then value = cut.printmoney(value) end
+   if currency == "Platinum, Gold, Silver" then 
+      value = cut.printmoney(value) 
+   else
+      local sign = "+"
+      if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
+                     else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+      end
+   end      
 
    cut.shown.objs[currency]:SetText(string.format("%s", value), true)
 
