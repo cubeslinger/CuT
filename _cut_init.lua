@@ -113,27 +113,56 @@ end
 
 
 local function getcoins()
-   local coins =  {}
+   local coins    =  {}
+   local coinlist =  {}
    local currency =  nil
    for currency, _ in pairs(Inspect.Currency.List()) do
       local detail = Inspect.Currency.Detail(currency)
       coins[detail.name] = { stack=detail.stack, icon=detail.icon }
+      
+      -- added coinlist to check for new currencies
+      table.insert(coinlist, currency)
+      
       --       print(string.format("CuT: (%s) (%s) (%s)", detail.name, detail.stack, detail.icon))
    end
 
-   return coins
+   return coins, coinlist
 end
 
 local function currencyevent()
 --    print("CURRENCY EVENT")
 
-   local current  =  getcoins()
+   local current, currentlist =  getcoins()
    local var, val =  nil, nil
    local tbl      =  {}
 
    -- find changes
    for var, tbl in pairs(current) do
       val   =  tbl.stack
+      --
+      -- is this a NEW currency, one we have never seen before?
+      -- Begin
+      --
+         if table.getn(cut.coinlist) ~= table.getn(currentlist) then
+            local newcoin  =  nil
+            local coin     =  nil
+            local itsnew   =  true
+            for coin in pairs (currentlist) do
+               for oldcoin in pairs (cut.coinlist) do
+                  if oldcoin == coin then
+                     itsnew = false
+                     break
+                  end
+               end
+               
+               if itsnew then
+                  local detail = Inspect.Currency.Detail(coin)
+                  cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon }                           
+               end
+            end
+         end  
+      -- End
+      
       if val   ~= (cut.coinbase[var].stack or 0) then
          local newvalue =  val - (cut.coinbase[var].stack or 0)
          cut.updatecurrencies(var, newvalue)
@@ -147,9 +176,9 @@ local function initcoinbase()
 
       while not cut.baseinit do
 --          print("INIT COIN BASE: BEGIN")
-         cut.coinbase   =  getcoins()
+         cut.coinbase, cut.coinlist   =  getcoins()
 
-         -- do we really have a coint base, let's count
+         -- do we really have a coin base? let's count
          local cnt = 0
          local a,b = nil, nil
          for a,b in pairs(cut.coinbase) do
