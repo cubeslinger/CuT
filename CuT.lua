@@ -108,16 +108,18 @@ local function createnewline(currency, value)
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
    currencylabel:SetFontSize(cut.gui.font.size)
    local textcurrency   =  ""
-   if currency == "Platinum, Gold, Silver" then
+   if currency == "Platinum, Gold, Silver"   or 
+      currency == "Platine, Or, Argent"      or          
+      currency == "Platin, Gold, Silber"     then
       textcurrency="Money"
    else
       -- shorten Crafting Marks label
-      if currency:gmatch("Craftsman's")   then
+--       if currency:gmatch("Craftsman's")   then
+--          textcurrency   =  currency
+--          textcurrency:gsub("Craftsman's ", "")
+--       else
          textcurrency   =  currency
-         textcurrency:gsub("Craftsman's ", "")
-      else
-         textcurrency   =  currency
-      end
+--       end
    end
    currencylabel:SetText(string.format("%s:", textcurrency))
    currencylabel:SetLayer(3)
@@ -130,7 +132,9 @@ local function createnewline(currency, value)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
-   if currency == "Platinum, Gold, Silver" then
+   if currency == "Platinum, Gold, Silver"   or 
+      currency == "Platine, Or, Argent"      or
+      currency == "Platin, Gold, Silber"     then
       value = cut.printmoney(value)
    else
       local sign = "+"
@@ -154,7 +158,9 @@ end
 local function updatecurrencyvalue(currency, value)
 
 --    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
-   if currency == "Platinum, Gold, Silver" then 
+   if currency == "Platinum, Gold, Silver"   or
+      currency == "Platine, Or, Argent"      or 
+      currency == "Platin, Gold, Silber"     then 
       value = cut.printmoney(value) 
    else
       local sign = "+"

@@ -1,7 +1,7 @@
 Identifier  =  "CuT"
 Name        =  { English = "CuT" }
 NameShort   =  "CuT"
-Version     =  "0.00.11"
+Version     =  "0.00.12"
 Description =  { English = "CUrrency Tracker" }
 Author      =  "marcob@marcob.org"
 Website     =  "https://github.com/cubeslinger/CuT"
@@ -13,6 +13,7 @@ RunOnStartup = {
    "_cut_utils.lua",
    "CuT.lua",
 }
+
 
 Dependencies = {
   LibDraggable = {"required", "before"},
