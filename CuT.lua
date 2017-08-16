@@ -151,7 +151,11 @@ local function createnewline(currency, value, id)
    end
    
    -- "Platinum, Silver, Gold" doesn't seem to have a tooltip... so i hide it
-   if currency == "Affinity" or currency == "Affinität" or currency = "Affinité" then id = nil end
+   if currency == "Affinity"  or 
+      currency == "Affinität" or 
+      currency == "Affinité"  then 
+      id = nil 
+   end
    --
    -- ToolTip
    -- Mouse Hover IN    => show tooltip
