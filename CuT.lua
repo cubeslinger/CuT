@@ -98,7 +98,7 @@ local function createwindow()
 end
 
 
-local function createnewline(currency, value)
+local function createnewline(currency, value, id)
 
    -- CUT currency container
    local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
@@ -136,6 +136,9 @@ local function createnewline(currency, value)
       currency == "Platine, Or, Argent"      or
       currency == "Platin, Gold, Silber"     then
       value = cut.printmoney(value)
+      -- 
+      -- "Platinum, Silver, Gold" doesn't seem to have a tooltip... so i hide it
+      id    =  nil
    else
 --       local sign = "+"
 --       if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
@@ -144,9 +147,18 @@ local function createnewline(currency, value)
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
                      else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
       end     
---    end            
-      
+--    end                 
    end
+   
+   --
+   -- ToolTip
+   -- Mouse Hover IN    => show tooltip
+   currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id) end, "Event.UI.Input.Mouse.Cursor.In_"  .. currencyicon:GetName())
+   -- Mouse Hover OUT   => show tooltip
+   currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() Command.Tooltip(nil) end, "Event.UI.Input.Mouse.Cursor.Out_" .. currencyicon:GetName())
+   --
+   --
+   
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFontSize(cut.gui.font.size )
@@ -184,7 +196,7 @@ local function updatecurrencyvalue(currency, value)
    return
 end
 
-function cut.updatecurrencies(currency, value, restoresession)
+function cut.updatecurrencies(currency, value, id, restoresession)
    
    if restoresession then
 --       print("RESTORING "..currency.." - "..value)
@@ -197,7 +209,7 @@ function cut.updatecurrencies(currency, value, restoresession)
       local oldvalue    =  nil
       for oldcoin, oldvalue in pairs(cut.session) do
 --          print(string.format("Reading cu.session[%s] = %s", oldcoin, oldvalue))
-         cut.updatecurrencies(oldcoin, oldvalue, true)
+         cut.updatecurrencies(oldcoin, oldvalue, id, true)
       end      
    end
 
@@ -206,7 +218,7 @@ function cut.updatecurrencies(currency, value, restoresession)
       updatecurrencyvalue(currency, value)
    else
 --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value)
+      local newline =   createnewline(currency, value, id)
       if cut.shown.frames.count > 1  then
 --          print("NOT First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, cut.gui.borders.top)

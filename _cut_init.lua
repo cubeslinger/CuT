@@ -140,7 +140,7 @@ local function getcoins()
    local currency =  nil
    for currency, _ in pairs(Inspect.Currency.List()) do
       local detail = Inspect.Currency.Detail(currency)
-      coins[detail.name] = { stack=detail.stack, icon=detail.icon }
+      coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
       
       -- added coinlist to check for new currencies
       table.insert(coinlist, currency)
@@ -155,12 +155,13 @@ local function currencyevent()
 --    print("CURRENCY EVENT")
 
    local current, currentlist =  getcoins()
-   local var, val =  nil, nil
+   local var, val, id =  nil, nil, nil
    local tbl      =  {}
 
    -- find changes
    for var, tbl in pairs(current) do
       val   =  tbl.stack
+      id    =  tbl.id
       --
       -- is this a NEW currency, one we have never seen before?
       -- Begin
@@ -179,7 +180,7 @@ local function currencyevent()
                
                if itsnew then
                   local detail = Inspect.Currency.Detail(coin)
-                  cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon }                           
+                  cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }                           
                end
             end
          end  
@@ -187,7 +188,7 @@ local function currencyevent()
       
       if val   ~= (cut.coinbase[var].stack or 0) then
          local newvalue =  val - (cut.coinbase[var].stack or 0)
-         cut.updatecurrencies(var, newvalue)
+         cut.updatecurrencies(var, newvalue, id)
       end
    end
 end
