@@ -53,6 +53,8 @@ cut.html.green          =  '#00ff00'
 cut.color               =  {}
 cut.color.black         =  { 0,  0,  0, .5}
 cut.color.darkgrey      =  {.2, .2, .2, .5}
+--
+cut.session             =  {}
 
 
 
@@ -74,20 +76,40 @@ local function loadvariables(_, addonname)
 --          for key, val in pairs(cut.gui) do   print(string.format("Importing cut.gui.%s: %s", key, val)) end
 
       end
+      if session then
+         cut.session = session
+      end
    end
    return
 end
 
 local function savevariables(_, addonname)
    if addon.name == addonname then
+      
+      -- Save GUI prefrences
       local a = cut.gui
       a.window    =  nil
       a.minwidth  =  nil
       a.minheight =  nil
       a.maxwidth  =  nil
       a.maxheight =  nil
-      guidata  =  a
+      guidata     =  a
+      
+-- --       session  =  cut.session
+--       local b  =  nil
+--       local c  =  {}
+--       for b, _ in pairs(cut.shown.objs) do 
+--          print("A ["..a.."]")
+--             c[a]     =  cut.coinbase[a].stack
+--       end 
+      
+      -- Save Session data
+      -- Purge "anomaly" currencies from saved ones
+      if cut.session["Affinity"] then cut.session["Affinity"] = nil end
+      if cut.session["Prize Tickets"] then cut.session["Prize Tickets"] = nil end
+      session  =  cut.session
    end
+   
    return
 end
 
@@ -191,7 +213,16 @@ local function initcoinbase()
          if cnt > 0 then
 --             print("INIT COIN BASE: DONE")
             cut.baseinit   =  true
-
+            
+            -- do we need to re-base to last session?
+            local oldcoin     =  nil
+            local oldvalue    =  nil
+            for oldcoin, oldvalue in pairs(cut.session) do
+--                print(string.format("re-basing cu.session[%s] = %s", oldcoin, oldvalue))               
+               cut.coinbase[oldcoin].stack = cut.coinbase[oldcoin].stack + ( -1 * oldvalue)               
+            end      
+            
+            
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
          else

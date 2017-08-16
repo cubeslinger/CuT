@@ -137,10 +137,15 @@ local function createnewline(currency, value)
       currency == "Platin, Gold, Silber"     then
       value = cut.printmoney(value)
    else
-      local sign = "+"
-      if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
-                     else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
-      end
+--       local sign = "+"
+--       if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
+--                      else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+--       end
+      if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
+                     else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+      end     
+--    end            
+      
    end
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
@@ -163,33 +168,51 @@ local function updatecurrencyvalue(currency, value)
       currency == "Platin, Gold, Silber"     then 
       value = cut.printmoney(value) 
    else
-      local sign = "+"
-      if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
-                     else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+--       local sign = "+"
+--       if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
+--                      else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+--       end
+--       local sign = "+"
+      if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
+                     else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
       end
    end      
 
    cut.shown.objs[currency]:SetText(string.format("%s", value), true)
+--    print(string.format("SHOWING %s = %s", currency, value))
 
    return
 end
 
-function cut.updatecurrencies(currency, value)
+function cut.updatecurrencies(currency, value, restoresession)
+   
+   if restoresession then
+--       print("RESTORING "..currency.." - "..value)
+   end
 
-   if not cut.gui.window then cut.gui.window = createwindow() end
+   if not cut.gui.window then 
+      cut.gui.window = createwindow() 
+
+      local oldcoin     =  nil
+      local oldvalue    =  nil
+      for oldcoin, oldvalue in pairs(cut.session) do
+--          print(string.format("Reading cu.session[%s] = %s", oldcoin, oldvalue))
+         cut.updatecurrencies(oldcoin, oldvalue, true)
+      end      
+   end
 
    if cut.shown.objs[currency] then
---       print("...UPDATING...")
+--       print("...UPDATING..."..currency.." - "..value)
       updatecurrencyvalue(currency, value)
    else
---       print("...CREATING...")
+--       print("...CREATING..."..currency.." - "..value)
       local newline =   createnewline(currency, value)
       if cut.shown.frames.count > 1  then
---          print("NOT First currencies")
+--          print("NOT First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, cut.gui.borders.top)
          newline:SetPoint("TOPRIGHT",  cut.shown.frames.last, "BOTTOMRIGHT",  0, cut.gui.borders.top)
       else
---          print("First currencies")
+--          print("First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.frames.container,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
          newline:SetPoint("TOPRIGHT",  cut.frames.container,   "TOPRIGHT", -cut.gui.borders.right, cut.gui.borders.top)
       end
@@ -199,6 +222,21 @@ function cut.updatecurrencies(currency, value)
 
    -- adjust window size
    cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+   
+--    if not restoresession then
+--       if cut.session[currency] then
+--          cut.session[currency] = cut.session[currency] + value
+--       else
+--          cut.session[currency] = value
+--       end
+--       print(string.format("storing cu.session[%s] = %s", currency, cut.session[currency]))
+--    end
+
+   if not restoresession then
+      cut.session[currency] = value
+--       print(string.format("storing cu.session[%s] = %s", currency, cut.session[currency]))
+   end
+   
 
    return
 end
