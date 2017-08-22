@@ -60,3 +60,12 @@ function cut.printmoney(money)
 
    return(t)
 end
+
+function table.contains(table, element)
+   for var, _ in pairs(table) do
+      if var == element then
+         return true
+      end
+   end
+   return false
+end

@@ -26,6 +26,8 @@ cut.gui.font.size       =  12
 --
 cut.coinbase            =  {}
 cut.baseinit            =  false
+cut.todaybase           =  {}
+cut.todayinit           =  false
 --
 cut.timer               =  {}
 cut.timer.flag          =  false
@@ -179,33 +181,38 @@ local function currencyevent()
    for var, tbl in pairs(current) do
       val   =  tbl.stack
       id    =  tbl.id
-      --
-      -- is this a NEW currency, one we have never seen before?
-      -- Begin
-      --
-         if table.getn(cut.coinlist) ~= table.getn(currentlist) then
-            local newcoin  =  nil
-            local coin     =  nil
-            local itsnew   =  true
-            for coin in pairs (currentlist) do
-               for oldcoin in pairs (cut.coinlist) do
-                  if oldcoin == coin then
-                     itsnew = false
-                     break
-                  end
-               end
+--       --
+--       -- is this a NEW currency, one we have never seen before?
+--       -- Begin
+--       --
+--          if table.getn(cut.coinlist) ~= table.getn(currentlist) then
+--             local newcoin  =  nil
+--             local coin     =  nil
+--             local itsnew   =  true
+--             for coin in pairs (currentlist) do
+--                for oldcoin in pairs (cut.coinlist) do
+--                   if oldcoin == coin then
+--                      itsnew = false
+--                      break
+--                   end
+--                end
+--
+--                if itsnew then
+--                   local detail = Inspect.Currency.Detail(coin)
+--                   cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
+--                end
+--             end
+--          end
+--       -- End
 
-               if itsnew then
-                  local detail = Inspect.Currency.Detail(coin)
-                  cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
-               end
-            end
+      if table.contains(cut.coinbase, var) then
+         if val   ~= (cut.coinbase[var].stack or 0) then
+            local newvalue =  val - (cut.coinbase[var].stack or 0)
+            cut.updatecurrencies(var, newvalue)
          end
-      -- End
-
-      if val   ~= (cut.coinbase[var].stack or 0) then
-         local newvalue =  val - (cut.coinbase[var].stack or 0)
-         cut.updatecurrencies(var, newvalue, id)
+      else
+         cut.coinbase[var] =  val
+         cut.updatecurrencies(var, val)
       end
    end
 end
@@ -232,14 +239,8 @@ local function initcoinbase()
 --             print("INIT COIN BASE: DONE")
             cut.baseinit   =  true
 
-            -- do we need to re-base to last session?
-            local oldcoin     =  nil
-            local oldvalue    =  nil
-            for oldcoin, oldvalue in pairs(cut.session) do
---                print(string.format("re-basing cu.session[%s] = %s", oldcoin, oldvalue))
-               cut.coinbase[oldcoin].stack = cut.coinbase[oldcoin].stack + ( -1 * oldvalue)
-            end
-
+            if not cut.todayinit then
+               cut.todaybase  =  cut.coinbase
 
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")

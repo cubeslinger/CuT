@@ -65,8 +65,6 @@ local function createwindow()
    local corner=  UI.CreateFrame("Text", "corner", cutwindow)
    local text  =  "<font color=\'"..cut.html.red.."\'>o</font>"
    corner:SetText(text, true)
---    corner:SetWidth(cut.gui.font.size)
---    corner:SetHeight(cut.gui.font.size)
    corner:SetFontSize(cut.gui.font.size -2 )
    corner:SetLayer(4)
    corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", 6, 7)
@@ -98,7 +96,7 @@ local function createwindow()
 end
 
 
-local function createnewline(currency, value, id)
+local function createnewline(currency, value)
 
    -- CUT currency container
    local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
@@ -136,35 +134,11 @@ local function createnewline(currency, value, id)
       currency == "Platine, Or, Argent"      or
       currency == "Platin, Gold, Silber"     then
       value = cut.printmoney(value)
-      --
-      -- "Platinum, Silver, Gold" doesn't seem to have a tooltip... so i hide it
-      id    =  nil
    else
---       local sign = "+"
---       if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
---                      else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
---       end
-      if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
-                     else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+      if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
+                     else  value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
       end
---    end
    end
-
-   -- "Platinum, Silver, Gold" doesn't seem to have a tooltip... so i hide it
-   if currency == "Affinity"  or
-      currency == "Affinität" or
-      currency == "Affinité"  then
-      id = nil
-   end
-   --
-   -- ToolTip
-   -- Mouse Hover IN    => show tooltip
---    currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id) end, "Event.UI.Input.Mouse.Cursor.In_"  .. currencyicon:GetName())
-   -- Mouse Hover OUT   => show tooltip
---    currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() Command.Tooltip(nil) end, "Event.UI.Input.Mouse.Cursor.Out_" .. currencyicon:GetName())
-   --
-   --
-
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFontSize(cut.gui.font.size )
@@ -186,8 +160,8 @@ local function updatecurrencyvalue(currency, value)
       currency == "Platin, Gold, Silber"     then
       value    =  cut.printmoney(value)
    else
-      if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
-                     else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
+      if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
+      else  value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
       end
    end
 
@@ -197,21 +171,10 @@ local function updatecurrencyvalue(currency, value)
    return
 end
 
-function cut.updatecurrencies(currency, value, id, restoresession)
-
-   if restoresession then
---       print("RESTORING "..currency.." - "..value)
-   end
+function cut.updatecurrencies(currency, value)
 
    if not cut.gui.window then
       cut.gui.window = createwindow()
-
-      local oldcoin     =  nil
-      local oldvalue    =  nil
-      for oldcoin, oldvalue in pairs(cut.session) do
---          print(string.format("Reading cu.session[%s] = %s", oldcoin, oldvalue))
-         cut.updatecurrencies(oldcoin, oldvalue, id, true)
-      end
    end
 
    if cut.shown.objs[currency] then
@@ -219,7 +182,7 @@ function cut.updatecurrencies(currency, value, id, restoresession)
       updatecurrencyvalue(currency, value)
    else
 --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value, id)
+      local newline =   createnewline(currency, value)
       if cut.shown.frames.count > 1  then
 --          print("NOT First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, cut.gui.borders.top)
@@ -236,11 +199,7 @@ function cut.updatecurrencies(currency, value, id, restoresession)
    -- adjust window size
    cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
 
-   if not restoresession then
-      cut.session[currency] = value
---       print(string.format("storing cu.session[%s] = %s", currency, cut.session[currency]))
-   end
-
+   cut.session[currency] = value
 
    return
 end
