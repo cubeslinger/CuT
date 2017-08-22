@@ -61,15 +61,15 @@ local function createwindow()
 
    -- RESIZER WIDGET
 --    local corner = UI.CreateFrame("Texture", "corner", cutwindow)
---    corner:SetTexture("CuT", "indicator_player_ping.png.dds")   
+--    corner:SetTexture("CuT", "indicator_player_ping.png.dds")
    local corner=  UI.CreateFrame("Text", "corner", cutwindow)
    local text  =  "<font color=\'"..cut.html.red.."\'>o</font>"
    corner:SetText(text, true)
 --    corner:SetWidth(cut.gui.font.size)
 --    corner:SetHeight(cut.gui.font.size)
    corner:SetFontSize(cut.gui.font.size -2 )
-   corner:SetLayer(4)   
-   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", 6, 7)   
+   corner:SetLayer(4)
+   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", 6, 7)
    corner:EventAttach(Event.UI.Input.Mouse.Left.Down,      function()  local mouse = Inspect.Mouse()
                                                                         corner.pressed = true
                                                                         corner.basex   =  cutwindow:GetLeft()
@@ -108,8 +108,8 @@ local function createnewline(currency, value, id)
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
    currencylabel:SetFontSize(cut.gui.font.size)
    local textcurrency   =  ""
-   if currency == "Platinum, Gold, Silver"   or 
-      currency == "Platine, Or, Argent"      or          
+   if currency == "Platinum, Gold, Silver"   or
+      currency == "Platine, Or, Argent"      or
       currency == "Platin, Gold, Silber"     then
       textcurrency="Money"
    else
@@ -132,11 +132,11 @@ local function createnewline(currency, value, id)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
-   if currency == "Platinum, Gold, Silver"   or 
+   if currency == "Platinum, Gold, Silver"   or
       currency == "Platine, Or, Argent"      or
       currency == "Platin, Gold, Silber"     then
       value = cut.printmoney(value)
-      -- 
+      --
       -- "Platinum, Silver, Gold" doesn't seem to have a tooltip... so i hide it
       id    =  nil
    else
@@ -146,25 +146,25 @@ local function createnewline(currency, value, id)
 --       end
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
                      else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
-      end     
---    end                 
+      end
+--    end
    end
-   
+
    -- "Platinum, Silver, Gold" doesn't seem to have a tooltip... so i hide it
-   if currency == "Affinity"  or 
-      currency == "Affinität" or 
-      currency == "Affinité"  then 
-      id = nil 
+   if currency == "Affinity"  or
+      currency == "Affinität" or
+      currency == "Affinité"  then
+      id = nil
    end
    --
    -- ToolTip
    -- Mouse Hover IN    => show tooltip
-   currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id) end, "Event.UI.Input.Mouse.Cursor.In_"  .. currencyicon:GetName())
+--    currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id) end, "Event.UI.Input.Mouse.Cursor.In_"  .. currencyicon:GetName())
    -- Mouse Hover OUT   => show tooltip
-   currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() Command.Tooltip(nil) end, "Event.UI.Input.Mouse.Cursor.Out_" .. currencyicon:GetName())
+--    currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() Command.Tooltip(nil) end, "Event.UI.Input.Mouse.Cursor.Out_" .. currencyicon:GetName())
    --
    --
-   
+
 
    local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
    currencyvalue:SetFontSize(cut.gui.font.size )
@@ -182,9 +182,9 @@ local function updatecurrencyvalue(currency, value)
 
 --    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
    if currency == "Platinum, Gold, Silver"   or
-      currency == "Platine, Or, Argent"      or 
-      currency == "Platin, Gold, Silber"     then 
-      value = cut.printmoney(value) 
+      currency == "Platine, Or, Argent"      or
+      currency == "Platin, Gold, Silber"     then
+      value = cut.printmoney(value)
    else
 --       local sign = "+"
 --       if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
@@ -194,7 +194,7 @@ local function updatecurrencyvalue(currency, value)
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
                      else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
       end
-   end      
+   end
 
    cut.shown.objs[currency]:SetText(string.format("%s", value), true)
 --    print(string.format("SHOWING %s = %s", currency, value))
@@ -203,20 +203,20 @@ local function updatecurrencyvalue(currency, value)
 end
 
 function cut.updatecurrencies(currency, value, id, restoresession)
-   
+
    if restoresession then
 --       print("RESTORING "..currency.." - "..value)
    end
 
-   if not cut.gui.window then 
-      cut.gui.window = createwindow() 
+   if not cut.gui.window then
+      cut.gui.window = createwindow()
 
       local oldcoin     =  nil
       local oldvalue    =  nil
       for oldcoin, oldvalue in pairs(cut.session) do
 --          print(string.format("Reading cu.session[%s] = %s", oldcoin, oldvalue))
          cut.updatecurrencies(oldcoin, oldvalue, id, true)
-      end      
+      end
    end
 
    if cut.shown.objs[currency] then
@@ -240,7 +240,7 @@ function cut.updatecurrencies(currency, value, id, restoresession)
 
    -- adjust window size
    cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
-   
+
 --    if not restoresession then
 --       if cut.session[currency] then
 --          cut.session[currency] = cut.session[currency] + value
@@ -254,7 +254,7 @@ function cut.updatecurrencies(currency, value, id, restoresession)
       cut.session[currency] = value
 --       print(string.format("storing cu.session[%s] = %s", currency, cut.session[currency]))
    end
-   
+
 
    return
 end

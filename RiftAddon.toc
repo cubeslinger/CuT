@@ -1,7 +1,7 @@
 Identifier  =  "CuT"
 Name        =  { English = "CuT" }
 NameShort   =  "CuT"
-Version     =  "0.00.18"
+Version     =  "0.00.20"
 Description =  { English = "CUrrency Tracker" }
 Author      =  "marcob@marcob.org"
 Website     =  "https://github.com/cubeslinger/CuT"
@@ -22,4 +22,5 @@ Dependencies = {
 SavedVariables = {
    guidata     =  'character',
    session     =  'character',
+   sessiondate =  'character',
 }

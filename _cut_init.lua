@@ -58,6 +58,21 @@ cut.session             =  {}
 
 
 
+local function gettoday()
+   local today = os.date("*t", os.time())
+   print(string.format("today os.date(*t, os.time) = %s", today))
+
+   --[[
+      {year = 1998, month = 9, day = 16, yday = 259, wday = 4,
+       hour = 23, min = 48, sec = 10, isdst = false}
+      ]]--
+
+   -- returns year day (yday)
+   print(string.format("today yday = %s", today.yday))
+   return(today.yday)
+end
+
+
 local function loadvariables(_, addonname)
    if addon.name == addonname then
       if guidata then
@@ -76,16 +91,25 @@ local function loadvariables(_, addonname)
 --          for key, val in pairs(cut.gui) do   print(string.format("Importing cut.gui.%s: %s", key, val)) end
 
       end
-      if session then
-         cut.session = session
+
+      -- Load old session data only if we are in the same day
+      if sessiondate then
+         lastsession =  sessiondate
+         local today =  gettoday()
+         if lastsession == today then
+            if session then
+               cut.session = session
+            end
+         end
       end
+
    end
    return
 end
 
 local function savevariables(_, addonname)
    if addon.name == addonname then
-      
+
       -- Save GUI prefrences
       local a = cut.gui
       a.window    =  nil
@@ -94,22 +118,15 @@ local function savevariables(_, addonname)
       a.maxwidth  =  nil
       a.maxheight =  nil
       guidata     =  a
-      
--- --       session  =  cut.session
---       local b  =  nil
---       local c  =  {}
---       for b, _ in pairs(cut.shown.objs) do 
---          print("A ["..a.."]")
---             c[a]     =  cut.coinbase[a].stack
---       end 
-      
+
       -- Save Session data
       -- Purge "anomaly" currencies from saved ones
       if cut.session["Affinity"] then cut.session["Affinity"] = nil end
       if cut.session["Prize Tickets"] then cut.session["Prize Tickets"] = nil end
-      session  =  cut.session
+      session     =  cut.session
+      sessiondate =  gettoday()
    end
-   
+
    return
 end
 
@@ -141,10 +158,10 @@ local function getcoins()
    for currency, _ in pairs(Inspect.Currency.List()) do
       local detail = Inspect.Currency.Detail(currency)
       coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
-      
+
       -- added coinlist to check for new currencies
       table.insert(coinlist, currency)
-      
+
       --       print(string.format("CuT: (%s) (%s) (%s)", detail.name, detail.stack, detail.icon))
    end
 
@@ -177,15 +194,15 @@ local function currencyevent()
                      break
                   end
                end
-               
+
                if itsnew then
                   local detail = Inspect.Currency.Detail(coin)
-                  cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }                           
+                  cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
                end
             end
-         end  
+         end
       -- End
-      
+
       if val   ~= (cut.coinbase[var].stack or 0) then
          local newvalue =  val - (cut.coinbase[var].stack or 0)
          cut.updatecurrencies(var, newvalue, id)
@@ -214,16 +231,16 @@ local function initcoinbase()
          if cnt > 0 then
 --             print("INIT COIN BASE: DONE")
             cut.baseinit   =  true
-            
+
             -- do we need to re-base to last session?
             local oldcoin     =  nil
             local oldvalue    =  nil
             for oldcoin, oldvalue in pairs(cut.session) do
---                print(string.format("re-basing cu.session[%s] = %s", oldcoin, oldvalue))               
-               cut.coinbase[oldcoin].stack = cut.coinbase[oldcoin].stack + ( -1 * oldvalue)               
-            end      
-            
-            
+--                print(string.format("re-basing cu.session[%s] = %s", oldcoin, oldvalue))
+               cut.coinbase[oldcoin].stack = cut.coinbase[oldcoin].stack + ( -1 * oldvalue)
+            end
+
+
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
          else
