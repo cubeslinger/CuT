@@ -184,13 +184,8 @@ local function updatecurrencyvalue(currency, value)
    if currency == "Platinum, Gold, Silver"   or
       currency == "Platine, Or, Argent"      or
       currency == "Platin, Gold, Silber"     then
-      value = cut.printmoney(value)
+      value    =  cut.printmoney(value)
    else
---       local sign = "+"
---       if value < 0   then  sign = "<font color=\'"..cut.html.red.."\'>-</font>"..value
---                      else  sign = "<font color=\'"..cut.html.green.."\'>+</font>"..value
---       end
---       local sign = "+"
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>-</font>"..value
                      else  value = "<font color=\'"..cut.html.green.."\'>+</font>"..value
       end
@@ -240,15 +235,6 @@ function cut.updatecurrencies(currency, value, id, restoresession)
 
    -- adjust window size
    cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
-
---    if not restoresession then
---       if cut.session[currency] then
---          cut.session[currency] = cut.session[currency] + value
---       else
---          cut.session[currency] = value
---       end
---       print(string.format("storing cu.session[%s] = %s", currency, cut.session[currency]))
---    end
 
    if not restoresession then
       cut.session[currency] = value
