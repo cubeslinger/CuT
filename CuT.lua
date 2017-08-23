@@ -44,11 +44,36 @@ local function createwindow()
                                                                   if cut.frames.container:GetVisible() == true then
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.todaycontainer:SetVisible(true)
-                                                                     print("Flipping to Today View")
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.fullframes) do
+--                                                                         print(string.format("1) var=%s - val=%s", var, val))
+--                                                                         if type(val) == "table"
+                                                                        cut.shown.fullframes[var]:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         print(string.format("2) var=%s - val=%s", var, val))
+                                                                        cut.shown.todayfullframes[var]:SetVisible(true)
+                                                                     end
+                                                                     local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
+                                                                     if cut.shown.todayframes.last then bottom = cut.shown.todayframes.last:GetBottom() end
+                                                                     cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+--                                                                      print("Flipping to Today View")
                                                                   else
                                                                      cut.frames.container:SetVisible(true)
                                                                      cut.frames.todaycontainer:SetVisible(false)
-                                                                     print("Flipping to Session View")
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         print(string.format("3) var=%s - val=%s", var, val))
+                                                                        cut.shown.todayfullframes[var]:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.fullframes) do
+--                                                                         print(string.format("4) var=%s - val=%s", var, val))
+                                                                        cut.shown.fullframes[var]:SetVisible(true)
+                                                                     end
+                                                                     local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
+                                                                     if cut.shown.frames.last then bottom = cut.shown.frames.last:GetBottom() end
+                                                                     cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+--                                                                      print("Flipping to Session View")
                                                                   end
                                                                end,
                                                                "Flip Panels" )
@@ -178,7 +203,6 @@ local function createnewline(currency, value, today)
    return currencyframe
 end
 
--- local function updatecurrencyvalue(currency, value)
 local function updatecurrencyvalue(currency, value, field)
 
 --    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
@@ -192,7 +216,6 @@ local function updatecurrencyvalue(currency, value, field)
       end
    end
 
---    cut.shown.objs[currency]:SetText(string.format("%s", value), true)
    field:SetText(string.format("%s", value), true)
 --    print(string.format("SHOWING %s = %s", currency, value))
 
@@ -213,6 +236,8 @@ function cut.updatecurrenciestoday(currency, value)
    else
       --       print("...CREATING..."..currency.." - "..value)
       local newline =   createnewline(currency, value, true)
+      cut.shown.todayfullframes[currency] = newline
+
       if cut.shown.todayframes.count > 1  then
          --          print("NOT First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.shown.todayframes.last, "BOTTOMLEFT",   0, cut.gui.borders.top)
@@ -227,9 +252,9 @@ function cut.updatecurrenciestoday(currency, value)
    end
 
    -- adjust window size
-   cut.gui.window:SetHeight( (cut.shown.todayframes.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
-
-   cut.session[currency] = value
+   if cut.frames.todaycontainer:GetVisible() == true then
+      cut.gui.window:SetHeight( (cut.shown.todayframes.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+   end
 
    return
 end
@@ -247,6 +272,8 @@ function cut.updatecurrencies(currency, value)
    else
 --       print("...CREATING..."..currency.." - "..value)
       local newline =   createnewline(currency, value, false)
+      cut.shown.fullframes[currency] = newline
+
       if cut.shown.frames.count > 1  then
 --          print("NOT First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, cut.gui.borders.top)
@@ -261,9 +288,9 @@ function cut.updatecurrencies(currency, value)
    end
 
    -- adjust window size
-   cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
-
-   cut.session[currency] = value
+   if cut.frames.container:GetVisible() == true then
+      cut.gui.window:SetHeight( (cut.shown.frames.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+   end
 
    return
 end

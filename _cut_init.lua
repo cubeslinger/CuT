@@ -28,11 +28,12 @@ cut.coinbase            =  {}
 cut.baseinit            =  false
 cut.todaybase           =  {}
 cut.todayinit           =  false
+cut.coinname2idx        =  {}
 --
 cut.timer               =  {}
 cut.timer.flag          =  false
 cut.timer.start         =  0
-cut.timer.duration      =  1  -- seconds
+cut.timer.duration      =  10  -- seconds
 --
 cut.shown               =  {}
 cut.shown.objs          =  {}
@@ -41,12 +42,14 @@ cut.shown.objs.last     =  nil
 cut.shown.frames        =  {}
 cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
-cut.shown.todayobjs          =  {}
-cut.shown.todayobjs.count    =  0
-cut.shown.todayobjs.last     =  nil
-cut.shown.todayframes        =  {}
-cut.shown.todayframes.count  =  0
-cut.shown.todayframes.last   =  nil
+cut.shown.todayobjs        =  {}
+cut.shown.todayobjs.count  =  0
+cut.shown.todayobjs.last   =  nil
+cut.shown.todayframes      =  {}
+cut.shown.todayframes.count=  0
+cut.shown.todayframes.last =  nil
+cut.shown.fullframes       =  {}
+cut.shown.todayfullframes  =  {}
 
 --
 cut.frames              =  {}
@@ -78,7 +81,7 @@ local function gettoday()
       ]]--
 
    -- returns year day (yday)
-   print(string.format("today yday = %s", today.yday))
+--    print(string.format("today yday = %s", today.yday))
    return(today.yday)
 end
 
@@ -105,7 +108,10 @@ local function loadvariables(_, addonname)
          local today =  gettoday()
          if lastsession == today then
             if session then
-               cut.session = session
+               cut.session    =  session
+               local flag, a, b = false, nil, nil
+               for a,b in pairs(cut.session) do flag = true break end
+               cut.todayinit  =  flag
             end
          end
       end
@@ -127,10 +133,19 @@ local function savevariables(_, addonname)
       guidata     =  a
 
       -- Save Session data
-      -- Purge "anomaly" currencies from saved ones
-      if cut.session["Affinity"] then cut.session["Affinity"] = nil end
-      if cut.session["Prize Tickets"] then cut.session["Prize Tickets"] = nil end
-      session     =  cut.todaybase
+--       -- Purge "anomaly" currencies from saved ones
+--       if cut.session["Affinity"] then cut.session["Affinity"] = nil end
+--       if cut.session["Prize Tickets"] then cut.session["Prize Tickets"] = nil end
+--       session     =  cut.todaybase
+
+      -- we save only what has really changed
+      local tobesaved   =  {}
+      for var, tbl in pairs(cut.todaybase) do
+         if cut.todaybase[var].stack ~= cut.coinbase[var].stack then
+            tobesaved[var] = cut.todaybase[var]
+         end
+      end
+      session     =  tobesaved
       sessiondate =  gettoday()
    end
 
@@ -160,55 +175,28 @@ end
 
 local function getcoins()
    local coins    =  {}
-   local coinlist =  {}
    local currency =  nil
    for currency, _ in pairs(Inspect.Currency.List()) do
       local detail = Inspect.Currency.Detail(currency)
       coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
+      print(string.format("CuT: %s =>(%s) (%s) (%s)", currency, detail.name, detail.stack, detail.icon))
 
-      -- added coinlist to check for new currencies
-      table.insert(coinlist, currency)
-
-      --       print(string.format("CuT: (%s) (%s) (%s)", detail.name, detail.stack, detail.icon))
+      cut.coinname2idx[detail.name] =  currency
    end
 
-   return coins, coinlist
+   return coins
 end
 
 local function currencyevent()
 --    print("CURRENCY EVENT")
 
-   local current, currentlist =  getcoins()
-   local var, val, id =  nil, nil, nil
+   local current  =  getcoins()
+   local var, val =  nil, nil, nil
    local tbl      =  {}
 
    -- find changes
    for var, tbl in pairs(current) do
       val   =  tbl.stack
-      id    =  tbl.id
---       --
---       -- is this a NEW currency, one we have never seen before?
---       -- Begin
---       --
---          if table.getn(cut.coinlist) ~= table.getn(currentlist) then
---             local newcoin  =  nil
---             local coin     =  nil
---             local itsnew   =  true
---             for coin in pairs (currentlist) do
---                for oldcoin in pairs (cut.coinlist) do
---                   if oldcoin == coin then
---                      itsnew = false
---                      break
---                   end
---                end
---
---                if itsnew then
---                   local detail = Inspect.Currency.Detail(coin)
---                   cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
---                end
---             end
---          end
---       -- End
 
       -- Current Session value Update
       if table.contains(cut.coinbase, var) then
@@ -217,9 +205,11 @@ local function currencyevent()
             cut.updatecurrencies(var, newvalue)
          end
       else
-         cut.coinbase[var] =  val
+         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
+         cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
          cut.updatecurrencies(var, val)
       end
+
 
       -- Whole Day Session value Update
       if table.contains(cut.todaybase, var) then
@@ -228,7 +218,8 @@ local function currencyevent()
             cut.updatecurrenciestoday(var, newvalue)
          end
       else
-         cut.todaybase[var] =  val
+         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
+         cut.todaybase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
          cut.updatecurrenciestoday(var, val)
       end
 
@@ -241,20 +232,15 @@ local function initcoinbase()
 
       while not cut.baseinit do
 --          print("INIT COIN BASE: BEGIN")
-         cut.coinbase, cut.coinlist   =  getcoins()
+         cut.coinbase   =  getcoins()
 
          -- do we really have a coin base? let's count
          local cnt = 0
          local a,b = nil, nil
-         for a,b in pairs(cut.coinbase) do
-            cnt = cnt + 1
-
-            --debug
---             print(string.format("CuT: cut.coinbase[%s]=%s", a, b))
-         end
+         for a,b in pairs(cut.coinbase) do cnt = cnt + 1 break end
 
          if cnt > 0 then
---             print("INIT COIN BASE: DONE")
+            print("INIT COIN BASE: DONE")
             cut.baseinit   =  true
 
             if not cut.todayinit then
@@ -262,10 +248,30 @@ local function initcoinbase()
                cut.todayinit  =  true
             end
 
+            -- if we have session, we restore it in the today pane
+            local currency =  nil
+            local value    =  nil
+            for currency, tbl in pairs(cut.session) do
+--                print(string.format("LOAD: currency=%s tbl=%s", currency, tbl))
+               if cut.coinbase[currency] then
+                  value =  cut.coinbase[currency].stack - tbl.stack
+--                   print(string.format("LOAD: tbl.stack=%s - cut.coinbase[currency].stack=%s => %s", tbl.stack, cut.coinbase[currency].stack, value))
+               else
+                  value =  tbl.stack
+--                   print(string.format("LOAD: currency=%s value=%s", currency, value))
+               end
+
+               -- value = 0      => there's been no variation in value since when we saved
+               if value ~= 0 then
+                  cut.updatecurrenciestoday(currency, value)
+               end
+            end
+            -- end restore
+
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
          else
-            -- we don't have data yet, we wait 1 sec...
+            -- we don't have data yet, we wait cut.timer.duration secs...
             if not cut.timer.flag then
                Command.Event.Attach(Event.System.Update.Begin, waitforcoins,  "Event.System.Update.Begin")
             end
@@ -279,3 +285,10 @@ end
 Command.Event.Attach(Event.Unit.Availability.Full,          initcoinbase,     "CuT: Init Coin Base")
 Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   loadvariables,    "CuT: Load Variables")
 Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, savevariables,    "CuT: Save Variables")
+
+--[[Error: CuT/_cut_init.lua:213: attempt to index local 'detail' (a nil value)
+    In CuT / CuT Currency Event, event Event.Currency
+   stack traceback:
+   [C]: in function '__index'
+   CuT/_cut_init.lua:213: in function <CuT/_cut_init.lua:178>
+]]--
