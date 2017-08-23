@@ -18,6 +18,7 @@ end
 
 
 local function createwindow()
+
    --Global context (parent frame-thing).
    local cutwindow  =  UI.CreateFrame("Frame", "cut", UI.CreateContext("cut_context"))
    if cut.gui.x == nil or cut.gui.y == nil then
@@ -39,6 +40,18 @@ local function createwindow()
    windowtitle:SetText(string.format("%s", title), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
+   windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click,   function()
+                                                                  if cut.frames.container:GetVisible() == true then
+                                                                     cut.frames.container:SetVisible(false)
+                                                                     cut.frames.todaycontainer:SetVisible(true)
+                                                                     print("Flipping to Today View")
+                                                                  else
+                                                                     cut.frames.container:SetVisible(true)
+                                                                     cut.frames.todaycontainer:SetVisible(false)
+                                                                     print("Flipping to Session View")
+                                                                  end
+                                                               end,
+                                                               "Flip Panels" )
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
@@ -53,15 +66,22 @@ local function createwindow()
    local maskframe = UI.CreateFrame("Mask", "cut_mask_frame", externalcutframe)
    maskframe:SetAllPoints(externalcutframe)
 
+   -- Current Session Data Container
    -- CUT CONTAINER FRAME
    local cutframe =  UI.CreateFrame("Frame", "cut_frame", maskframe)
    cutframe:SetAllPoints(maskframe)
    cutframe:SetLayer(1)
    cut.frames.container =  cutframe
 
+   -- Whole Day Session Data Container
+   local todaycutframe =  UI.CreateFrame("Frame", "cut_frame_today", maskframe)
+   todaycutframe:SetAllPoints(maskframe)
+   todaycutframe:SetLayer(1)
+   todaycutframe:SetBackgroundColor(unpack(cut.color.red))
+   cut.frames.todaycontainer =  todaycutframe
+   cut.frames.todaycontainer:SetVisible(false)
+
    -- RESIZER WIDGET
---    local corner = UI.CreateFrame("Texture", "corner", cutwindow)
---    corner:SetTexture("CuT", "indicator_player_ping.png.dds")
    local corner=  UI.CreateFrame("Text", "corner", cutwindow)
    local text  =  "<font color=\'"..cut.html.red.."\'>o</font>"
    corner:SetText(text, true)
@@ -96,14 +116,21 @@ local function createwindow()
 end
 
 
-local function createnewline(currency, value)
+local function createnewline(currency, value, today)
+   local flag  =  ""
+   if today then flag = "_today_" end
 
    -- CUT currency container
-   local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
+   local currencyframe  =  nil
+   if today then
+      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer)
+   else
+      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
+   end
    currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
 
-   local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. currency, currencyframe)
+   local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. flag .. currency, currencyframe)
    currencylabel:SetFontSize(cut.gui.font.size)
    local textcurrency   =  ""
    if currency == "Platinum, Gold, Silver"   or
@@ -111,19 +138,13 @@ local function createnewline(currency, value)
       currency == "Platin, Gold, Silber"     then
       textcurrency="Money"
    else
-      -- shorten Crafting Marks label
---       if currency:gmatch("Craftsman's")   then
---          textcurrency   =  currency
---          textcurrency:gsub("Craftsman's ", "")
---       else
          textcurrency   =  currency
---       end
    end
    currencylabel:SetText(string.format("%s:", textcurrency))
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
-   local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. currency, currencyframe)
+   local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
    currencyicon:SetTexture("Rift", (cut.coinbase[currency].icon or "reward_gold.png.dds"))
    currencyicon:SetWidth(cut.gui.font.size)
    currencyicon:SetHeight(cut.gui.font.size)
@@ -140,19 +161,25 @@ local function createnewline(currency, value)
       end
    end
 
-   local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. currency, currencyframe)
+   local currencyvalue  =  UI.CreateFrame("Text", "currency_value_" .. flag .. currency, currencyframe)
    currencyvalue:SetFontSize(cut.gui.font.size )
    currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
 
-   cut.shown.objs[currency]   =  currencyvalue
-   cut.shown.frames.count     =  1 + cut.shown.frames.count -- last frame shown by number
+   if today then
+      cut.shown.todayobjs[currency] =  currencyvalue
+      cut.shown.todayframes.count   =  1 + cut.shown.todayframes.count -- last frame shown by number (today)
+   else
+      cut.shown.objs[currency]      =  currencyvalue
+      cut.shown.frames.count        =  1 + cut.shown.frames.count -- last frame shown by number
+   end
 
    return currencyframe
 end
 
-local function updatecurrencyvalue(currency, value)
+-- local function updatecurrencyvalue(currency, value)
+local function updatecurrencyvalue(currency, value, field)
 
 --    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
    if currency == "Platinum, Gold, Silver"   or
@@ -165,8 +192,44 @@ local function updatecurrencyvalue(currency, value)
       end
    end
 
-   cut.shown.objs[currency]:SetText(string.format("%s", value), true)
+--    cut.shown.objs[currency]:SetText(string.format("%s", value), true)
+   field:SetText(string.format("%s", value), true)
 --    print(string.format("SHOWING %s = %s", currency, value))
+
+   return
+end
+
+
+function cut.updatecurrenciestoday(currency, value)
+
+   if not cut.gui.window then
+      cut.gui.window = createwindow()
+   end
+
+   if cut.shown.todayobjs[currency] then
+      --       print("...UPDATING..."..currency.." - "..value)
+--       updatecurrencyvaluetoday(currency, value, )
+      updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency])
+   else
+      --       print("...CREATING..."..currency.." - "..value)
+      local newline =   createnewline(currency, value, true)
+      if cut.shown.todayframes.count > 1  then
+         --          print("NOT First currencies"..currency.." - "..value)
+         newline:SetPoint("TOPLEFT",   cut.shown.todayframes.last, "BOTTOMLEFT",   0, cut.gui.borders.top)
+         newline:SetPoint("TOPRIGHT",  cut.shown.todayframes.last, "BOTTOMRIGHT",  0, cut.gui.borders.top)
+      else
+         --          print("First currencies"..currency.." - "..value)
+         newline:SetPoint("TOPLEFT",   cut.frames.todaycontainer,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
+         newline:SetPoint("TOPRIGHT",  cut.frames.todaycontainer,   "TOPRIGHT", -cut.gui.borders.right, cut.gui.borders.top)
+      end
+
+      cut.shown.todayframes.last   =  newline
+   end
+
+   -- adjust window size
+   cut.gui.window:SetHeight( (cut.shown.todayframes.last:GetBottom() - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+
+   cut.session[currency] = value
 
    return
 end
@@ -179,10 +242,11 @@ function cut.updatecurrencies(currency, value)
 
    if cut.shown.objs[currency] then
 --       print("...UPDATING..."..currency.." - "..value)
-      updatecurrencyvalue(currency, value)
+--       cut.updatecurrencyvalue(currency, value)
+      updatecurrencyvalue(currency, value, cut.shown.objs[currency])
    else
 --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value)
+      local newline =   createnewline(currency, value, false)
       if cut.shown.frames.count > 1  then
 --          print("NOT First currencies"..currency.." - "..value)
          newline:SetPoint("TOPLEFT",   cut.shown.frames.last, "BOTTOMLEFT",   0, cut.gui.borders.top)

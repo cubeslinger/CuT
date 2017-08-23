@@ -41,6 +41,13 @@ cut.shown.objs.last     =  nil
 cut.shown.frames        =  {}
 cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
+cut.shown.todayobjs          =  {}
+cut.shown.todayobjs.count    =  0
+cut.shown.todayobjs.last     =  nil
+cut.shown.todayframes        =  {}
+cut.shown.todayframes.count  =  0
+cut.shown.todayframes.last   =  nil
+
 --
 cut.frames              =  {}
 --
@@ -54,6 +61,7 @@ cut.html.green          =  '#00ff00'
 --
 cut.color               =  {}
 cut.color.black         =  { 0,  0,  0, .5}
+cut.color.red           =  { .8,  0,  0, .5}
 cut.color.darkgrey      =  {.2, .2, .2, .5}
 --
 cut.session             =  {}
@@ -89,9 +97,6 @@ local function loadvariables(_, addonname)
          end
          cut.gui.window =  nil
 
---          local key, val = nil, nil
---          for key, val in pairs(cut.gui) do   print(string.format("Importing cut.gui.%s: %s", key, val)) end
-
       end
 
       -- Load old session data only if we are in the same day
@@ -125,7 +130,7 @@ local function savevariables(_, addonname)
       -- Purge "anomaly" currencies from saved ones
       if cut.session["Affinity"] then cut.session["Affinity"] = nil end
       if cut.session["Prize Tickets"] then cut.session["Prize Tickets"] = nil end
-      session     =  cut.session
+      session     =  cut.todaybase
       sessiondate =  gettoday()
    end
 
@@ -205,6 +210,7 @@ local function currencyevent()
 --          end
 --       -- End
 
+      -- Current Session value Update
       if table.contains(cut.coinbase, var) then
          if val   ~= (cut.coinbase[var].stack or 0) then
             local newvalue =  val - (cut.coinbase[var].stack or 0)
@@ -214,6 +220,18 @@ local function currencyevent()
          cut.coinbase[var] =  val
          cut.updatecurrencies(var, val)
       end
+
+      -- Whole Day Session value Update
+      if table.contains(cut.todaybase, var) then
+         if val   ~= (cut.todaybase[var].stack or 0) then
+            local newvalue =  val - (cut.todaybase[var].stack or 0)
+            cut.updatecurrenciestoday(var, newvalue)
+         end
+      else
+         cut.todaybase[var] =  val
+         cut.updatecurrenciestoday(var, val)
+      end
+
    end
 end
 
@@ -241,6 +259,8 @@ local function initcoinbase()
 
             if not cut.todayinit then
                cut.todaybase  =  cut.coinbase
+               cut.todayinit  =  true
+            end
 
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
