@@ -179,7 +179,7 @@ local function getcoins()
    for currency, _ in pairs(Inspect.Currency.List()) do
       local detail = Inspect.Currency.Detail(currency)
       coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
-      print(string.format("CuT: %s =>(%s) (%s) (%s)", currency, detail.name, detail.stack, detail.icon))
+--       print(string.format("CuT: %s =>(%s) (%s) (%s)", currency, detail.name, detail.stack, detail.icon))
 
       cut.coinname2idx[detail.name] =  currency
    end
@@ -240,7 +240,7 @@ local function initcoinbase()
          for a,b in pairs(cut.coinbase) do cnt = cnt + 1 break end
 
          if cnt > 0 then
-            print("INIT COIN BASE: DONE")
+--             print("INIT COIN BASE: DONE")
             cut.baseinit   =  true
 
             if not cut.todayinit then
