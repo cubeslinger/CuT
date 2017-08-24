@@ -34,10 +34,10 @@ local function createwindow()
    cutwindow:SetBackgroundColor(unpack(cut.color.black))
 
    -- Window Title
-   local title =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
+--    local title =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
    local windowtitle =  UI.CreateFrame("Text", "window_title", cutwindow)
    windowtitle:SetFontSize(cut.gui.font.size )
-   windowtitle:SetText(string.format("%s", title), true)
+   windowtitle:SetText(string.format("%s", cut.html.title), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
    windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click,   function()
@@ -294,3 +294,30 @@ function cut.updatecurrencies(currency, value)
 
    return
 end
+
+-- Load/Save variable and Coinbases initialization -- begin
+Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,     "CuT: Init Coin Base")
+Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,    "CuT: Load Variables")
+Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,    "CuT: Save Variables")
+-- end
+
+
+-- DEBUG -- begin
+--[[
+local a,b = nil, nil
+-- Inspect.Addon.Detail(Inspect.Addon.Current())["name"]
+local tbl   =  Inspect.Addon.Detail(Inspect.Addon.Current())
+for a,b in pairs (tbl) do
+   print(string.format("a=%s - b=%s", a, b))
+   if a == "data" or a == "toc" then
+      local c, d = nil, nil
+      for c,d in pairs(b) do
+         print(string.format("  c=%s - d=%s", c, d))
+      end
+   end
+end
+print(string.format("VERSION=%s", tbl["toc"]["Version"]))
+print(string.format("VERSION=%s", Inspect.Addon.Detail(Inspect.Addon.Current())["toc"]["Version"]))
+
+]]--
+-- DEBUG -- end
