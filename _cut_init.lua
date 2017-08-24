@@ -247,6 +247,10 @@ function cut.initcoinbase()
             end
             -- end restore
 
+            -- since Today Pane starts hidden, the shown empty window would be to tall
+            -- so i resize it accordingly
+            cut.resizewindow(false)
+
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
 

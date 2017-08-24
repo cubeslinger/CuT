@@ -227,7 +227,7 @@ function cut.updatecurrenciestoday(currency, value)
       cut.shown.todayframes.last   =  newline
    end
 
-   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes)
+   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, true)
 
    return
 end
@@ -247,7 +247,7 @@ function cut.updatecurrencies(currency, value)
       cut.shown.frames.last   =  newline
    end
 
-   cut.sortbykey(cut.frames.container, cut.shown.fullframes)
+   cut.sortbykey(cut.frames.container, cut.shown.fullframes, false)
 
    return
 end
