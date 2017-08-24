@@ -44,10 +44,10 @@ cut.shown.frames        =  {}
 cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
 cut.shown.todayobjs        =  {}
-cut.shown.todayobjs.count  =  0
+-- cut.shown.todayobjs.count  =  0
 cut.shown.todayobjs.last   =  nil
 cut.shown.todayframes      =  {}
-cut.shown.todayframes.count=  0
+-- cut.shown.todayframes.count=  0
 cut.shown.todayframes.last =  nil
 cut.shown.fullframes       =  {}
 cut.shown.todayfullframes  =  {}
@@ -87,7 +87,7 @@ function cut.loadvariables(_, addonname)
          local a  =  guidata
          local key, val = nil, nil
          for key, val in pairs(a) do
-            if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight then
+            if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight and key ~= height then
                cut.gui[key]   =  val
 --                print(string.format("Importing %s: %s", key, val))
             end
@@ -125,10 +125,23 @@ function cut.savevariables(_, addonname)
       a.minheight =  nil
       a.maxwidth  =  nil
       a.maxheight =  nil
+      a.height    =  nil
       guidata     =  a
 
       -- Save Session data
-      todaybase     =  cut.todaybase
+      -- workaround for currencies that at fist appearence have stack=0
+      -- like: Affinity, Ticket Prize, ...
+      local tbl   =  {}
+      local a,b   =  nil, nil
+      for a,b in pairs(cut.todaybase) do
+         if b.stack ~= 0 then
+            tbl[a]   =  b
+         end
+      end
+
+--       todaybase     =  cut.todaybase
+      todaybase     =  tbl
+
       today =  gettoday()
    end
 
@@ -225,6 +238,22 @@ function cut.initcoinbase()
 
          if cnt > 0 then
 --             print("INIT COIN BASE: DONE")
+
+
+               -- debug
+               --[[
+               local a,b = nil, nil
+               for a,b in pairs(cut.coinbase) do
+                  print(string.format("a=%s b=%s", a, b))
+                  if b then
+                     local c,d = nil, nil
+                     for c,d in pairs(b) do
+                        print(string.format("  c=%s d=%s", c, d))
+                     end
+                  end
+               end
+               ]]--
+
             cut.baseinit   =  true
 
             if not cut.todayinit then
@@ -247,9 +276,9 @@ function cut.initcoinbase()
             end
             -- end restore
 
-            -- since Today Pane starts hidden, the shown empty window would be to tall
-            -- so i resize it accordingly
-            cut.resizewindow(false)
+--             -- since Today Pane starts hidden, the shown empty window would be to tall
+--             -- so i resize it accordingly
+--             cut.resizewindow(false)
 
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")

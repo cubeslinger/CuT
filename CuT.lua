@@ -183,10 +183,10 @@ local function createnewline(currency, value, today)
 
    if today then
       cut.shown.todayobjs[currency] =  currencyvalue
-      cut.shown.todayframes.count   =  1 + cut.shown.todayframes.count -- last frame shown by number (today)
+--       cut.shown.todayframes.count   =  1 + cut.shown.todayframes.count -- last frame shown by number (today)
    else
       cut.shown.objs[currency]      =  currencyvalue
-      cut.shown.frames.count        =  1 + cut.shown.frames.count -- last frame shown by number
+--       cut.shown.frames.count        =  1 + cut.shown.frames.count -- last frame shown by number
    end
 
    return currencyframe
