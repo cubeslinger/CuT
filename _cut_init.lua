@@ -75,15 +75,6 @@ cut.session             =  {}
 
 local function gettoday()
    local today = os.date("*t", os.time())
-
-   --[[
-   print(string.format("today os.date(*t, os.time) = %s", today))
-   {year = 1998, month = 9, day = 16, yday = 259, wday = 4,
-       hour = 23, min = 48, sec = 10, isdst = false}
-      ]]--
-
-   -- returns year day (yday)
---    print(string.format("today yday = %s", today.yday))
    return(today.yday)
 end
 
@@ -137,20 +128,7 @@ function cut.savevariables(_, addonname)
       guidata     =  a
 
       -- Save Session data
---       -- Purge "anomaly" currencies from saved ones
---       if cut.session["Affinity"] then cut.session["Affinity"] = nil end
---       if cut.session["Prize Tickets"] then cut.session["Prize Tickets"] = nil end
-
       todaybase     =  cut.todaybase
-
---       -- we save only what has really changed
---       local tobesaved   =  {}
---       for var, tbl in pairs(cut.todaybase) do
---          if cut.todaybase[var].stack ~= cut.coinbase[var].stack then
---             tobesaved[var] = cut.todaybase[var]
---          end
---       end
---       session     =  tobesaved
       today =  gettoday()
    end
 
@@ -258,13 +236,8 @@ function cut.initcoinbase()
             local currency =  nil
             local value    =  0
             for currency, tbl in pairs(cut.todaybase) do
---                print(string.format("LOAD: currency=%s tbl=%s", currency, tbl))
                if cut.coinbase[currency] then
                   value =  cut.coinbase[currency].stack - tbl.stack
---                   print(string.format("LOAD: tbl.stack=%s - cut.coinbase[currency].stack=%s => %s", tbl.stack, cut.coinbase[currency].stack, value))
---                else
---                   value =  tbl.stack
--- --                   print(string.format("LOAD: currency=%s value=%s", currency, value))
                end
 
                -- value = 0      => there's been no variation in value since when we saved
@@ -278,8 +251,6 @@ function cut.initcoinbase()
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
 
             -- say "Hello World"
-            -- Command.Console.Display(console, suppressPrefix, text, html)
-            -- print(string.format("%s - v.%s", cut.html.title, cut.version))
             Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title, cut.version), true)
 
          else
@@ -294,6 +265,18 @@ function cut.initcoinbase()
    return
 end
 
--- Command.Event.Attach(Event.Unit.Availability.Full,          initcoinbase,     "CuT: Init Coin Base")
--- Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   loadvariables,    "CuT: Load Variables")
--- Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, savevariables,    "CuT: Save Variables")
+function cut.resizewindow(today)
+
+   local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
+
+   if today then
+      if cut.shown.todayframes.last then bottom = cut.shown.todayframes.last:GetBottom() end
+   else
+      if cut.shown.frames.last then bottom = cut.shown.frames.last:GetBottom() end
+   end
+
+   cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+
+   return
+end
+

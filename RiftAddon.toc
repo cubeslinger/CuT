@@ -1,7 +1,7 @@
 Identifier  =  "CuT"
 Name        =  { English = "CuT" }
 NameShort   =  "CuT"
-Version     =  "0.00.23"
+Version     =  "0.00.24"
 Description =  { English = "CUrrency Tracker" }
 Author      =  "marcob@marcob.org"
 Website     =  "https://github.com/cubeslinger/CuT"
@@ -11,6 +11,7 @@ Environment =  "4.0"
 RunOnStartup = {
    "_cut_init.lua",
    "_cut_utils.lua",
+   "_cut_sortbykey.lua",
    "CuT.lua",
 }
 
