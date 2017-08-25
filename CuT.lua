@@ -44,9 +44,7 @@ local function createwindow()
 
                                                                   cut.shown.panel   =  cut.shown.panel + 1
 
-                                                                  if cut.shown.panel > 3 then
-                                                                     cut.shown.panel = 1
-                                                                  end
+                                                                  if cut.shown.panel > 3 then   cut.shown.panel = 1  end
 
                                                                   -- show Current Session
                                                                   if cut.shown.panel == 1 then
@@ -63,7 +61,6 @@ local function createwindow()
                                                                      for var, val in pairs(cut.shown.fullframes) do
                                                                         cut.shown.fullframes[var]:SetVisible(true)
                                                                      end
-                                                                     cut.resizewindow(cut.shown.panel)
                                                                   end
                                                                   -- show Today Session
                                                                   if cut.shown.panel == 2 then
@@ -80,7 +77,6 @@ local function createwindow()
                                                                      for var, val in pairs(cut.shown.todayfullframes) do
                                                                         cut.shown.todayfullframes[var]:SetVisible(true)
                                                                      end
-                                                                     cut.resizewindow(cut.shown.panel)
                                                                   end
                                                                   -- show Week Session
                                                                   if cut.shown.panel == 3 then
@@ -97,20 +93,16 @@ local function createwindow()
                                                                      for var, val in pairs(cut.shown.weekfullframes) do
                                                                         cut.shown.weekfullframes[var]:SetVisible(true)
                                                                      end
-                                                                     cut.resizewindow(cut.shown.panel)
                                                                   end
-
+                                                                  
+                                                                  cut.resizewindow(cut.shown.panel)
                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
-
                                                                end,
                                                                "Flip Panels" )
 
 
    local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
    windowinfo:SetFontSize(cut.gui.font.size )
-   if cut.shown.panel   == 1  then  panel =  "Session"   end
-   if cut.shown.panel   == 2  then  panel =  "Today"     end
-   if cut.shown.panel   == 3  then  panel =  "Week"      end
    windowinfo:SetFontSize(cut.gui.font.size -2 )
    windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
    windowinfo:SetLayer(3)
@@ -268,9 +260,7 @@ end
 
 function cut.updatecurrenciesweek(currency, value)
 
-   if not cut.gui.window then
-      cut.gui.window = createwindow()
-   end
+   if not cut.gui.window then cut.gui.window = createwindow() end
 
    if cut.shown.weekobjs[currency] then
       updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency])
@@ -281,7 +271,7 @@ function cut.updatecurrenciesweek(currency, value)
       cut.shown.weekframes.last           =  newline
    end
 
-   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, true)
+   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, 3)
 
    return
 end
@@ -301,7 +291,7 @@ function cut.updatecurrenciestoday(currency, value)
       cut.shown.todayframes.last          =  newline
    end
 
-   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, true)
+   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, 2)
 
    return
 end
@@ -321,7 +311,7 @@ function cut.updatecurrencies(currency, value)
       cut.shown.frames.last            =  newline
    end
 
-   cut.sortbykey(cut.frames.container, cut.shown.fullframes, false)
+   cut.sortbykey(cut.frames.container, cut.shown.fullframes, 1)
 
    return
 end

@@ -386,9 +386,9 @@ function cut.resizewindow(panel)
 
    local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
 
-   if panel == 1 then if cut.shown.frames.last then bottom = cut.shown.frames.last:GetBottom() end end
-   if panel == 2 then if cut.shown.todayframes.last then bottom = cut.shown.todayframes.last:GetBottom() end end
-   if panel == 3 then if cut.shown.weekframes.last then bottom = cut.shown.weekframes.last:GetBottom() end end
+   if panel == 1 then if cut.shown.frames.last        then bottom = cut.shown.frames.last:GetBottom()       end end
+   if panel == 2 then if cut.shown.todayframes.last   then bottom = cut.shown.todayframes.last:GetBottom()  end end
+   if panel == 3 then if cut.shown.weekframes.last    then bottom = cut.shown.weekframes.last:GetBottom()   end end
 
    cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
 
