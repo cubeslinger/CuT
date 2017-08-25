@@ -29,6 +29,9 @@ cut.coinbase            =  {}
 cut.baseinit            =  false
 cut.todaybase           =  {}
 cut.todayinit           =  false
+cut.weekbase            =  {}
+cut.weekinit            =  false
+cut.weekday             =  0
 cut.coinname2idx        =  {}
 --
 cut.timer               =  {}
@@ -43,16 +46,23 @@ cut.shown.objs.last     =  nil
 cut.shown.frames        =  {}
 cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
+cut.shown.fullframes    =  {}
+--
 cut.shown.todayobjs        =  {}
--- cut.shown.todayobjs.count  =  0
 cut.shown.todayobjs.last   =  nil
 cut.shown.todayframes      =  {}
--- cut.shown.todayframes.count=  0
 cut.shown.todayframes.last =  nil
-cut.shown.fullframes       =  {}
 cut.shown.todayfullframes  =  {}
-cut.shown.secondpanel      =  false
-
+--
+cut.shown.weekobjs         =  {}
+cut.shown.weekobjs.last    =  nil
+cut.shown.weekframes       =  {}
+cut.shown.weekframes.last  =  nil
+cut.shown.weekfullframes   =  {}
+--
+cut.shown.panel         =  1
+cut.shown.windowinfo    =  nil
+cut.shown.panellabel    =  {  [1]="<i>Current</i>", [2]="<i>Today</i>", [3]="<i>Week</i>" }
 --
 cut.frames              =  {}
 --
@@ -66,25 +76,24 @@ cut.html.green          =  '#00ff00'
 cut.html.title          =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
 --
 cut.color               =  {}
-cut.color.black         =  { 0,  0,  0, .5}
+cut.color.black         =  {  0,  0,  0, .5}
 cut.color.red           =  { .2,  0,  0, .5}
-cut.color.darkgrey      =  {.2, .2, .2, .5}
+cut.color.green         =  { .0, .2,  0, .5}
+cut.color.darkgrey      =  { .2, .2, .2, .5}
 --
 cut.session             =  {}
 
 
 
-local function gettoday()
+local function getdayoftheyear()
    local today = os.date("*t", os.time())
    return(today.yday)
 end
 
 
--- local function loadvariables(_, addonname)
 function cut.loadvariables(_, addonname)
    if addon.name == addonname then
       if guidata then
---          cut.gui        =  guidata
          local a  =  guidata
          local key, val = nil, nil
          for key, val in pairs(a) do
@@ -94,14 +103,14 @@ function cut.loadvariables(_, addonname)
             end
          end
          cut.gui.window =  nil
-
       end
 
-      -- Load old session data only if we are in the same day
+      local dayoftheyear =  getdayoftheyear()
+
+      -- Load Today session data only if we are in the same day
       if today then
          lastsession =  today
-         local nowis =  gettoday()
-         if lastsession == nowis then
+         if lastsession == dayoftheyear then
             if todaybase then
                cut.todaybase    =  todaybase
                local flag, a, b = false, nil, nil
@@ -111,11 +120,25 @@ function cut.loadvariables(_, addonname)
          end
       end
 
+      -- Load Week session data only if we are in the same week
+      if weekday then
+         if (dayoftheyear - weekday) <= 7 then
+            if weekbase then
+               cut.weekbase   =  weekbase
+               local flag, a, b = false, nil, nil
+               for a,b in pairs(cut.weekbase) do flag = true break end
+               cut.weekinit  =  flag
+            end
+            cut.weekday =  weekday
+         else
+            cut.weekday  =  getdayoftheyear()
+         end
+      end
    end
+
    return
 end
 
--- local function savevariables(_, addonname)
 function cut.savevariables(_, addonname)
    if addon.name == addonname then
 
@@ -129,7 +152,7 @@ function cut.savevariables(_, addonname)
       a.height    =  nil
       guidata     =  a
 
-      -- Save Session data
+      -- Save Today Session data
       -- workaround for currencies that at first appearence have stack=0
       -- like: Affinity, Ticket Prize, ...
       local tbl   =  {}
@@ -139,11 +162,22 @@ function cut.savevariables(_, addonname)
             tbl[a]   =  b
          end
       end
-
---       todaybase     =  cut.todaybase
       todaybase     =  tbl
+      today =  getdayoftheyear()
 
-      today =  gettoday()
+      -- Save Week Session data
+      -- workaround for currencies that at first appearence have stack=0
+      -- like: Affinity, Ticket Prize, ...
+      local tbl   =  {}
+      local a,b   =  nil, nil
+      for a,b in pairs(cut.weekbase) do
+         if b.stack ~= 0 then
+            tbl[a]   =  b
+         end
+      end
+      weekbase =  tbl
+      weekday  =  getdayoftheyear()
+
    end
 
    return
@@ -219,6 +253,19 @@ local function currencyevent()
          cut.todaybase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
          cut.updatecurrenciestoday(var, val)
       end
+
+      -- Whole Week Session value Update
+      if table.contains(cut.weekbase, var) then
+         if val   ~= (cut.weekbase[var].stack or 0) then
+            local newvalue =  val - (cut.weekbase[var].stack or 0)
+            cut.updatecurrenciesweek(var, newvalue)
+         end
+      else
+         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
+         cut.weekbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
+         cut.updatecurrenciesweek(var, val)
+      end
+
    end
 
    -- set the right size for pane
@@ -290,7 +337,28 @@ function cut.initcoinbase()
                   cut.updatecurrenciestoday(currency, value)
                end
             end
-            -- end restore
+            -- end restore today data
+
+            if not cut.weekinit then
+               cut.weekbase  =  cut.coinbase
+               cut.weekinit  =  true
+            end
+
+            -- if we have week data, we restore it in the Week panel
+            local currency =  nil
+            local value    =  0
+            for currency, tbl in pairs(cut.weekbase) do
+               if cut.coinbase[currency] then
+                  value =  cut.coinbase[currency].stack - tbl.stack
+               end
+
+               -- value = 0      => there's been no variation in value since when we saved
+               if value ~= 0 then
+                  cut.updatecurrenciesweek(currency, value)
+               end
+            end
+            -- end restore week data
+
 
             -- since Today Pane starts hidden, the shown empty window would be too tall
             -- so i resize it accordingly
@@ -314,15 +382,13 @@ function cut.initcoinbase()
    return
 end
 
-function cut.resizewindow(today)
+function cut.resizewindow(panel)
 
    local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
 
-   if today then
-      if cut.shown.todayframes.last then bottom = cut.shown.todayframes.last:GetBottom() end
-   else
-      if cut.shown.frames.last then bottom = cut.shown.frames.last:GetBottom() end
-   end
+   if panel == 1 then if cut.shown.frames.last then bottom = cut.shown.frames.last:GetBottom() end end
+   if panel == 2 then if cut.shown.todayframes.last then bottom = cut.shown.todayframes.last:GetBottom() end end
+   if panel == 3 then if cut.shown.weekframes.last then bottom = cut.shown.weekframes.last:GetBottom() end end
 
    cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
 

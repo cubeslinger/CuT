@@ -41,33 +41,82 @@ local function createwindow()
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
    windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click,   function()
-                                                                  if cut.frames.container:GetVisible() == true then
-                                                                     cut.frames.container:SetVisible(false)
+
+                                                                  cut.shown.panel   =  cut.shown.panel + 1
+
+                                                                  if cut.shown.panel > 3 then
+                                                                     cut.shown.panel = 1
+                                                                  end
+
+                                                                  -- show Current Session
+                                                                  if cut.shown.panel == 1 then
+                                                                     cut.frames.container:SetVisible(true)
+                                                                     cut.frames.todaycontainer:SetVisible(false)
+                                                                     cut.frames.weekcontainer:SetVisible(false)
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.todayfullframes) do
+                                                                        cut.shown.todayfullframes[var]:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.weekfullframes) do
+                                                                        cut.shown.weekfullframes[var]:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.fullframes) do
+                                                                        cut.shown.fullframes[var]:SetVisible(true)
+                                                                     end
+                                                                     cut.resizewindow(cut.shown.panel)
+                                                                  end
+                                                                  -- show Today Session
+                                                                  if cut.shown.panel == 2 then
                                                                      cut.frames.todaycontainer:SetVisible(true)
+                                                                     cut.frames.container:SetVisible(false)
+                                                                     cut.frames.weekcontainer:SetVisible(false)
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.fullframes) do
+                                                                        cut.shown.fullframes[var]:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.weekfullframes) do
+                                                                        cut.shown.weekfullframes[var]:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.todayfullframes) do
+                                                                        cut.shown.todayfullframes[var]:SetVisible(true)
+                                                                     end
+                                                                     cut.resizewindow(cut.shown.panel)
+                                                                  end
+                                                                  -- show Week Session
+                                                                  if cut.shown.panel == 3 then
+                                                                     cut.frames.weekcontainer:SetVisible(true)
+                                                                     cut.frames.container:SetVisible(false)
+                                                                     cut.frames.todaycontainer:SetVisible(false)
                                                                      local var, val = nil
                                                                      for var, val in pairs(cut.shown.fullframes) do
                                                                         cut.shown.fullframes[var]:SetVisible(false)
                                                                      end
                                                                      for var, val in pairs(cut.shown.todayfullframes) do
-                                                                        cut.shown.todayfullframes[var]:SetVisible(true)
-                                                                     end
-                                                                     cut.shown.secondpanel =  true
-                                                                     cut.resizewindow(cut.shown.secondpanel)
-                                                                  else
-                                                                     cut.frames.container:SetVisible(true)
-                                                                     cut.frames.todaycontainer:SetVisible(false)
-                                                                     local var, val = nil
-                                                                     for var, val in pairs(cut.shown.todayfullframes) do
                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.fullframes) do
-                                                                        cut.shown.fullframes[var]:SetVisible(true)
+                                                                     for var, val in pairs(cut.shown.weekfullframes) do
+                                                                        cut.shown.weekfullframes[var]:SetVisible(true)
                                                                      end
-                                                                     cut.shown.secondpanel =  false
-                                                                     cut.resizewindow(cut.shown.secondpanel)
+                                                                     cut.resizewindow(cut.shown.panel)
                                                                   end
+
+                                                                  cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+
                                                                end,
                                                                "Flip Panels" )
+
+
+   local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
+   windowinfo:SetFontSize(cut.gui.font.size )
+   if cut.shown.panel   == 1  then  panel =  "Session"   end
+   if cut.shown.panel   == 2  then  panel =  "Today"     end
+   if cut.shown.panel   == 3  then  panel =  "Week"      end
+   windowinfo:SetFontSize(cut.gui.font.size -2 )
+   windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+   windowinfo:SetLayer(3)
+   windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
+   cut.shown.windowinfo  =  windowinfo
+
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
@@ -96,6 +145,14 @@ local function createwindow()
    todaycutframe:SetBackgroundColor(unpack(cut.color.red))
    cut.frames.todaycontainer =  todaycutframe
    cut.frames.todaycontainer:SetVisible(false)
+
+   -- Whole Week Session Data Container
+   local weekcutframe =  UI.CreateFrame("Frame", "cut_frame_week", maskframe)
+   weekcutframe:SetAllPoints(maskframe)
+   weekcutframe:SetLayer(1)
+   weekcutframe:SetBackgroundColor(unpack(cut.color.green))
+   cut.frames.weekcontainer =  weekcutframe
+   cut.frames.weekcontainer:SetVisible(false)
 
    -- RESIZER WIDGET
    local corner=  UI.CreateFrame("Text", "corner", cutwindow)
@@ -132,17 +189,19 @@ local function createwindow()
 end
 
 
-local function createnewline(currency, value, today)
+local function createnewline(currency, value, panel)
+--    print(string.format("createnewline: c=%s, v=%s, panel=%s", currency, value, panel))
    local flag  =  ""
-   if today then flag = "_today_" end
+   if panel == 1 then flag = "_current_"  end
+   if panel == 2 then flag = "_today_"    end
+   if panel == 3 then flag = "_week_"     end
 
    -- CUT currency container
    local currencyframe  =  nil
-   if today then
-      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer)
-   else
-      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame", cut.frames.container)
-   end
+   if panel == 1  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)      end
+   if panel == 2  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer) end
+   if panel == 3  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)  end
+
    currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
 
@@ -154,7 +213,7 @@ local function createnewline(currency, value, today)
       currency == "Platin, Gold, Silber"     then
       textcurrency="Money"
    else
-         textcurrency   =  currency
+      textcurrency   =  currency
    end
    currencylabel:SetText(string.format("%s:", textcurrency))
    currencylabel:SetLayer(3)
@@ -183,21 +242,15 @@ local function createnewline(currency, value, today)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
 
-   if today then
-      cut.shown.todayobjs[currency] =  currencyvalue
---       cut.shown.todayframes.count   =  1 + cut.shown.todayframes.count -- last frame shown by number (today)
-   else
-      cut.shown.objs[currency]      =  currencyvalue
---       cut.shown.frames.count        =  1 + cut.shown.frames.count -- last frame shown by number
-   end
+   if panel == 1 then   cut.shown.objs[currency]      =  currencyvalue  end
+   if panel == 2 then   cut.shown.todayobjs[currency] =  currencyvalue  end
+   if panel == 3 then   cut.shown.weekobjs[currency]  =  currencyvalue  end
 
    return currencyframe
 end
 
--- local function updatecurrencyvalue(currency, value, field, parent, framelist)
 local function updatecurrencyvalue(currency, value, field)
 
---    print(string.format("updatecurrencyvalue(%s, %s)", currency, value))
    if currency == "Platinum, Gold, Silver"   or
       currency == "Platine, Or, Argent"      or
       currency == "Platin, Gold, Silber"     then
@@ -213,6 +266,25 @@ local function updatecurrencyvalue(currency, value, field)
    return
 end
 
+function cut.updatecurrenciesweek(currency, value)
+
+   if not cut.gui.window then
+      cut.gui.window = createwindow()
+   end
+
+   if cut.shown.weekobjs[currency] then
+      updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency])
+   else
+      --       print("...CREATING..."..currency.." - "..value)
+      local newline =   createnewline(currency, value, 3)
+      cut.shown.weekfullframes[currency]  =  newline
+      cut.shown.weekframes.last           =  newline
+   end
+
+   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, true)
+
+   return
+end
 
 function cut.updatecurrenciestoday(currency, value)
 
@@ -224,9 +296,9 @@ function cut.updatecurrenciestoday(currency, value)
       updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency])
    else
       --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value, true)
-      cut.shown.todayfullframes[currency] = newline
-      cut.shown.todayframes.last   =  newline
+      local newline =   createnewline(currency, value, 2)
+      cut.shown.todayfullframes[currency] =  newline
+      cut.shown.todayframes.last          =  newline
    end
 
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, true)
@@ -244,9 +316,9 @@ function cut.updatecurrencies(currency, value)
       updatecurrencyvalue(currency, value, cut.shown.objs[currency])
    else
 --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value, false)
-      cut.shown.fullframes[currency] = newline
-      cut.shown.frames.last   =  newline
+      local newline =   createnewline(currency, value, 1)
+      cut.shown.fullframes[currency]   =  newline
+      cut.shown.frames.last            =  newline
    end
 
    cut.sortbykey(cut.frames.container, cut.shown.fullframes, false)

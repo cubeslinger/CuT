@@ -4,7 +4,7 @@
 --
 local addon, cut  = ...
 
-function cut.sortbykey(parent, tbl, today)
+function cut.sortbykey(parent, tbl, panel)
    local a,b, cnt = nil, nil, 0
 
    -- reset all Pinned Point of Full loot Frames objs
@@ -45,13 +45,11 @@ function cut.sortbykey(parent, tbl, today)
       end
    end
 
-   if today then
-      cut.shown.todayframes.last =  LASTOBJ
-   else
-      cut.shown.frames.last =  LASTOBJ
-   end
+   if panel == 1 then cut.shown.frames.last        =  LASTOBJ  end
+   if panel == 2 then cut.shown.todayframes.last   =  LASTOBJ  end
+   if panel == 3 then cut.shown.weekframes.last    =  LASTOBJ  end
 
---    cut.resizewindow(today)
+--    cut.resizewindow(panel)
 
 --    print("EXIT SORT TABLE")
 
