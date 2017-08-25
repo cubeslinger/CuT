@@ -51,7 +51,7 @@ function cut.sortbykey(parent, tbl, today)
       cut.shown.frames.last =  LASTOBJ
    end
 
-   cut.resizewindow(today)
+--    cut.resizewindow(today)
 
 --    print("EXIT SORT TABLE")
 

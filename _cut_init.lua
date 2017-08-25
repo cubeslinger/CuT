@@ -51,6 +51,7 @@ cut.shown.todayframes      =  {}
 cut.shown.todayframes.last =  nil
 cut.shown.fullframes       =  {}
 cut.shown.todayfullframes  =  {}
+cut.shown.secondpanel      =  false
 
 --
 cut.frames              =  {}
@@ -66,7 +67,7 @@ cut.html.title          =  "<font color=\'"..cut.html.green.."\'>C</font><font c
 --
 cut.color               =  {}
 cut.color.black         =  { 0,  0,  0, .5}
-cut.color.red           =  { .8,  0,  0, .5}
+cut.color.red           =  { .2,  0,  0, .5}
 cut.color.darkgrey      =  {.2, .2, .2, .5}
 --
 cut.session             =  {}
@@ -129,7 +130,7 @@ function cut.savevariables(_, addonname)
       guidata     =  a
 
       -- Save Session data
-      -- workaround for currencies that at fist appearence have stack=0
+      -- workaround for currencies that at first appearence have stack=0
       -- like: Affinity, Ticket Prize, ...
       local tbl   =  {}
       local a,b   =  nil, nil
@@ -218,8 +219,12 @@ local function currencyevent()
          cut.todaybase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
          cut.updatecurrenciestoday(var, val)
       end
-
    end
+
+   -- set the right size for pane
+   cut.resizewindow(cut.shown.secondpanel)
+
+
 end
 
 -- local function initcoinbase()
@@ -254,6 +259,17 @@ function cut.initcoinbase()
                end
                ]]--
 
+            -- trying to get Strange Currecnies right... if it's zero at start we check again
+            -- for: Affinity, Prize Tickets
+            local strangecurrencies =  { "Affinity", "Prize Tickets" }
+            local c                 =  nil
+            for   _, c in pairs(strangecurrencies) do
+               if cut.coinbase[c].stack == 0 then
+                  cut.coinbase[c] = nil
+--                   print(string.format("CoinBase check, removed = %s", c))
+               end
+            end
+
             cut.baseinit   =  true
 
             if not cut.todayinit then
@@ -276,9 +292,9 @@ function cut.initcoinbase()
             end
             -- end restore
 
---             -- since Today Pane starts hidden, the shown empty window would be to tall
---             -- so i resize it accordingly
---             cut.resizewindow(false)
+            -- since Today Pane starts hidden, the shown empty window would be too tall
+            -- so i resize it accordingly
+            if cut.gui.window then cut.resizewindow(cut.shown.secondpanel) end
 
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")

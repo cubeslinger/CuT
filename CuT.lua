@@ -51,7 +51,8 @@ local function createwindow()
                                                                      for var, val in pairs(cut.shown.todayfullframes) do
                                                                         cut.shown.todayfullframes[var]:SetVisible(true)
                                                                      end
-                                                                     cut.resizewindow(true)
+                                                                     cut.shown.secondpanel =  true
+                                                                     cut.resizewindow(cut.shown.secondpanel)
                                                                   else
                                                                      cut.frames.container:SetVisible(true)
                                                                      cut.frames.todaycontainer:SetVisible(false)
@@ -62,7 +63,8 @@ local function createwindow()
                                                                      for var, val in pairs(cut.shown.fullframes) do
                                                                         cut.shown.fullframes[var]:SetVisible(true)
                                                                      end
-                                                                     cut.resizewindow(false)
+                                                                     cut.shown.secondpanel =  false
+                                                                     cut.resizewindow(cut.shown.secondpanel)
                                                                   end
                                                                end,
                                                                "Flip Panels" )
