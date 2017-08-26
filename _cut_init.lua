@@ -269,7 +269,7 @@ local function currencyevent()
    end
 
    -- set the right size for pane
-   cut.resizewindow(cut.shown.secondpanel)
+   cut.resizewindow(cut.shown.panel)
 
 
 end
@@ -362,7 +362,7 @@ function cut.initcoinbase()
 
             -- since Today Pane starts hidden, the shown empty window would be too tall
             -- so i resize it accordingly
-            if cut.gui.window then cut.resizewindow(cut.shown.secondpanel) end
+            if cut.gui.window then cut.resizewindow(cut.shown.panel) end
 
             -- we are ready for events
             Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
