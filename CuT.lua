@@ -211,16 +211,18 @@ local function createnewline(currency, value, panel)
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
+
+   local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
    if cut.coinbase[currency].icon ~= nil then
-      local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
-      currencyicon:SetTexture("Rift", (cut.coinbase[currency].icon or "reward_gold.png.dds"))
-      currencyicon:SetWidth(cut.gui.font.size)
-      currencyicon:SetHeight(cut.gui.font.size)
-      currencyicon:SetLayer(3)
-      currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
+      currencyicon:SetTexture("Rift", cut.coinbase[currency].icon)
    else
+      currencyicon:SetTexture("Rift", "reward_gold.png.dds")
       print(string.format("NO ICON for %s", currency))
    end
+   currencyicon:SetWidth(cut.gui.font.size)
+   currencyicon:SetHeight(cut.gui.font.size)
+   currencyicon:SetLayer(3)
+   currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
    if currency == "Platinum, Gold, Silver"   or
       currency == "Platine, Or, Argent"      or
