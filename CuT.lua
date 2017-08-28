@@ -94,7 +94,7 @@ local function createwindow()
                                                                         cut.shown.weekfullframes[var]:SetVisible(true)
                                                                      end
                                                                   end
-                                                                  
+
                                                                   cut.resizewindow(cut.shown.panel)
                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
                                                                end,
@@ -211,12 +211,16 @@ local function createnewline(currency, value, panel)
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
-   local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
-   currencyicon:SetTexture("Rift", (cut.coinbase[currency].icon or "reward_gold.png.dds"))
-   currencyicon:SetWidth(cut.gui.font.size)
-   currencyicon:SetHeight(cut.gui.font.size)
-   currencyicon:SetLayer(3)
-   currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
+   if cut.coinbase[currency].icon ~= nil then
+      local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
+      currencyicon:SetTexture("Rift", (cut.coinbase[currency].icon or "reward_gold.png.dds"))
+      currencyicon:SetWidth(cut.gui.font.size)
+      currencyicon:SetHeight(cut.gui.font.size)
+      currencyicon:SetLayer(3)
+      currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
+   else
+      print(string.format("NO ICON for %s", currency))
+   end
 
    if currency == "Platinum, Gold, Silver"   or
       currency == "Platine, Or, Argent"      or
