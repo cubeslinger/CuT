@@ -329,14 +329,15 @@ function cut.initcoinbase()
             local value    =  0
             for currency, tbl in pairs(cut.todaybase) do
                if cut.coinbase[currency] then
+--                   print(string.format("TODAY: currency=%s stack=%s, icon=%s, id=%s", currency, cut.todaybase[currency].stack, cut.todaybase[currency].icon, cut.todaybase[currency].id))
                   value =  cut.coinbase[currency].stack - tbl.stack
+
                end
 
                -- value = 0      => there's been no variation in value since when we saved
-               if value ~= 0 then
-                  cut.updatecurrenciestoday(currency, value)
-               end
+               if value ~= 0 then   cut.updatecurrenciestoday(currency, value)   end
             end
+--             print("END restore Today data")
             -- end restore today data
 
             if not cut.weekinit then
@@ -349,14 +350,14 @@ function cut.initcoinbase()
             local value    =  0
             for currency, tbl in pairs(cut.weekbase) do
                if cut.coinbase[currency] then
+--                   print(string.format("WEEK: currency=%s stack=%s, icon=%s, id=%s", currency, cut.weekbase[currency].stack, cut.weekbase[currency].icon, cut.weekbase[currency].id))
                   value =  cut.coinbase[currency].stack - tbl.stack
                end
 
                -- value = 0      => there's been no variation in value since when we saved
-               if value ~= 0 then
-                  cut.updatecurrenciesweek(currency, value)
-               end
+               if value ~= 0 then   cut.updatecurrenciesweek(currency, value) end
             end
+--             print("END restore Week data")
             -- end restore week data
 
 

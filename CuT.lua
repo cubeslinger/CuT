@@ -212,12 +212,21 @@ local function createnewline(currency, value, panel)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
 
+   local base  =  {}
+   if panel == 1  then  base  =  cut.coinbase   end
+   if panel == 2  then  base  =  cut.todaybase  end
+   if panel == 3  then  base  =  cut.weekbase   end
+
    local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
-   if cut.coinbase[currency].icon ~= nil then
-      currencyicon:SetTexture("Rift", cut.coinbase[currency].icon)
-   else
-      currencyicon:SetTexture("Rift", "reward_gold.png.dds")
-      print(string.format("NO ICON for %s", currency))
+   if table.contains(base, currency) then
+--       if table.contains(base[currency], icon) then
+         currencyicon:SetTexture("Rift", (base[currency].icon or "reward_gold.png.dds"))
+--       else
+--          currencyicon:SetTexture("Rift", "reward_gold.png.dds")
+--          print(string.format("NO ICON for %s", currency))
+--       end
+--    else
+--       print(string.format("NO !DATA! for %s", currency))
    end
    currencyicon:SetWidth(cut.gui.font.size)
    currencyicon:SetHeight(cut.gui.font.size)
@@ -284,9 +293,7 @@ end
 
 function cut.updatecurrenciestoday(currency, value)
 
-   if not cut.gui.window then
-      cut.gui.window = createwindow()
-   end
+   if not cut.gui.window then cut.gui.window = createwindow()  end
 
    if cut.shown.todayobjs[currency] then
       updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency])
@@ -327,3 +334,15 @@ Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,   
 Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,    "CuT: Load Variables")
 Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,    "CuT: Save Variables")
 -- end
+
+
+
+--[[
+    Error: CuT/CuT.lua:216: attempt to index a nil value
+   In CuT / CuT: Init Coin Base, event Event.Unit.Availability.Full
+   stack traceback:
+   [C]: in function '__index'
+   CuT/CuT.lua:216: in function 'createnewline'
+   CuT/CuT.lua:275: in function 'updatecurrenciesweek'
+   CuT/_cut_init.lua:357: in function
+]]--
