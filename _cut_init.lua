@@ -103,7 +103,7 @@ function cut.loadvariables(_, addonname)
          for key, val in pairs(a) do
             if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight and key ~= height then
                cut.gui[key]   =  val
-               print(string.format("Importing %s: %s", key, val))
+--                print(string.format("Importing %s: %s", key, val))
             end
          end
          cut.gui.window =  nil
