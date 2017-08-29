@@ -73,65 +73,6 @@ local function createwindow()
    windowtitle:SetText(string.format("%s", cut.html.title), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
---    windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click,   function()
---
---                                                                   cut.shown.panel   =  cut.shown.panel + 1
---
---                                                                   if cut.shown.panel > 3 then   cut.shown.panel = 1  end
---
---                                                                   -- show Current Session
---                                                                   if cut.shown.panel == 1 then
---                                                                      cut.frames.container:SetVisible(true)
---                                                                      cut.frames.todaycontainer:SetVisible(false)
---                                                                      cut.frames.weekcontainer:SetVisible(false)
---                                                                      local var, val = nil
---                                                                      for var, val in pairs(cut.shown.todayfullframes) do
---                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.weekfullframes) do
---                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.fullframes) do
---                                                                         cut.shown.fullframes[var]:SetVisible(true)
---                                                                      end
---                                                                   end
---                                                                   -- show Today Session
---                                                                   if cut.shown.panel == 2 then
---                                                                      cut.frames.todaycontainer:SetVisible(true)
---                                                                      cut.frames.container:SetVisible(false)
---                                                                      cut.frames.weekcontainer:SetVisible(false)
---                                                                      local var, val = nil
---                                                                      for var, val in pairs(cut.shown.fullframes) do
---                                                                         cut.shown.fullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.weekfullframes) do
---                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.todayfullframes) do
---                                                                         cut.shown.todayfullframes[var]:SetVisible(true)
---                                                                      end
---                                                                   end
---                                                                   -- show Week Session
---                                                                   if cut.shown.panel == 3 then
---                                                                      cut.frames.weekcontainer:SetVisible(true)
---                                                                      cut.frames.container:SetVisible(false)
---                                                                      cut.frames.todaycontainer:SetVisible(false)
---                                                                      local var, val = nil
---                                                                      for var, val in pairs(cut.shown.fullframes) do
---                                                                         cut.shown.fullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.todayfullframes) do
---                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.weekfullframes) do
---                                                                         cut.shown.weekfullframes[var]:SetVisible(true)
---                                                                      end
---                                                                   end
---
---                                                                   cut.resizewindow(cut.shown.panel)
---                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
---                                                                end,
---                                                                "Flip Panels" )
    cut.shown.windowtitle   =  windowtitle
 
 
@@ -153,15 +94,27 @@ local function createwindow()
                                                                      cut.frames.todaycontainer:SetVisible(false)
                                                                      cut.frames.weekcontainer:SetVisible(false)
                                                                      local var, val = nil
-                                                                     for var, val in pairs(cut.shown.todayfullframes) do
-                                                                        cut.shown.todayfullframes[var]:SetVisible(false)
+--                                                                      for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.weekfullframes) do
+--                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.fullframes) do
+--                                                                         cut.shown.fullframes[var]:SetVisible(true)
+--                                                                      end
+
+--                                                                   frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue
+                                                                     for var, val in pairs(cut.shown.todaytbl) do
+                                                                        cut.shown.todaytbl[var].frame:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.weekfullframes) do
-                                                                        cut.shown.weekfullframes[var]:SetVisible(false)
+                                                                     for var, val in pairs(cut.shown.weektbl) do
+                                                                        cut.shown.weektbl[var].frame:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.fullframes) do
-                                                                        cut.shown.fullframes[var]:SetVisible(true)
+                                                                     for var, val in pairs(cut.shown.currenttbl) do
+                                                                        cut.shown.currenttbl[var].frame:SetVisible(true)
                                                                      end
+
                                                                   end
                                                                   -- show Today Session
                                                                   if cut.shown.panel == 2 then
@@ -169,15 +122,25 @@ local function createwindow()
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.weekcontainer:SetVisible(false)
                                                                      local var, val = nil
-                                                                     for var, val in pairs(cut.shown.fullframes) do
-                                                                        cut.shown.fullframes[var]:SetVisible(false)
+--                                                                      for var, val in pairs(cut.shown.fullframes) do
+--                                                                         cut.shown.fullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.weekfullframes) do
+--                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         cut.shown.todayfullframes[var]:SetVisible(true)
+--                                                                      end
+                                                                     for var, val in pairs(cut.shown.currenttbl) do
+                                                                        cut.shown.currenttbl[var].frame:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.weekfullframes) do
-                                                                        cut.shown.weekfullframes[var]:SetVisible(false)
+                                                                     for var, val in pairs(cut.shown.weektbl) do
+                                                                        cut.shown.weektbl[var].frame:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.todayfullframes) do
-                                                                        cut.shown.todayfullframes[var]:SetVisible(true)
+                                                                     for var, val in pairs(cut.shown.todaytbl) do
+                                                                        cut.shown.todaytbl[var].frame:SetVisible(true)
                                                                      end
+
                                                                   end
                                                                   -- show Week Session
                                                                   if cut.shown.panel == 3 then
@@ -185,14 +148,23 @@ local function createwindow()
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.todaycontainer:SetVisible(false)
                                                                      local var, val = nil
-                                                                     for var, val in pairs(cut.shown.fullframes) do
-                                                                        cut.shown.fullframes[var]:SetVisible(false)
+--                                                                      for var, val in pairs(cut.shown.fullframes) do
+--                                                                         cut.shown.fullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.weekfullframes) do
+--                                                                         cut.shown.weekfullframes[var]:SetVisible(true)
+--                                                                      end
+                                                                     for var, val in pairs(cut.shown.currenttbl) do
+                                                                        cut.shown.currenttbl[var].frame:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.todayfullframes) do
-                                                                        cut.shown.todayfullframes[var]:SetVisible(false)
+                                                                     for var, val in pairs(cut.shown.todaytbl) do
+                                                                        cut.shown.todaytbl[var].frame:SetVisible(false)
                                                                      end
-                                                                     for var, val in pairs(cut.shown.weekfullframes) do
-                                                                        cut.shown.weekfullframes[var]:SetVisible(true)
+                                                                     for var, val in pairs(cut.shown.weektbl) do
+                                                                        cut.shown.weektbl[var].frame:SetVisible(true)
                                                                      end
                                                                   end
 
@@ -275,13 +247,13 @@ end
 
 
 local function createnewline(currency, value, panel, id)
---    print(string.format("createnewline: c=%s, v=%s, panel=%s", currency, value, panel))
+--    print(string.format("createnewline: c=%s, v=%s, panel=%s, id=%s", currency, value, panel, id))
    local flag           =  ""
    local currencyframe  =  nil
    local base           =  {}
    if panel == 1 then
       flag = "_current_"
-      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)
+      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)      -- CUT currency container
       base  =  cut.coinbase
    end
    if panel == 2 then
@@ -295,33 +267,14 @@ local function createnewline(currency, value, panel, id)
       base  =  cut.weekbase
    end
 
-   -- CUT currency container
---    if panel == 1  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)      end
---    if panel == 2  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer) end
---    if panel == 3  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)  end
-
    currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
 
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. flag .. currency, currencyframe)
    currencylabel:SetFontSize(cut.gui.font.size)
-   local textcurrency   =  ""
---    if currency == "Platinum, Gold, Silver"   or
---       currency == "Platine, Or, Argent"      or
---       currency == "Platin, Gold, Silber"     then
-   if id == "coin" then
-      textcurrency="Money"
-   else
-      textcurrency   =  currency
-   end
-   currencylabel:SetText(string.format("%s:", textcurrency))
+   currencylabel:SetText(string.format("%s:", currency))
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
-
---    local base           =  {}
---    if panel == 1  then  base  =  cut.coinbase   end
---    if panel == 2  then  base  =  cut.todaybase  end
---    if panel == 3  then  base  =  cut.weekbase   end
 
    local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
    if table.contains(base, currency) then currencyicon:SetTexture("Rift", (base[currency].icon or "reward_gold.png.dds")) end
@@ -330,9 +283,6 @@ local function createnewline(currency, value, panel, id)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
---    if currency == "Platinum, Gold, Silver"   or
---       currency == "Platine, Or, Argent"      or
---       currency == "Platin, Gold, Silber"     then
    if id == "coin" then
       value = cut.printmoney(value)
    else
@@ -347,20 +297,12 @@ local function createnewline(currency, value, panel, id)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
 
-   if panel == 1 then   cut.shown.objs[currency]      =  currencyvalue  end
-   if panel == 2 then   cut.shown.todayobjs[currency] =  currencyvalue  end
-   if panel == 3 then   cut.shown.weekobjs[currency]  =  currencyvalue  end
-
---    return currencyframe
    local t  =  {  frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue }
    return t
 end
 
 local function updatecurrencyvalue(currency, value, field, id)
-
---    if currency == "Platinum, Gold, Silver"   or
---       currency == "Platine, Or, Argent"      or
---       currency == "Platin, Gold, Silber"     then
+   print(string.format("updatecurrencyvalue: currency=%s, value=%s, field=%s, id=%s", currency, value, field, id))
    if id == "coin" then
       value    =  cut.printmoney(value)
    else
@@ -378,25 +320,20 @@ function cut.updatecurrenciesweek(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow() end
 
-   if cut.shown.weekobjs[currency] then
-      updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency], id)
+--    if cut.shown.weekobjs[currency] then
+   if cut.shown.weektbl[currency] then
+--       updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency], id)
+      updatecurrencyvalue(currency, value, cut.shown.weektbl[currency].value, id)
    else
-      --       print("...CREATING..."..currency.." - "..value)
---       local newline =   createnewline(currency, value, 3)
-
-      -- frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue
       local t  =  {}
       t  =  createnewline(currency, value, 3, id)
-
---       cut.shown.weekfullframes[currency]  =  newline
---       cut.shown.weekframes.last           =  newline
-
-      cut.shown.weekfullframes[currency]  =  t.frame
+--       cut.shown.weekfullframes[currency]  =  t.frame
       cut.shown.weekframes.last           =  t.frame
       cut.shown.weektbl[currency]         =  t
    end
 
-   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, 3)
+--    cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, 3)
+   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weektbl, 3)
 
    return
 end
@@ -405,49 +342,43 @@ function cut.updatecurrenciestoday(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
-   if cut.shown.todayobjs[currency] then
-      updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency], id)
+--    if cut.shown.todayobjs[currency] then
+   if cut.shown.currenttbl[currency] then
+--       updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency], id)
+      updatecurrencyvalue(currency, value, cut.shown.todaytbl[currency].value, id)
    else
-      --       print("...CREATING..."..currency.." - "..value)
---       local newline =   createnewline(currency, value, 2)
---       cut.shown.todayfullframes[currency] =  newline
---       cut.shown.todayframes.last          =  newline
-
       local t  =  {}
       t  =  createnewline(currency, value, 2, id)
-      cut.shown.todayfullframes[currency] =  t.frame
+--       cut.shown.todayfullframes[currency] =  t.frame
       cut.shown.todayframes.last          =  t.frame
       cut.shown.todaytbl[currency]        =  t
 
    end
 
-   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, 2)
+--    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, 2)
+   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 2)
 
    return
 end
 
 function cut.updatecurrencies(currency, value, id)
 
-   if not cut.gui.window then
-      cut.gui.window = createwindow()
-   end
+   if not cut.gui.window then cut.gui.window = createwindow() end
 
-   if cut.shown.objs[currency] then
-      updatecurrencyvalue(currency, value, cut.shown.objs[currency], id)
+--    if cut.shown.objs[currency] then
+   if cut.shown.currenttbl[currency] then
+--       updatecurrencyvalue(currency, value, cut.shown.objs[currency], id)
+      updatecurrencyvalue(currency, value, cut.shown.currenttbl[currency].value, id)
    else
---       print("...CREATING..."..currency.." - "..value)
---       local newline =   createnewline(currency, value, 1)
---       cut.shown.fullframes[currency]   =  newline
---       cut.shown.frames.last            =  newline
-
       local t  =  {}
       t  =  createnewline(currency, value, 1, id)
-      cut.shown.fullframes[currency]   =  t.frame
+--       cut.shown.fullframes[currency]   =  t.frame
       cut.shown.frames.last            =  t.frame
       cut.shown.currenttbl[currency]   =  t
    end
 
-   cut.sortbykey(cut.frames.container, cut.shown.fullframes, 1)
+--    cut.sortbykey(cut.frames.container, cut.shown.fullframes, 1)
+   cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1)
 
    return
 end
