@@ -302,7 +302,7 @@ local function createnewline(currency, value, panel, id)
 end
 
 local function updatecurrencyvalue(currency, value, field, id)
-   print(string.format("updatecurrencyvalue: currency=%s, value=%s, field=%s, id=%s", currency, value, field, id))
+--    print(string.format("updatecurrencyvalue: currency=%s, value=%s, field=%s, id=%s", currency, value, field, id))
    if id == "coin" then
       value    =  cut.printmoney(value)
    else
@@ -343,8 +343,9 @@ function cut.updatecurrenciestoday(currency, value, id)
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
 --    if cut.shown.todayobjs[currency] then
-   if cut.shown.currenttbl[currency] then
+   if cut.shown.todaytbl[currency] then
 --       updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency], id)
+--       print(string.format("  currency=%s, value=%s, cut.shown.todaytbl[currency].value=%s, id=%s", currency, value, cut.shown.todaytbl[currency].value, id))
       updatecurrencyvalue(currency, value, cut.shown.todaytbl[currency].value, id)
    else
       local t  =  {}
@@ -389,3 +390,13 @@ Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,   
 Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,    "CuT: Load Variables")
 Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,    "CuT: Save Variables")
 -- end
+
+
+--[[
+Error: CuT/CuT.lua:348: attempt to index a nil value
+    In CuT / CuT Currency Event, event Event.Currency
+stack traceback:
+	[C]: in function '__index'
+	CuT/CuT.lua:348: in function 'updatecurrenciestoday'
+	CuT/_cut_init.lua:246: in function <CuT/_cut_init.lua:218>    
+    ]]--
