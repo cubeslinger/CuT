@@ -16,6 +16,36 @@ local function updateguicoordinates(win, x, y)
    return
 end
 
+function cut.changefontsize(newfontsize)
+
+   local nfs   =  cut.gui.font.size + newfontsize
+   if (nfs > 24)  then  nfs   =  24 end
+   if (nfs < 6)   then  nfs   =  6  end
+
+   if nfs ~=   cut.gui.font.size then
+--       print(string.format("Font was %s, now is %s.", cut.gui.font.size, nfs))
+
+      cut.gui.font.size =  nfs
+
+      local tbls  =  { cut.shown.currenttbl, cut.shown.todaytbl, cut.shown.weektbl }
+
+      for _, TBL in pairs(tbls) do
+         for currency, tbl in pairs(TBL) do
+            tbl.frame:SetHeight(cut.gui.font.size)
+            tbl.label:SetFontSize(cut.gui.font.size)
+            tbl.icon:SetHeight(cut.gui.font.size)
+            tbl.icon:SetWidth(cut.gui.font.size)
+            tbl.value:SetFontSize(cut.gui.font.size)
+         end
+      end
+
+      cut.shown.windowtitle:SetFontSize(cut.gui.font.size)
+      cut.shown.windowinfo:SetFontSize(cut.gui.font.size)
+      cut.resizewindow(cut.shown.panel)
+   end
+
+   return
+end
 
 local function createwindow()
 
@@ -32,6 +62,9 @@ local function createwindow()
    cutwindow:SetWidth(cut.gui.width)
 --    cutwindow:SetBackgroundColor(0, 0, 0, .5)
    cutwindow:SetBackgroundColor(unpack(cut.color.black))
+   cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Forward, function() cut.changefontsize(2)   end,  "cutwindow_wheel_forward")
+   cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Back,    function() cut.changefontsize(-2)  end,  "cutwindow_wheel_backward")
+
 
    -- Window Title
 --    local title =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
@@ -40,7 +73,75 @@ local function createwindow()
    windowtitle:SetText(string.format("%s", cut.html.title), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
-   windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click,   function()
+--    windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click,   function()
+--
+--                                                                   cut.shown.panel   =  cut.shown.panel + 1
+--
+--                                                                   if cut.shown.panel > 3 then   cut.shown.panel = 1  end
+--
+--                                                                   -- show Current Session
+--                                                                   if cut.shown.panel == 1 then
+--                                                                      cut.frames.container:SetVisible(true)
+--                                                                      cut.frames.todaycontainer:SetVisible(false)
+--                                                                      cut.frames.weekcontainer:SetVisible(false)
+--                                                                      local var, val = nil
+--                                                                      for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.weekfullframes) do
+--                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.fullframes) do
+--                                                                         cut.shown.fullframes[var]:SetVisible(true)
+--                                                                      end
+--                                                                   end
+--                                                                   -- show Today Session
+--                                                                   if cut.shown.panel == 2 then
+--                                                                      cut.frames.todaycontainer:SetVisible(true)
+--                                                                      cut.frames.container:SetVisible(false)
+--                                                                      cut.frames.weekcontainer:SetVisible(false)
+--                                                                      local var, val = nil
+--                                                                      for var, val in pairs(cut.shown.fullframes) do
+--                                                                         cut.shown.fullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.weekfullframes) do
+--                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         cut.shown.todayfullframes[var]:SetVisible(true)
+--                                                                      end
+--                                                                   end
+--                                                                   -- show Week Session
+--                                                                   if cut.shown.panel == 3 then
+--                                                                      cut.frames.weekcontainer:SetVisible(true)
+--                                                                      cut.frames.container:SetVisible(false)
+--                                                                      cut.frames.todaycontainer:SetVisible(false)
+--                                                                      local var, val = nil
+--                                                                      for var, val in pairs(cut.shown.fullframes) do
+--                                                                         cut.shown.fullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.todayfullframes) do
+--                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
+--                                                                      end
+--                                                                      for var, val in pairs(cut.shown.weekfullframes) do
+--                                                                         cut.shown.weekfullframes[var]:SetVisible(true)
+--                                                                      end
+--                                                                   end
+--
+--                                                                   cut.resizewindow(cut.shown.panel)
+--                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+--                                                                end,
+--                                                                "Flip Panels" )
+   cut.shown.windowtitle   =  windowtitle
+
+
+   local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
+   windowinfo:SetFontSize(cut.gui.font.size )
+   windowinfo:SetFontSize(cut.gui.font.size -2 )
+   windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+   windowinfo:SetLayer(3)
+   windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
+   windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, function()
 
                                                                   cut.shown.panel   =  cut.shown.panel + 1
 
@@ -99,14 +200,6 @@ local function createwindow()
                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
                                                                end,
                                                                "Flip Panels" )
-
-
-   local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
-   windowinfo:SetFontSize(cut.gui.font.size )
-   windowinfo:SetFontSize(cut.gui.font.size -2 )
-   windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
-   windowinfo:SetLayer(3)
-   windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
    cut.shown.windowinfo  =  windowinfo
 
 
@@ -183,16 +276,29 @@ end
 
 local function createnewline(currency, value, panel)
 --    print(string.format("createnewline: c=%s, v=%s, panel=%s", currency, value, panel))
-   local flag  =  ""
-   if panel == 1 then flag = "_current_"  end
-   if panel == 2 then flag = "_today_"    end
-   if panel == 3 then flag = "_week_"     end
+   local flag           =  ""
+   local currencyframe  =  nil
+   local base           =  {}
+   if panel == 1 then
+      flag = "_current_"
+      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)
+      base  =  cut.coinbase
+   end
+   if panel == 2 then
+      flag = "_today_"
+      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer)
+      base  =  cut.todaybase
+   end
+   if panel == 3 then
+      flag = "_week_"
+      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)
+      base  =  cut.weekbase
+   end
 
    -- CUT currency container
-   local currencyframe  =  nil
-   if panel == 1  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)      end
-   if panel == 2  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer) end
-   if panel == 3  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)  end
+--    if panel == 1  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)      end
+--    if panel == 2  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer) end
+--    if panel == 3  then  currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)  end
 
    currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
@@ -211,23 +317,13 @@ local function createnewline(currency, value, panel)
    currencylabel:SetLayer(3)
    currencylabel:SetPoint("TOPLEFT",   currencyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
-
-   local base  =  {}
-   if panel == 1  then  base  =  cut.coinbase   end
-   if panel == 2  then  base  =  cut.todaybase  end
-   if panel == 3  then  base  =  cut.weekbase   end
+--    local base           =  {}
+--    if panel == 1  then  base  =  cut.coinbase   end
+--    if panel == 2  then  base  =  cut.todaybase  end
+--    if panel == 3  then  base  =  cut.weekbase   end
 
    local currencyicon = UI.CreateFrame("Texture", "currency_icon_" .. flag .. currency, currencyframe)
-   if table.contains(base, currency) then
---       if table.contains(base[currency], icon) then
-         currencyicon:SetTexture("Rift", (base[currency].icon or "reward_gold.png.dds"))
---       else
---          currencyicon:SetTexture("Rift", "reward_gold.png.dds")
---          print(string.format("NO ICON for %s", currency))
---       end
---    else
---       print(string.format("NO !DATA! for %s", currency))
-   end
+   if table.contains(base, currency) then currencyicon:SetTexture("Rift", (base[currency].icon or "reward_gold.png.dds")) end
    currencyicon:SetWidth(cut.gui.font.size)
    currencyicon:SetHeight(cut.gui.font.size)
    currencyicon:SetLayer(3)
@@ -239,7 +335,7 @@ local function createnewline(currency, value, panel)
       value = cut.printmoney(value)
    else
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
-                     else  value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
+      else                 value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
       end
    end
 
@@ -253,7 +349,9 @@ local function createnewline(currency, value, panel)
    if panel == 2 then   cut.shown.todayobjs[currency] =  currencyvalue  end
    if panel == 3 then   cut.shown.weekobjs[currency]  =  currencyvalue  end
 
-   return currencyframe
+--    return currencyframe
+   local t  =  {  frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue }
+   return t
 end
 
 local function updatecurrencyvalue(currency, value, field)
@@ -281,9 +379,18 @@ function cut.updatecurrenciesweek(currency, value)
       updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency])
    else
       --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value, 3)
-      cut.shown.weekfullframes[currency]  =  newline
-      cut.shown.weekframes.last           =  newline
+--       local newline =   createnewline(currency, value, 3)
+
+      -- frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue
+      local t  =  {}
+      t  =  createnewline(currency, value, 3)
+
+--       cut.shown.weekfullframes[currency]  =  newline
+--       cut.shown.weekframes.last           =  newline
+
+      cut.shown.weekfullframes[currency]  =  t.frame
+      cut.shown.weekframes.last           =  t.frame
+      cut.shown.weektbl[currency]         =  t
    end
 
    cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, 3)
@@ -299,9 +406,16 @@ function cut.updatecurrenciestoday(currency, value)
       updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency])
    else
       --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value, 2)
-      cut.shown.todayfullframes[currency] =  newline
-      cut.shown.todayframes.last          =  newline
+--       local newline =   createnewline(currency, value, 2)
+--       cut.shown.todayfullframes[currency] =  newline
+--       cut.shown.todayframes.last          =  newline
+
+      local t  =  {}
+      t  =  createnewline(currency, value, 2)
+      cut.shown.todayfullframes[currency] =  t.frame
+      cut.shown.todayframes.last          =  t.frame
+      cut.shown.todaytbl[currency]        =  t
+
    end
 
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, 2)
@@ -319,9 +433,15 @@ function cut.updatecurrencies(currency, value)
       updatecurrencyvalue(currency, value, cut.shown.objs[currency])
    else
 --       print("...CREATING..."..currency.." - "..value)
-      local newline =   createnewline(currency, value, 1)
-      cut.shown.fullframes[currency]   =  newline
-      cut.shown.frames.last            =  newline
+--       local newline =   createnewline(currency, value, 1)
+--       cut.shown.fullframes[currency]   =  newline
+--       cut.shown.frames.last            =  newline
+
+      local t  =  {}
+      t  =  createnewline(currency, value, 2)
+      cut.shown.fullframes[currency]   =  t.frame
+      cut.shown.frames.last            =  t.frame
+      cut.shown.currenttbl[currency]   =  t
    end
 
    cut.sortbykey(cut.frames.container, cut.shown.fullframes, 1)
@@ -329,20 +449,9 @@ function cut.updatecurrencies(currency, value)
    return
 end
 
+
 -- Load/Save variable and Coinbases initialization -- begin
 Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,     "CuT: Init Coin Base")
 Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,    "CuT: Load Variables")
 Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,    "CuT: Save Variables")
 -- end
-
-
-
---[[
-    Error: CuT/CuT.lua:216: attempt to index a nil value
-   In CuT / CuT: Init Coin Base, event Event.Unit.Availability.Full
-   stack traceback:
-   [C]: in function '__index'
-   CuT/CuT.lua:216: in function 'createnewline'
-   CuT/CuT.lua:275: in function 'updatecurrenciesweek'
-   CuT/_cut_init.lua:357: in function
-]]--

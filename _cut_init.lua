@@ -47,21 +47,25 @@ cut.shown.frames        =  {}
 cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
 cut.shown.fullframes    =  {}
+cut.shown.currenttbl    =  {}
 --
 cut.shown.todayobjs        =  {}
 cut.shown.todayobjs.last   =  nil
 cut.shown.todayframes      =  {}
 cut.shown.todayframes.last =  nil
 cut.shown.todayfullframes  =  {}
+cut.shown.todaytbl         =  {}
 --
 cut.shown.weekobjs         =  {}
 cut.shown.weekobjs.last    =  nil
 cut.shown.weekframes       =  {}
 cut.shown.weekframes.last  =  nil
 cut.shown.weekfullframes   =  {}
+cut.shown.weektbl          =  {}
 --
 cut.shown.panel         =  1
 cut.shown.windowinfo    =  nil
+cut.shown.windowtitle   =  nil
 cut.shown.panellabel    =  {  [1]="<i>Current</i>", [2]="<i>Today</i>", [3]="<i>Week</i>" }
 --
 cut.frames              =  {}
