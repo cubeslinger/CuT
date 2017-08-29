@@ -274,7 +274,7 @@ local function createwindow()
 end
 
 
-local function createnewline(currency, value, panel)
+local function createnewline(currency, value, panel, id)
 --    print(string.format("createnewline: c=%s, v=%s, panel=%s", currency, value, panel))
    local flag           =  ""
    local currencyframe  =  nil
@@ -306,9 +306,10 @@ local function createnewline(currency, value, panel)
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. flag .. currency, currencyframe)
    currencylabel:SetFontSize(cut.gui.font.size)
    local textcurrency   =  ""
-   if currency == "Platinum, Gold, Silver"   or
-      currency == "Platine, Or, Argent"      or
-      currency == "Platin, Gold, Silber"     then
+--    if currency == "Platinum, Gold, Silver"   or
+--       currency == "Platine, Or, Argent"      or
+--       currency == "Platin, Gold, Silber"     then
+   if id == "coin" then
       textcurrency="Money"
    else
       textcurrency   =  currency
@@ -329,9 +330,10 @@ local function createnewline(currency, value, panel)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
-   if currency == "Platinum, Gold, Silver"   or
-      currency == "Platine, Or, Argent"      or
-      currency == "Platin, Gold, Silber"     then
+--    if currency == "Platinum, Gold, Silver"   or
+--       currency == "Platine, Or, Argent"      or
+--       currency == "Platin, Gold, Silber"     then
+   if id == "coin" then
       value = cut.printmoney(value)
    else
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
@@ -354,11 +356,12 @@ local function createnewline(currency, value, panel)
    return t
 end
 
-local function updatecurrencyvalue(currency, value, field)
+local function updatecurrencyvalue(currency, value, field, id)
 
-   if currency == "Platinum, Gold, Silver"   or
-      currency == "Platine, Or, Argent"      or
-      currency == "Platin, Gold, Silber"     then
+--    if currency == "Platinum, Gold, Silver"   or
+--       currency == "Platine, Or, Argent"      or
+--       currency == "Platin, Gold, Silber"     then
+   if id == "coin" then
       value    =  cut.printmoney(value)
    else
       if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
@@ -371,19 +374,19 @@ local function updatecurrencyvalue(currency, value, field)
    return
 end
 
-function cut.updatecurrenciesweek(currency, value)
+function cut.updatecurrenciesweek(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow() end
 
    if cut.shown.weekobjs[currency] then
-      updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency])
+      updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency], id)
    else
       --       print("...CREATING..."..currency.." - "..value)
 --       local newline =   createnewline(currency, value, 3)
 
       -- frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue
       local t  =  {}
-      t  =  createnewline(currency, value, 3)
+      t  =  createnewline(currency, value, 3, id)
 
 --       cut.shown.weekfullframes[currency]  =  newline
 --       cut.shown.weekframes.last           =  newline
@@ -398,12 +401,12 @@ function cut.updatecurrenciesweek(currency, value)
    return
 end
 
-function cut.updatecurrenciestoday(currency, value)
+function cut.updatecurrenciestoday(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
    if cut.shown.todayobjs[currency] then
-      updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency])
+      updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency], id)
    else
       --       print("...CREATING..."..currency.." - "..value)
 --       local newline =   createnewline(currency, value, 2)
@@ -411,7 +414,7 @@ function cut.updatecurrenciestoday(currency, value)
 --       cut.shown.todayframes.last          =  newline
 
       local t  =  {}
-      t  =  createnewline(currency, value, 2)
+      t  =  createnewline(currency, value, 2, id)
       cut.shown.todayfullframes[currency] =  t.frame
       cut.shown.todayframes.last          =  t.frame
       cut.shown.todaytbl[currency]        =  t
@@ -423,14 +426,14 @@ function cut.updatecurrenciestoday(currency, value)
    return
 end
 
-function cut.updatecurrencies(currency, value)
+function cut.updatecurrencies(currency, value, id)
 
    if not cut.gui.window then
       cut.gui.window = createwindow()
    end
 
    if cut.shown.objs[currency] then
-      updatecurrencyvalue(currency, value, cut.shown.objs[currency])
+      updatecurrencyvalue(currency, value, cut.shown.objs[currency], id)
    else
 --       print("...CREATING..."..currency.." - "..value)
 --       local newline =   createnewline(currency, value, 1)
@@ -438,7 +441,7 @@ function cut.updatecurrencies(currency, value)
 --       cut.shown.frames.last            =  newline
 
       local t  =  {}
-      t  =  createnewline(currency, value, 2)
+      t  =  createnewline(currency, value, 1, id)
       cut.shown.fullframes[currency]   =  t.frame
       cut.shown.frames.last            =  t.frame
       cut.shown.currenttbl[currency]   =  t
