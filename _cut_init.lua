@@ -238,9 +238,9 @@ local function currencyevent()
          local newid    =  nil
          -- let's see if we have a baseline in Today TBL for this new value
          if table.contains(cut.todaybase, var) then
-            newvalue =  val - cut.coinbase[var].stack
-            newicon  =  cut.coinbase[var].icon
-            newid    =  cut.coinbase[var].id
+            newvalue =  val - cut.todaybase[var].stack
+            newicon  =  cut.todaybase[var].icon
+            newid    =  cut.todaybase[var].id
          end
          -- let's see if we have a baseline in Week TBL for this new value
          if newvalue == nil and table.contains(cut.weekbase, var) then
@@ -419,3 +419,10 @@ function cut.resizewindow(panel)
    return
 end
 
+--[[
+Error: CuT/_cut_init.lua:241: attempt to index a nil value
+    In CuT / CuT Currency Event, event Event.Currency
+stack traceback:
+	[C]: in function '__index'
+	CuT/_cut_init.lua:241: in function <CuT/_cut_init.lua:218>    
+    ]]--
