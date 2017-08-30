@@ -1,7 +1,7 @@
 Identifier  =  "CuT"
 Name        =  { English = "CuT" }
 NameShort   =  "CuT"
-Version     =  "0.00.40"
+Version     =  "0.00.41"
 Description =  { English = "CUrrency Tracker" }
 Author      =  "marcob@marcob.org"
 Website     =  "https://github.com/cubeslinger/CuT"

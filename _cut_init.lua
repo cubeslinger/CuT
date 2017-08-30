@@ -233,9 +233,32 @@ local function currencyevent()
             cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
          end
       else
-         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
-         cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
-         cut.updatecurrencies(var, val, detail.id)
+         local newvalue =  nil
+         local newicon  =  nil
+         local newid    =  nil
+         -- let's see if we have a baseline in Today TBL for this new value
+         if table.contains(cut.todaybase, var) then
+            newvalue =  val - cut.coinbase[var].stack
+            newicon  =  cut.coinbase[var].icon
+            newid    =  cut.coinbase[var].id
+         end
+         -- let's see if we have a baseline in Week TBL for this new value
+         if newvalue == nil and table.contains(cut.weekbase, var) then
+            newvalue =  val - cut.weekbase[var].stack
+            newicon  =  cut.weekbase[var].icon
+            newid    =  cut.weekbase[var].id
+         end
+         --
+         if newvalue ~= nil then
+            -- we found a base in other tables, let's use that
+            cut.coinbase[var] =  { stack=newvalue, icon=newicon, id=newid }
+            cut.updatecurrencies(var, newvalue, newid)
+         else
+            -- we found nothing let's create from scratch this new currency
+            local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
+            cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
+            cut.updatecurrencies(var, val, detail.id)
+         end
       end
 
 
