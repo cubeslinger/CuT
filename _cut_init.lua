@@ -228,40 +228,23 @@ local function currencyevent()
 
       -- Current Session value Update
       if table.contains(cut.coinbase, var) then
-         if val   ~= (cut.coinbase[var].stack or 0) then
-            local newvalue =  val - (cut.coinbase[var].stack or 0)
-            cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+         if cut.coinbase[var].stack == 0 then
+            cut.coinbase[var].stack =  val
+--             print(string.format("Rebased currency: %s from 0 to %s.", var, val))
+         else
+            if val   ~= (cut.coinbase[var].stack or 0) then
+               local newvalue =  val - (cut.coinbase[var].stack or 0)
+               cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+            end
          end
       else
-         local newvalue =  nil
-         local newicon  =  nil
-         local newid    =  nil
-         -- let's see if we have a baseline in Today TBL for this new value
-         if table.contains(cut.todaybase, var) then
-            newvalue =  val - cut.todaybase[var].stack
-            newicon  =  cut.todaybase[var].icon
-            newid    =  cut.todaybase[var].id
-         end
-         -- let's see if we have a baseline in Week TBL for this new value
-         if newvalue == nil and table.contains(cut.weekbase, var) then
-            newvalue =  val - cut.weekbase[var].stack
-            newicon  =  cut.weekbase[var].icon
-            newid    =  cut.weekbase[var].id
-         end
-         --
-         if newvalue ~= nil then
-            -- we found a base in other tables, let's use that
-            cut.coinbase[var] =  { stack=newvalue, icon=newicon, id=newid }
-            cut.updatecurrencies(var, newvalue, newid)
-         else
-            -- we found nothing let's create from scratch this new currency
-            local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
-            cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
-            cut.updatecurrencies(var, val, detail.id)
-         end
+         -- we found nothing let's create from scratch this new currency
+         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
+         cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
+--          if var == "Affinity" or var == "Prize Tickets" then print(string.format("CURRENT: %s => %val (base=%s)", var, val, cut.coinbase[var].stack)) end
+         cut.updatecurrencies(var, val, detail.id)
       end
-
-
+-- --------------------------------------
       -- Whole Day Session value Update
       if table.contains(cut.todaybase, var) then
          if val   ~= (cut.todaybase[var].stack or 0) then
@@ -304,38 +287,23 @@ function cut.initcoinbase()
          cut.coinbase   =  getcoins()
 
          -- do we really have a coin base? let's count
-         local cnt = 0
-         local a,b = nil, nil
+         local cnt, a,b = 0, nil, nil
          for a,b in pairs(cut.coinbase) do cnt = cnt + 1 break end
 
          if cnt > 0 then
 --             print("INIT COIN BASE: DONE")
 
-
-               -- debug
-               --[[
-               local a,b = nil, nil
-               for a,b in pairs(cut.coinbase) do
-                  print(string.format("a=%s b=%s", a, b))
-                  if b then
-                     local c,d = nil, nil
-                     for c,d in pairs(b) do
-                        print(string.format("  c=%s d=%s", c, d))
-                     end
-                  end
-               end
-               ]]--
-
-            -- trying to get Strange Currecnies right... if it's zero at start we check again
-            -- for: Affinity, Prize Tickets
-            local strangecurrencies =  { "Affinity", "Prize Tickets" }
-            local c                 =  nil
-            for   _, c in pairs(strangecurrencies) do
-               if cut.coinbase[c].stack == 0 then
-                  cut.coinbase[c] = nil
---                   print(string.format("CoinBase check, removed = %s", c))
-               end
-            end
+--                -- debug
+--                local a,b = nil, nil
+--                for a,b in pairs(cut.coinbase) do
+-- --                   print(string.format("a=%s b=%s", a, b))
+--                   if b then
+--                      local c,d = nil, nil
+--                      for c,d in pairs(b) do
+--                         if d == 0 then print(string.format("a=%s  %s=%s", a, c, d)) end
+--                      end
+--                   end
+--                end
 
             cut.baseinit   =  true
 
@@ -424,5 +392,5 @@ Error: CuT/_cut_init.lua:241: attempt to index a nil value
     In CuT / CuT Currency Event, event Event.Currency
 stack traceback:
 	[C]: in function '__index'
-	CuT/_cut_init.lua:241: in function <CuT/_cut_init.lua:218>    
+	CuT/_cut_init.lua:241: in function <CuT/_cut_init.lua:218>
     ]]--
