@@ -283,6 +283,13 @@ local function createnewline(currency, value, panel, id)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
+   if string.find(id, ',') then
+      -- Mouse Hover IN    => show tooltip
+      currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id)    end, "Event.UI.Input.Mouse.Cursor.In_"  .. currencyicon:GetName())
+      -- Mouse Hover OUT   => hide tooltip
+      currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() Command.Tooltip(nil)   end, "Event.UI.Input.Mouse.Cursor.Out_" .. currencyicon:GetName())
+   end
+
    if id == "coin" then
       value = cut.printmoney(value)
    else
@@ -320,19 +327,15 @@ function cut.updatecurrenciesweek(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow() end
 
---    if cut.shown.weekobjs[currency] then
    if cut.shown.weektbl[currency] then
---       updatecurrencyvalue(currency, value, cut.shown.weekobjs[currency], id)
       updatecurrencyvalue(currency, value, cut.shown.weektbl[currency].value, id)
    else
       local t  =  {}
       t  =  createnewline(currency, value, 3, id)
---       cut.shown.weekfullframes[currency]  =  t.frame
       cut.shown.weekframes.last           =  t.frame
       cut.shown.weektbl[currency]         =  t
    end
 
---    cut.sortbykey(cut.frames.weekcontainer, cut.shown.weekfullframes, 3)
    cut.sortbykey(cut.frames.weekcontainer, cut.shown.weektbl, 3)
 
    return
@@ -342,21 +345,15 @@ function cut.updatecurrenciestoday(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
---    if cut.shown.todayobjs[currency] then
    if cut.shown.todaytbl[currency] then
---       updatecurrencyvalue(currency, value, cut.shown.todayobjs[currency], id)
---       print(string.format("  currency=%s, value=%s, cut.shown.todaytbl[currency].value=%s, id=%s", currency, value, cut.shown.todaytbl[currency].value, id))
       updatecurrencyvalue(currency, value, cut.shown.todaytbl[currency].value, id)
    else
       local t  =  {}
       t  =  createnewline(currency, value, 2, id)
---       cut.shown.todayfullframes[currency] =  t.frame
       cut.shown.todayframes.last          =  t.frame
       cut.shown.todaytbl[currency]        =  t
-
    end
 
---    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todayfullframes, 2)
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 2)
 
    return
@@ -366,19 +363,15 @@ function cut.updatecurrencies(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = createwindow() end
 
---    if cut.shown.objs[currency] then
    if cut.shown.currenttbl[currency] then
---       updatecurrencyvalue(currency, value, cut.shown.objs[currency], id)
       updatecurrencyvalue(currency, value, cut.shown.currenttbl[currency].value, id)
    else
       local t  =  {}
       t  =  createnewline(currency, value, 1, id)
---       cut.shown.fullframes[currency]   =  t.frame
       cut.shown.frames.last            =  t.frame
       cut.shown.currenttbl[currency]   =  t
    end
 
---    cut.sortbykey(cut.frames.container, cut.shown.fullframes, 1)
    cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1)
 
    return
@@ -386,17 +379,8 @@ end
 
 
 -- Load/Save variable and Coinbases initialization -- begin
-Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,     "CuT: Init Coin Base")
-Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,    "CuT: Load Variables")
-Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,    "CuT: Save Variables")
--- end
-
-
---[[
-Error: CuT/CuT.lua:348: attempt to index a nil value
-    In CuT / CuT Currency Event, event Event.Currency
-stack traceback:
-	[C]: in function '__index'
-	CuT/CuT.lua:348: in function 'updatecurrenciestoday'
-	CuT/_cut_init.lua:246: in function <CuT/_cut_init.lua:218>    
-    ]]--
+-- Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,     "CuT: Init Coin Base")
+Command.Event.Attach(Event.Unit.Availability.Full,          cut.startmeup,       "CuT: Init Coin Base")
+Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,   "CuT: Load Variables")
+Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,   "CuT: Save Variables")
+-- Load/Save variable and Coinbases initialization -- end

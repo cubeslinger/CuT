@@ -25,6 +25,8 @@ cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
 --
+cut.startupinit         =  false
+--
 cut.coinbase            =  {}
 cut.baseinit            =  false
 cut.todaybase           =  {}
@@ -206,8 +208,8 @@ local function getcoins()
    local currency =  nil
    for currency, _ in pairs(Inspect.Currency.List()) do
       local detail = Inspect.Currency.Detail(currency)
-      coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id }
---       print(string.format("CuT: %s =>(%s) (%s) (%s)", currency, detail.name, detail.stack, detail.icon))
+      coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
+      --       print(string.format("CuT: %s =>(%s) (%s) (%s) stackMax=%s", currency, detail.name, detail.stack, detail.icon, detail.stackMax))
 
       cut.coinname2idx[detail.name] =  currency
    end
@@ -215,75 +217,80 @@ local function getcoins()
    return coins
 end
 
+function cut.updateothers(var, val)
+
+   print(string.format("cut.updateothers var=%s val=%s", var, val))
+
+   if table.contains(cut.todaybase, var) then
+      cut.todaybase[var].stack   =  cut.todaybase[var].stack + (val - cut.coinbase[var].stack)
+      cut.updatecurrenciestoday(var, cut.todaybase[var].stack, cut.todaybase[var].id)
+      print("updatecurrenciestoday update: "..var.." "..cut.todaybase[var].stack)
+   else
+      cut.todaybase[var] =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+      cut.updatecurrenciestoday(var, val, cut.coinbase[var].id)
+      print("updatecurrenciestoday create: "..var.." "..val)
+   end
+
+   if table.contains(cut.weekbase, var) then
+      cut.weekbase[var].stack =  cut.weekbase[var].stack + (val - cut.coinbase[var].stack)
+      cut.updatecurrenciesweek(var, cut.weekbase[var].stack, cut.weekbase[var].id)
+      print("updatecurrenciesweek update: "..var.." "..cut.weekbase[var].stack)
+   else
+      cut.weekbase[var] =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+      cut.updatecurrenciesweek(var, val, cut.coinbase[var].id)
+      print("updatecurrenciesweek create: "..var.." "..val)
+   end
+
+   return
+end
+
+
 local function currencyevent()
---    print("CURRENCY EVENT")
+   --    print("CURRENCY EVENT")
 
    local current  =  getcoins()
    local var, val =  nil, nil, nil
    local tbl      =  {}
+   local updated  =  false
 
    -- find changes
    for var, tbl in pairs(current) do
       val   =  tbl.stack
 
-      -- Current Session value Update
+      --[[ -- CURRENT  -------------------------------------- BEGIN ]]--
+            -- Current Session value Update
       if table.contains(cut.coinbase, var) then
          if cut.coinbase[var].stack == 0 then
             cut.coinbase[var].stack =  val
---             print(string.format("Rebased currency: %s from 0 to %s.", var, val))
+            --             print(string.format("Rebased currency: %s from 0 to %s.", var, val))
          else
-            if val   ~= (cut.coinbase[var].stack or 0) then
-               local newvalue =  val - (cut.coinbase[var].stack or 0)
+            if val   ~= (cut.coinbase[var].stack) then
+               local newvalue =  val - (cut.coinbase[var].stack)
                cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+               cut.updateothers(var, (newvalue - cut.shown.currenttbl[var].value))  -- <<<<<<<
             end
          end
       else
          -- we found nothing let's create from scratch this new currency
          local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
-         cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
---          if var == "Affinity" or var == "Prize Tickets" then print(string.format("CURRENT: %s => %val (base=%s)", var, val, cut.coinbase[var].stack)) end
+         cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
          cut.updatecurrencies(var, val, detail.id)
+         cut.updateothers(var, val)
       end
--- --------------------------------------
-      -- Whole Day Session value Update
-      if table.contains(cut.todaybase, var) then
-         if val   ~= (cut.todaybase[var].stack or 0) then
-            local newvalue =  val - (cut.todaybase[var].stack or 0)
-            cut.updatecurrenciestoday(var, newvalue, cut.todaybase[var].id)
-         end
-      else
-         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
-         cut.todaybase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
-         cut.updatecurrenciestoday(var, val, detail.id)
-      end
+      --[[ CURRENT  -------------------------------------- END ]]--
+            end
 
-      -- Whole Week Session value Update
-      if table.contains(cut.weekbase, var) then
-         if val   ~= (cut.weekbase[var].stack or 0) then
-            local newvalue =  val - (cut.weekbase[var].stack or 0)
-            cut.updatecurrenciesweek(var, newvalue, cut.weekbase[var].id)
-         end
-      else
-         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
-         cut.weekbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id }
-         cut.updatecurrenciesweek(var, val, detail.id)
-      end
+      -- set the right size for pane
+      cut.resizewindow(cut.shown.panel)
 
+      return
    end
 
-   -- set the right size for pane
-   cut.resizewindow(cut.shown.panel)
-
-
-end
-
--- local function initcoinbase()
 function cut.initcoinbase()
 
    if not cut.baseinit then
 
       while not cut.baseinit do
---          print("INIT COIN BASE: BEGIN")
          cut.coinbase   =  getcoins()
 
          -- do we really have a coin base? let's count
@@ -291,77 +298,7 @@ function cut.initcoinbase()
          for a,b in pairs(cut.coinbase) do cnt = cnt + 1 break end
 
          if cnt > 0 then
---             print("INIT COIN BASE: DONE")
-
---                -- debug
---                local a,b = nil, nil
---                for a,b in pairs(cut.coinbase) do
--- --                   print(string.format("a=%s b=%s", a, b))
---                   if b then
---                      local c,d = nil, nil
---                      for c,d in pairs(b) do
---                         if d == 0 then print(string.format("a=%s  %s=%s", a, c, d)) end
---                      end
---                   end
---                end
-
             cut.baseinit   =  true
-
-            if not cut.todayinit then
-               cut.todaybase  =  cut.coinbase
-               cut.todayinit  =  true
-            end
-
-            -- if we have session, we restore it in the today pane
-            local currency =  nil
-            local value    =  0
-            local id       =  nil
-            for currency, tbl in pairs(cut.todaybase) do
-               if cut.coinbase[currency] then
---                   print(string.format("TODAY: currency=%s stack=%s, icon=%s, id=%s", currency, cut.todaybase[currency].stack, cut.todaybase[currency].icon, cut.todaybase[currency].id))
-                  value =  cut.coinbase[currency].stack - tbl.stack
-                  id    =  cut.coinbase[currency].id
-               end
-
-               -- value = 0      => there's been no variation in value since when we saved
-               if value ~= 0 then   cut.updatecurrenciestoday(currency, value, id)   end
-            end
---             print("END restore Today data")
-            -- end restore today data
-
-            if not cut.weekinit then
-               cut.weekbase  =  cut.coinbase
-               cut.weekinit  =  true
-            end
-
-            -- if we have week data, we restore it in the Week panel
-            local currency =  nil
-            local value    =  0
-            local id       =  nil
-            for currency, tbl in pairs(cut.weekbase) do
-               if cut.coinbase[currency] then
---                   print(string.format("WEEK: currency=%s stack=%s, icon=%s, id=%s", currency, cut.weekbase[currency].stack, cut.weekbase[currency].icon, cut.weekbase[currency].id))
-                  value =  cut.coinbase[currency].stack - tbl.stack
-                  id    =    cut.coinbase[currency].id
-               end
-
-               -- value = 0      => there's been no variation in value since when we saved
-               if value ~= 0 then   cut.updatecurrenciesweek(currency, value, id) end
-            end
---             print("END restore Week data")
-            -- end restore week data
-
-
-            -- since Today Pane starts hidden, the shown empty window would be too tall
-            -- so i resize it accordingly
-            if cut.gui.window then cut.resizewindow(cut.shown.panel) end
-
-            -- we are ready for events
-            Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
-
-            -- say "Hello World"
-            Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title, cut.version), true)
-
          else
             -- we don't have data yet, we wait cut.timer.duration secs...
             if not cut.timer.flag then
@@ -374,23 +311,53 @@ function cut.initcoinbase()
    return
 end
 
-function cut.resizewindow(panel)
+function cut.startmeup()
 
-   local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
+   if not cut.startupinit then
+      -- if we have session data, we restore it in the today pane
+      if cut.todayinit then
+         for currency, tbl in pairs(cut.todaybase) do
+            if tbl.stack   ~= 0  then  cut.updatecurrenciestoday(currency, tbl.stack, tbl.id)   print("RESTORED TODAY "..currency.." "..tbl.stack) end
+         end
+      end
 
-   if panel == 1 then if cut.shown.frames.last        then bottom = cut.shown.frames.last:GetBottom()       end end
-   if panel == 2 then if cut.shown.todayframes.last   then bottom = cut.shown.todayframes.last:GetBottom()  end end
-   if panel == 3 then if cut.shown.weekframes.last    then bottom = cut.shown.weekframes.last:GetBottom()   end end
+      -- if we have week data, we restore it in the Week panel
+      if cut.weekinit then
+         for currency, tbl in pairs(cut.weekbase) do
+            if tbl.stack ~= 0 then  cut.updatecurrenciesweek(currency, tbl.stack, tbl.id) print("RESTORED WEEK " .. currency.." "..tbl.stack) end
+         end
+      end
 
-   cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+      -- let's initialize Current database
+      cut.initcoinbase()
+
+      -- since Today Pane starts hidden, the shown empty window would be too tall
+      -- so i resize it accordingly
+      if cut.gui.window then cut.resizewindow(cut.shown.panel) end
+
+      -- say "Hello World"
+      Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title, cut.version), true)
+
+      -- we are ready for events
+      Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
+
+      cut.startupinit   =  true
+   end
 
    return
 end
 
---[[
-Error: CuT/_cut_init.lua:241: attempt to index a nil value
-    In CuT / CuT Currency Event, event Event.Currency
-stack traceback:
-	[C]: in function '__index'
-	CuT/_cut_init.lua:241: in function <CuT/_cut_init.lua:218>
-    ]]--
+function cut.resizewindow(panel)
+
+   if table.contains(cut.gui, "window") then
+      local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
+
+      if panel == 1 then if cut.shown.frames.last        then bottom = cut.shown.frames.last:GetBottom()       end end
+      if panel == 2 then if cut.shown.todayframes.last   then bottom = cut.shown.todayframes.last:GetBottom()  end end
+      if panel == 3 then if cut.shown.weekframes.last    then bottom = cut.shown.weekframes.last:GetBottom()   end end
+
+      cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+   end
+
+   return
+end
