@@ -122,15 +122,6 @@ local function createwindow()
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.weekcontainer:SetVisible(false)
                                                                      local var, val = nil
---                                                                      for var, val in pairs(cut.shown.fullframes) do
---                                                                         cut.shown.fullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.weekfullframes) do
---                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.todayfullframes) do
---                                                                         cut.shown.todayfullframes[var]:SetVisible(true)
---                                                                      end
                                                                      for var, val in pairs(cut.shown.currenttbl) do
                                                                         cut.shown.currenttbl[var].frame:SetVisible(false)
                                                                      end
@@ -140,7 +131,6 @@ local function createwindow()
                                                                      for var, val in pairs(cut.shown.todaytbl) do
                                                                         cut.shown.todaytbl[var].frame:SetVisible(true)
                                                                      end
-
                                                                   end
                                                                   -- show Week Session
                                                                   if cut.shown.panel == 3 then
@@ -148,15 +138,6 @@ local function createwindow()
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.todaycontainer:SetVisible(false)
                                                                      local var, val = nil
---                                                                      for var, val in pairs(cut.shown.fullframes) do
---                                                                         cut.shown.fullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.todayfullframes) do
---                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.weekfullframes) do
---                                                                         cut.shown.weekfullframes[var]:SetVisible(true)
---                                                                      end
                                                                      for var, val in pairs(cut.shown.currenttbl) do
                                                                         cut.shown.currenttbl[var].frame:SetVisible(false)
                                                                      end
@@ -343,6 +324,8 @@ end
 
 function cut.updatecurrenciestoday(currency, value, id)
 
+   print(string.format(">> cut.todaybase[%s].stack=%s", currency, cut.todaybase[currency].stack))
+
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
    if cut.shown.todaytbl[currency] then
@@ -355,6 +338,8 @@ function cut.updatecurrenciestoday(currency, value, id)
    end
 
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 2)
+
+   print(string.format("<< cut.todaybase[%s].stack=%s", currency, cut.todaybase[currency].stack))
 
    return
 end
@@ -379,7 +364,6 @@ end
 
 
 -- Load/Save variable and Coinbases initialization -- begin
--- Command.Event.Attach(Event.Unit.Availability.Full,          cut.initcoinbase,     "CuT: Init Coin Base")
 Command.Event.Attach(Event.Unit.Availability.Full,          cut.startmeup,       "CuT: Init Coin Base")
 Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,   "CuT: Load Variables")
 Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,   "CuT: Save Variables")
