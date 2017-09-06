@@ -390,14 +390,16 @@ function cut.updateothers(var, val)
       cut.updatecurrenciestoday(var, (cut.save.day[var].stack + val), cut.save.day[var].id)
       print(string.format("post cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
    else
-      cut.save.day[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+--       cut.save.day[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+      cut.save.day[var]   =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.updatecurrenciestoday(var, val, cut.save.day[var].id)
    end
 
    if table.contains(cut.save.week, var) then
       cut.updatecurrenciesweek(var, (val + cut.save.week[var].stack), cut.save.week[var].id)
    else
-      cut.save.week[var]    =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+--       cut.save.week[var]    =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+      cut.save.week[var]    =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.updatecurrenciesweek(var, val, cut.save.week[var].id)
    end
 

@@ -31,6 +31,7 @@ cut.init.week           =  false
 cut.init.coinbase       =  false
 cut.init.startup        =  false
 --
+cut.deltas              =  {}      
 cut.save                =  {}
 cut.save.day            =  {}
 cut.save.week           =  {}
@@ -162,9 +163,12 @@ function cut.savevariables(_, addonname)
       local tbl   =  {}
       local a,b   =  nil, nil
       for a,b in pairs(cut.save.day) do
-         if b.stack ~= 0 then
+--          if b.stack ~= 0 then
             tbl[a]   =  b
---             tbl[a].stack = tbl[a].stack + cut.save.day[a].stack
+            if cut.deltas[a] then
+               tbl[a].stack = tbl[a].stack + cut.deltas[a]
+               print(string.format("save day  tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
+--             end
          end
       end
 
@@ -175,10 +179,13 @@ function cut.savevariables(_, addonname)
       local tbl   =  {}
       local a,b   =  nil, nil
       for a,b in pairs(cut.save.week) do
-         if b.stack ~= 0 then
+--          if b.stack ~= 0 then
             tbl[a]   =  b
---             tbl[a].stack = tbl[a].stack + cut.save.week[a].stack
-         end
+            if cut.deltas[a] then
+               tbl[a].stack = tbl[a].stack + cut.deltas[a]
+               print(string.format("save week tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
+            end
+--          end
       end
 
       weekbase =  tbl
@@ -247,15 +254,17 @@ local function currencyevent()
             if val   ~= (cut.coinbase[var].stack) then
                local newvalue =  val - (cut.coinbase[var].stack)
                cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-               print("currencyevent (1) ["..var.."]=>"..newvalue.."]")
+               cut.deltas[var]   =  newvalue
+               print("currencyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.deltas[var].."]")
             end
          end
       else
          -- we found nothing let's create from scratch this new currency
          local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
          cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
-         cut.updatecurrencies(var, val, detail.id)
-         print("currencyevent (2) ["..var.."]=["..val.."]")
+         cut.updatecurrencies(var, val, detail.id)         
+         cut.deltas[var]   =  val
+         print("currencyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
       end
       --[[ CURRENT  -------------------------------------- END ]]--
             end
