@@ -25,21 +25,17 @@ cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
 --
-cut.startupinit         =  false
--- cut.save.day             =  {}
--- cut.save.week            =  {}
+cut.init                =  {}
+cut.init.day            =  false
+cut.init.week           =  false
+cut.init.coinbase       =  false
+cut.init.startup        =  false
+--
 cut.save                =  {}
 cut.save.day            =  {}
 cut.save.week           =  {}
 --
 cut.coinbase            =  {}
-cut.baseinit            =  false
-cut.today               =  {}
-cut.today.base          =  {}
-cut.today.init          =  false
-cut.week                =  {}
-cut.week.base           =  {}
-cut.week.init            =  false
 cut.weekday             =  0
 cut.coinname2idx        =  {}
 --
@@ -99,7 +95,9 @@ end
 
 function cut.loadvariables(_, addonname)
    if addon.name == addonname then
-      if not cut.startupinit then
+
+      if not cut.init.startup then
+
          if guidata then
             local a  =  guidata
             local key, val = nil, nil
@@ -119,11 +117,10 @@ function cut.loadvariables(_, addonname)
             lastsession =  today
             if lastsession == dayoftheyear then
                if todaybase then
-                  cut.today.base    =  todaybase
+                  cut.save.day   =  todaybase
                   local flag, a, b = false, nil, nil
-                  for a,b in pairs(cut.today.base) do flag = true break end
-                  cut.today.init  =  flag
-                  cut.save.day  =  cut.today.base
+                  for a,b in pairs(cut.save.day) do flag = true break end
+                  cut.init.day  =  flag
                end
             end
          end
@@ -132,11 +129,10 @@ function cut.loadvariables(_, addonname)
          if weekday then
             if (dayoftheyear - weekday) <= 7 then
                if weekbase then
-                  cut.week.base   =  weekbase
+                  cut.save.week   =  weekbase
                   local flag, a, b = false, nil, nil
-                  for a,b in pairs(cut.week.base) do flag = true break end
-                  cut.week.init   =  flag
-                  cut.save.week  =  cut.week.base
+                  for a,b in pairs(cut.save.week) do flag = true break end
+                  cut.init.week   =  flag
                end
                cut.weekday =  weekday
             else
@@ -163,20 +159,28 @@ function cut.savevariables(_, addonname)
       guidata     =  a
 
       -- Save Today Session data
-      -- workaround for currencies that at first appearence have stack=0
-      -- like: Affinity, Ticket Prize, ...
       local tbl   =  {}
       local a,b   =  nil, nil
-      for a,b in pairs(cut.save.day) do if b.stack ~= 0 then tbl[a]   =  b  end   end
+      for a,b in pairs(cut.save.day) do
+         if b.stack ~= 0 then
+            tbl[a]   =  b
+            tbl[a].stack = tbl[a].stack + cut.save.day[a].stack
+         end
+      end
+
       todaybase   =  tbl
       today       =  getdayoftheyear()
 
       -- Save Week Session data
-      -- workaround for currencies that at first appearence have stack=0
-      -- like: Affinity, Ticket Prize, ...
       local tbl   =  {}
       local a,b   =  nil, nil
-      for a,b in pairs(cut.save.week) do if b.stack ~= 0 then tbl[a]   =  b end end
+      for a,b in pairs(cut.save.week) do
+         if b.stack ~= 0 then
+            tbl[a]   =  b
+            tbl[a].stack = tbl[a].stack + cut.save.week[a].stack
+         end
+      end
+
       weekbase =  tbl
       weekday  =  getdayoftheyear()
 
@@ -264,9 +268,9 @@ local function currencyevent()
 
 function cut.initcoinbase()
 
-   if not cut.baseinit then
+   if not cut.init.coinbase then
 
-      while not cut.baseinit do
+      while not cut.init.coinbase do
          cut.coinbase   =  getcoins()
 
          -- do we really have a coin base? let's count
@@ -274,7 +278,7 @@ function cut.initcoinbase()
          for a,b in pairs(cut.coinbase) do cnt = cnt + 1 break end
 
          if cnt > 0 then
-            cut.baseinit   =  true
+            cut.init.coinbase   =  true
          else
             -- we don't have data yet, we wait cut.timer.duration secs...
             if not cut.timer.flag then
@@ -289,18 +293,18 @@ end
 
 function cut.startmeup()
 
-   if not cut.startupinit then
+   if not cut.init.startup then
 
       -- if we have session data, we restore it in the today pane
-      if cut.today.init then
-         for currency, tbl in pairs(cut.today.base) do
+      if cut.init.day then
+         for currency, tbl in pairs(cut.save.day) do
             if tbl.stack   ~= 0  then  cut.updatecurrenciestoday(currency, tbl.stack, tbl.id)   end
          end
       end
 
       -- if we have week data, we restore it in the Week panel
-      if cut.week.init then
-         for currency, tbl in pairs(cut.week.base) do
+      if cut.init.week then
+         for currency, tbl in pairs(cut.save.week) do
             if tbl.stack ~= 0 then  cut.updatecurrenciesweek(currency, tbl.stack, tbl.id) end
          end
       end
@@ -316,7 +320,7 @@ function cut.startmeup()
       Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title, cut.version), true)
 
       -- ...don't come around here no more...
-      cut.startupinit   =  true
+      cut.init.startup   =  true
 
       -- we are ready for events
       Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
