@@ -26,15 +26,20 @@ cut.gui.font            =  {}
 cut.gui.font.size       =  12
 --
 cut.startupinit         =  false
-cut.daysave           =  {}
-cut.weeksave            =  {}
+-- cut.save.day             =  {}
+-- cut.save.week            =  {}
+cut.save                =  {}
+cut.save.day            =  {}
+cut.save.week           =  {}
 --
 cut.coinbase            =  {}
 cut.baseinit            =  false
-cut.todaybase           =  {}
-cut.todayinit           =  false
-cut.weekbase            =  {}
-cut.weekinit            =  false
+cut.today               =  {}
+cut.today.base          =  {}
+cut.today.init          =  false
+cut.week                =  {}
+cut.week.base           =  {}
+cut.week.init            =  false
 cut.weekday             =  0
 cut.coinname2idx        =  {}
 --
@@ -114,11 +119,11 @@ function cut.loadvariables(_, addonname)
             lastsession =  today
             if lastsession == dayoftheyear then
                if todaybase then
-                  cut.todaybase    =  todaybase
+                  cut.today.base    =  todaybase
                   local flag, a, b = false, nil, nil
-                  for a,b in pairs(cut.todaybase) do flag = true break end
-                  cut.todayinit  =  flag
-                  cut.daysave  =  cut.todaybase
+                  for a,b in pairs(cut.today.base) do flag = true break end
+                  cut.today.init  =  flag
+                  cut.save.day  =  cut.today.base
                end
             end
          end
@@ -127,11 +132,11 @@ function cut.loadvariables(_, addonname)
          if weekday then
             if (dayoftheyear - weekday) <= 7 then
                if weekbase then
-                  cut.weekbase   =  weekbase
+                  cut.week.base   =  weekbase
                   local flag, a, b = false, nil, nil
-                  for a,b in pairs(cut.weekbase) do flag = true break end
-                  cut.weekinit   =  flag
-                  cut.weeksave  =  cut.weekbase
+                  for a,b in pairs(cut.week.base) do flag = true break end
+                  cut.week.init   =  flag
+                  cut.save.week  =  cut.week.base
                end
                cut.weekday =  weekday
             else
@@ -162,11 +167,7 @@ function cut.savevariables(_, addonname)
       -- like: Affinity, Ticket Prize, ...
       local tbl   =  {}
       local a,b   =  nil, nil
-      for a,b in pairs(cut.daysave) do
-         if b.stack ~= 0 then
-            tbl[a]   =  b
-         end
-      end
+      for a,b in pairs(cut.save.day) do if b.stack ~= 0 then tbl[a]   =  b  end   end
       todaybase   =  tbl
       today       =  getdayoftheyear()
 
@@ -175,11 +176,7 @@ function cut.savevariables(_, addonname)
       -- like: Affinity, Ticket Prize, ...
       local tbl   =  {}
       local a,b   =  nil, nil
-      for a,b in pairs(cut.weeksave) do
-         if b.stack ~= 0 then
-            tbl[a]   =  b
-         end
-      end
+      for a,b in pairs(cut.save.week) do if b.stack ~= 0 then tbl[a]   =  b end end
       weekbase =  tbl
       weekday  =  getdayoftheyear()
 
@@ -223,47 +220,6 @@ local function getcoins()
    return coins
 end
 
-function cut.updateothers(var, val)
-   print("-------------------------------------")
-   print(string.format("cut.updateothers var=%s val=%s", var, val))
---    print(string.format("cut.todaybase[var].stack=%s", cut.todaybase[var].stack))
-
-   if table.contains(cut.todaybase, var) then
-      print(string.format("PRE  cut.todaybase[var].stack=%s", cut.todaybase[var].stack))
-      print(string.format("PRE  cut.daysave[var].stack=%s", cut.daysave[var].stack))
-      local a = cut.todaybase[var].stack
-      print(string.format("MID  cut.todaybase[var].stack=%s a=%s", cut.todaybase[var].stack, a))
-      print(string.format("MID  cut.daysave[var].stack=%s a=%s", cut.daysave[var].stack, a))
-      cut.daysave[var].stack   =  val + a
-      print(string.format("POST cut.todaybase[var].stack=%s", cut.todaybase[var].stack))
-      print(string.format("POST cut.daysave[var].stack=%s", cut.daysave[var].stack))
-      cut.updatecurrenciestoday(var, cut.daysave[var].stack, cut.todaybase[var].id)
-      print("updatecurrenciestoday update: "..var.." "..cut.daysave[var].stack)
-   else
-      cut.todaybase[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
-      cut.daysave[var]  =  cut.todaybase[var]
-      cut.updatecurrenciestoday(var, val, cut.coinbase[var].id)
-      print("updatecurrenciestoday create: "..var.." "..val)
-   end
-
---    print(string.format("cut.weekbase[var].stack=%s", cut.weekbase[var].stack))
-   if table.contains(cut.weekbase, var) then
-      cut.weeksave[var].stack =  cut.weekbase[var].stack + val
-      cut.updatecurrenciesweek(var, cut.weeksave[var].stack, cut.weekbase[var].id)
-      print("updatecurrenciesweek update: "..var.." "..cut.weekbase[var].stack)
-   else
-      cut.weekbase[var]    =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
-      cut.weeksave[var]   =  cut.weekbase[var]
-      cut.updatecurrenciesweek(var, val, cut.coinbase[var].id)
-      print("updatecurrenciesweek create: "..var.." "..val)
-   end
-
---    print(string.format("cut.todaybase[var].stack=%s", cut.todaybase[var].stack))
-   print("-------------------------------------")
-
-   return
-end
-
 
 local function currencyevent()
       print("CURRENCY EVENT")
@@ -287,7 +243,6 @@ local function currencyevent()
             if val   ~= (cut.coinbase[var].stack) then
                local newvalue =  val - (cut.coinbase[var].stack)
                cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-               cut.updateothers(var, newvalue)
                print("currencyevent (1) ["..var.."]=>"..newvalue.."]")
             end
          end
@@ -296,7 +251,6 @@ local function currencyevent()
          local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
          cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
          cut.updatecurrencies(var, val, detail.id)
-         cut.updateothers(var, val)
          print("currencyevent (2) ["..var.."]=["..val.."]")
       end
       --[[ CURRENT  -------------------------------------- END ]]--
@@ -338,15 +292,15 @@ function cut.startmeup()
    if not cut.startupinit then
 
       -- if we have session data, we restore it in the today pane
-      if cut.todayinit then
-         for currency, tbl in pairs(cut.todaybase) do
+      if cut.today.init then
+         for currency, tbl in pairs(cut.today.base) do
             if tbl.stack   ~= 0  then  cut.updatecurrenciestoday(currency, tbl.stack, tbl.id)   end
          end
       end
 
       -- if we have week data, we restore it in the Week panel
-      if cut.weekinit then
-         for currency, tbl in pairs(cut.weekbase) do
+      if cut.week.init then
+         for currency, tbl in pairs(cut.week.base) do
             if tbl.stack ~= 0 then  cut.updatecurrenciesweek(currency, tbl.stack, tbl.id) end
          end
       end

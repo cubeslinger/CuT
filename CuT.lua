@@ -240,12 +240,12 @@ local function createnewline(currency, value, panel, id)
    if panel == 2 then
       flag = "_today_"
       currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer)
-      base  =  cut.todaybase
+      base  =  cut.today.base
    end
    if panel == 3 then
       flag = "_week_"
       currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)
-      base  =  cut.weekbase
+      base  =  cut.week.base
    end
 
    currencyframe:SetHeight(cut.gui.font.size)
@@ -324,7 +324,7 @@ end
 
 function cut.updatecurrenciestoday(currency, value, id)
 
-   print(string.format(">> cut.todaybase[%s].stack=%s", currency, cut.todaybase[currency].stack))
+   print(string.format(">> cut.today.base[%s].stack=%s", currency, cut.today.base[currency].stack))
 
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
@@ -339,7 +339,46 @@ function cut.updatecurrenciestoday(currency, value, id)
 
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 2)
 
-   print(string.format("<< cut.todaybase[%s].stack=%s", currency, cut.todaybase[currency].stack))
+   print(string.format("<< cut.today.base[%s].stack=%s", currency, cut.today.base[currency].stack))
+
+   return
+end
+
+function cut.updateothers(var, val)
+   print("-------------------------------------")
+   print(string.format("cut.updateothers var=%s val=%s", var, val))
+   --    print(string.format("cut.today.base[var].stack=%s", cut.today.base[var].stack))
+
+   if table.contains(cut.today.base, var) then
+      print(string.format(" PRE  cut.today.base[var][\"stack\"]=%s", cut.today.base[var].stack))
+      print(string.format(" PRE  cut.save.day[var][\"stack\"]=%s", cut.save.day[var].stack))
+      cut.save.day[var].stack =  (val + cut.today.base[var].stack)
+      print(string.format(" POST cut.today.base[var][\"stack\"]=%s", cut.today.base[var].stack))
+      print(string.format(" POST cut.save.day[var][\"stack\"]=%s", cut.save.day[var].stack))
+      cut.updatecurrenciestoday(var, cut.save.day[var].stack, cut.save.day[var].id)
+      print("updatecurrenciestoday update: "..var.." "..cut.save.day[var].stack)
+   else
+      cut.today.base[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+      print(string.format(" CREATED: stack=%s, icon=%s, id=%s, smax%s", val, cut.coinbase[var].icon, cut.coinbase[var].id, cut.coinbase[var].stackMax))
+      cut.save.day[var]  =  cut.today.base[var]
+      cut.updatecurrenciestoday(var, val, cut.save.day[var].id)
+      print("updatecurrenciestoday create: "..var.." "..val)
+   end
+
+   --    print(string.format("cut.week.base[var][\"stack\"]=%s", cut.week.base[var].stack))
+   if table.contains(cut.week.base, var) then
+      cut.save.week[var].stack =  (val + cut.week.base[var].stack)
+      cut.updatecurrenciesweek(var, cut.save.week[var].stack, cut.save.week[var].id)
+      print("updatecurrenciesweek update: "..var.." "..cut.week.base[var].stack)
+   else
+      cut.week.base[var]    =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
+      cut.save.week[var]   =  cut.week.base[var]
+      cut.updatecurrenciesweek(var, val, cut.save.week[var].id)
+      print("updatecurrenciesweek create: "..var.." "..val)
+   end
+
+   --    print(string.format("cut.today.base[var].stack=%s", cut.today.base[var].stack))
+   print("-------------------------------------")
 
    return
 end
@@ -358,6 +397,8 @@ function cut.updatecurrencies(currency, value, id)
    end
 
    cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1)
+
+   cut.updateothers(currency, value)
 
    return
 end
