@@ -164,7 +164,7 @@ function cut.savevariables(_, addonname)
       for a,b in pairs(cut.save.day) do
          if b.stack ~= 0 then
             tbl[a]   =  b
-            tbl[a].stack = tbl[a].stack + cut.save.day[a].stack
+--             tbl[a].stack = tbl[a].stack + cut.save.day[a].stack
          end
       end
 
@@ -177,7 +177,7 @@ function cut.savevariables(_, addonname)
       for a,b in pairs(cut.save.week) do
          if b.stack ~= 0 then
             tbl[a]   =  b
-            tbl[a].stack = tbl[a].stack + cut.save.week[a].stack
+--             tbl[a].stack = tbl[a].stack + cut.save.week[a].stack
          end
       end
 
