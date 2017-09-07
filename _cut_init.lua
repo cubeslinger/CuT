@@ -32,6 +32,7 @@ cut.init.coinbase       =  false
 cut.init.startup        =  false
 --
 cut.deltas              =  {}
+--
 cut.save                =  {}
 cut.save.day            =  {}
 cut.save.week           =  {}
@@ -47,7 +48,6 @@ cut.timer.duration      =  60  -- seconds
 --
 cut.shown               =  {}
 cut.shown.frames        =  {}
-cut.shown.frames.count  =  0
 cut.shown.frames.last   =  nil
 cut.shown.currenttbl    =  {}
 --
@@ -360,6 +360,7 @@ function cut.resizewindow(panel)
       if panel == 3 then if cut.shown.weekframes.last    then bottom = cut.shown.weekframes.last:GetBottom()   end end
 
       cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
+
    end
 
    return

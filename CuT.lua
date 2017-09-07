@@ -94,17 +94,6 @@ local function createwindow()
                                                                      cut.frames.todaycontainer:SetVisible(false)
                                                                      cut.frames.weekcontainer:SetVisible(false)
                                                                      local var, val = nil
---                                                                      for var, val in pairs(cut.shown.todayfullframes) do
---                                                                         cut.shown.todayfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.weekfullframes) do
---                                                                         cut.shown.weekfullframes[var]:SetVisible(false)
---                                                                      end
---                                                                      for var, val in pairs(cut.shown.fullframes) do
---                                                                         cut.shown.fullframes[var]:SetVisible(true)
---                                                                      end
-
---                                                                   frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue
                                                                      for var, val in pairs(cut.shown.todaytbl) do
                                                                         cut.shown.todaytbl[var].frame:SetVisible(false)
                                                                      end
