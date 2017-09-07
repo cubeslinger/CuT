@@ -28,6 +28,9 @@ cut.gui.mmbtnx          =  nil
 cut.gui.mmbtny          =  nil
 cut.gui.mmbtnobj        =  nil
 cut.gui.visible         =  false
+cut.gui.mmbtnwidth      =  64
+cut.gui.mmbtnheight     =  64
+
 --
 cut.init                =  {}
 cut.init.day            =  false
