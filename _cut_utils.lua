@@ -69,3 +69,29 @@ function table.contains(table, element)
    end
    return false
 end
+
+
+function cut.updateguicoordinates(win, newx, newy)
+
+   if win ~= nil then
+      local winName = win:GetName()
+
+--       if winName == "mmBtnIcon" then
+      if winName == "mmBtnIconBorder" then
+         cut.gui.mmbtnx =  cut.round(newx)
+         cut.gui.mmbtny =  cut.round(newy)
+      end
+   end
+
+   return
+end
+
+function cut.showhidewindow(params)
+   if cut.gui.visible == true then  cut.gui.visible   =  false
+                              else  cut.gui.visible   =  true
+   end
+
+   cut.gui.window:SetVisible(cut.gui.visible)
+
+   return
+end

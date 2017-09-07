@@ -12,6 +12,7 @@ RunOnStartup = {
    "_cut_init.lua",
    "_cut_utils.lua",
    "_cut_sortbykey.lua",
+   "_cut_minimapbutton.lua",
    "CuT.lua",
 }
 

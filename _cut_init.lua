@@ -24,6 +24,10 @@ cut.gui.borders.top     =  2
 cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
+cut.gui.mmbtnx          =  nil
+cut.gui.mmbtny          =  nil
+cut.gui.mmbtnobj        =  nil
+cut.gui.visible         =  false
 --
 cut.init                =  {}
 cut.init.day            =  false
@@ -103,7 +107,7 @@ function cut.loadvariables(_, addonname)
             local a  =  guidata
             local key, val = nil, nil
             for key, val in pairs(a) do
-               if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight and key ~= height then
+               if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight and key ~= height and key ~= mmbtnobj then
                   cut.gui[key]   =  val
    --                print(string.format("Importing %s: %s", key, val))
                end
@@ -157,6 +161,7 @@ function cut.savevariables(_, addonname)
       a.maxwidth  =  nil
       a.maxheight =  nil
       a.height    =  nil
+      a.mmbtnobj  =  nil
       guidata     =  a
 
       -- Save Today Session data
@@ -304,6 +309,12 @@ function cut.startmeup()
 
    if not cut.init.startup then
 
+      -- Create/Display/Hide Mini Map Button Window
+      if cut.gui.mmbtnobj  == nil then
+         cut.gui.mmbtnobj  =  cut.createminimapbutton()
+         cut.gui.mmbtnobj:SetVisible(true)
+      end
+
       -- if we have session data, we restore it in the today pane
       if cut.init.day then
          for currency, tbl in pairs(cut.save.day) do
@@ -327,6 +338,9 @@ function cut.startmeup()
 
       -- say "Hello World"
       Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title, cut.version), true)
+
+      -- restore user defined window visibility
+      cut.gui.window:SetVisible(cut.gui.visible)
 
       -- ...don't come around here no more...
       cut.init.startup   =  true

@@ -73,6 +73,7 @@ local function createwindow()
    windowtitle:SetText(string.format("%s", cut.html.title), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
+--    windowtitle:SetEffectGlow({})
    cut.shown.windowtitle   =  windowtitle
 
 
