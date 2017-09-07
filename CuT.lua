@@ -324,7 +324,7 @@ end
 
 function cut.updatecurrenciestoday(currency, value, id)
 
-   print(string.format(">> cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
+--    print(string.format(">> cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
 
    if not cut.gui.window then cut.gui.window = createwindow()  end
 
@@ -339,56 +339,17 @@ function cut.updatecurrenciestoday(currency, value, id)
 
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 2)
 
-   print(string.format("<< cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
+--    print(string.format("<< cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
 
    return
 end
 
--- function cut.updateothers(var, val)
---    print("-------------------------------------")
---    print(string.format("cut.updateothers var=%s val=%s", var, val))
---    --    print(string.format("cut.save.day[var].stack=%s", cut.save.day[var].stack))
---
---    if table.contains(cut.save.day, var) then
---       print(string.format(" PRE  cut.save.day[var][\"stack\"]=%s", cut.save.day[var].stack))
---       print(string.format(" PRE  cut.save.day[var][\"stack\"]=%s", cut.save.day[var].stack))
---       cut.save.day[var].stack =  (val + cut.save.day[var].stack)
---       print(string.format(" POST cut.save.day[var][\"stack\"]=%s", cut.save.day[var].stack))
---       print(string.format(" POST cut.save.day[var][\"stack\"]=%s", cut.save.day[var].stack))
---       cut.updatecurrenciestoday(var, cut.save.day[var].stack, cut.save.day[var].id)
---       print("updatecurrenciestoday update: "..var.." "..cut.save.day[var].stack)
---    else
---       cut.save.day[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
---       print(string.format(" CREATED: stack=%s, icon=%s, id=%s, smax%s", val, cut.coinbase[var].icon, cut.coinbase[var].id, cut.coinbase[var].stackMax))
---       cut.save.day[var]  =  cut.save.day[var]
---       cut.updatecurrenciestoday(var, val, cut.save.day[var].id)
---       print("updatecurrenciestoday create: "..var.." "..val)
---    end
---
---    --    print(string.format("cut.save.week[var][\"stack\"]=%s", cut.save.week[var].stack))
---    if table.contains(cut.save.week, var) then
---       cut.save.week[var].stack =  (val + cut.save.week[var].stack)
---       cut.updatecurrenciesweek(var, cut.save.week[var].stack, cut.save.week[var].id)
---       print("updatecurrenciesweek update: "..var.." "..cut.save.week[var].stack)
---    else
---       cut.save.week[var]    =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
---       cut.save.week[var]   =  cut.save.week[var]
---       cut.updatecurrenciesweek(var, val, cut.save.week[var].id)
---       print("updatecurrenciesweek create: "..var.." "..val)
---    end
---
---    --    print(string.format("cut.save.day[var].stack=%s", cut.save.day[var].stack))
---    print("-------------------------------------")
---
---    return
--- end
-
 function cut.updateothers(var, val)
 
    if table.contains(cut.save.day, var) then
-      print(string.format("pre  cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
+--       print(string.format("pre  cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
       cut.updatecurrenciestoday(var, (cut.save.day[var].stack + val), cut.save.day[var].id)
-      print(string.format("post cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
+--       print(string.format("post cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
    else
 --       cut.save.day[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.save.day[var]   =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }

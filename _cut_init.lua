@@ -31,7 +31,7 @@ cut.init.week           =  false
 cut.init.coinbase       =  false
 cut.init.startup        =  false
 --
-cut.deltas              =  {}      
+cut.deltas              =  {}
 cut.save                =  {}
 cut.save.day            =  {}
 cut.save.week           =  {}
@@ -167,7 +167,7 @@ function cut.savevariables(_, addonname)
             tbl[a]   =  b
             if cut.deltas[a] then
                tbl[a].stack = tbl[a].stack + cut.deltas[a]
-               print(string.format("save day  tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
+--                print(string.format("save day  tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
 --             end
          end
       end
@@ -183,7 +183,7 @@ function cut.savevariables(_, addonname)
             tbl[a]   =  b
             if cut.deltas[a] then
                tbl[a].stack = tbl[a].stack + cut.deltas[a]
-               print(string.format("save week tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
+--                print(string.format("save week tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
             end
 --          end
       end
@@ -233,7 +233,7 @@ end
 
 
 local function currencyevent()
-      print("CURRENCY EVENT")
+--       print("CURRENCY EVENT")
 
    local current  =  getcoins()
    local var, val =  nil, nil, nil
@@ -255,16 +255,16 @@ local function currencyevent()
                local newvalue =  val - (cut.coinbase[var].stack)
                cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
                cut.deltas[var]   =  newvalue
-               print("currencyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.deltas[var].."]")
+--                print("currencyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.deltas[var].."]")
             end
          end
       else
          -- we found nothing let's create from scratch this new currency
          local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
          cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
-         cut.updatecurrencies(var, val, detail.id)         
+         cut.updatecurrencies(var, val, detail.id)
          cut.deltas[var]   =  val
-         print("currencyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
+--          print("currencyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
       end
       --[[ CURRENT  -------------------------------------- END ]]--
             end
@@ -330,6 +330,17 @@ function cut.startmeup()
 
       -- ...don't come around here no more...
       cut.init.startup   =  true
+
+--       -- TEST -- BEGIN
+--       -- Show Available Currency Categories
+--       local a, b = nil, nil
+--       local c, d = nil, nil
+--       for a, b in pairs(Inspect.Currency.Category.List()) do
+--          local id, tbl = nil, nil
+--          tbl  =  Inspect.Currency.Category.Detail(a)
+--          print(string.format("Name=[%s], ID=[%s]", tbl.name, tbl.id))
+--       end
+--       -- TEST -- END
 
       -- we are ready for events
       Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
