@@ -1,5 +1,5 @@
 --
--- Addon       _cut_layout.lua
+-- Addon       _cut_init.lua
 -- Author      marcob@marcob.org
 -- StartDate   30/05/2017
 --
@@ -28,8 +28,8 @@ cut.gui.mmbtnx          =  nil
 cut.gui.mmbtny          =  nil
 cut.gui.mmbtnobj        =  nil
 cut.gui.visible         =  false
-cut.gui.mmbtnwidth      =  64
-cut.gui.mmbtnheight     =  64
+cut.gui.mmbtnwidth      =  36
+cut.gui.mmbtnheight     =  36
 
 --
 cut.init                =  {}
@@ -110,7 +110,8 @@ function cut.loadvariables(_, addonname)
             local a  =  guidata
             local key, val = nil, nil
             for key, val in pairs(a) do
-               if val and key ~= minwidth and key ~= minheight and key ~= maxwidth and key ~= maxheight and key ~= height and key ~= mmbtnobj then
+               if val and  key ~= minwidth    and  key ~= minheight  and key ~= maxwidth    and key ~= maxheight  and
+                           key ~= height      and  key ~= mmbtnobj   and key ~= mmbtnheight and key ~= mmbtnwidth then
                   cut.gui[key]   =  val
    --                print(string.format("Importing %s: %s", key, val))
                end
@@ -158,13 +159,16 @@ function cut.savevariables(_, addonname)
 
       -- Save GUI prefrences
       local a = cut.gui
-      a.window    =  nil
-      a.minwidth  =  nil
-      a.minheight =  nil
-      a.maxwidth  =  nil
-      a.maxheight =  nil
-      a.height    =  nil
-      a.mmbtnobj  =  nil
+      a.window       =  nil
+      a.minwidth     =  nil
+      a.minheight    =  nil
+      a.maxwidth     =  nil
+      a.maxheight    =  nil
+      a.height       =  nil
+      a.mmbtnobj     =  nil
+      a.mmbtnheight  =  nil
+      a.mmbtnwidth   =  nil
+
       guidata     =  a
 
       -- Save Today Session data
@@ -204,7 +208,6 @@ function cut.savevariables(_, addonname)
    return
 end
 
-
 local function waitforcoins()
 
    local now = Inspect.Time.Frame()
@@ -224,7 +227,6 @@ local function waitforcoins()
    return
 end
 
-
 local function getcoins()
    local coins    =  {}
    local currency =  nil
@@ -238,7 +240,6 @@ local function getcoins()
 
    return coins
 end
-
 
 local function currencyevent()
 --       print("CURRENCY EVENT")

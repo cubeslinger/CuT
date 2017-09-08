@@ -1,5 +1,5 @@
 --
--- Addon       _cut_layout.lua
+-- Addon       CuT.lua
 -- Author      marcob@marcob.org
 -- StartDate   28/05/2017
 --

@@ -38,12 +38,8 @@ function cut.createminimapbutton()
       mmbutton = UI.CreateFrame("Texture", "mmBtnIcon", mmbuttonborder)
       mmbutton:SetTexture("Rift", "loot_gold_coins.dds")
       mmbutton:SetLayer(1)
---       mmbutton:SetPoint("TOPLEFT",     mmbuttonborder, "TOPLEFT",      cut.gui.font.size+2,  cut.gui.font.size+2)
-      mmbutton:SetPoint("TOPLEFT",     mmbuttonborder, "TOPLEFT",      cut.round(cut.gui.mmbtnwidth/3.7),  cut.round(cut.gui.mmbtnheight/3.7))
---       mmbutton:SetPoint("BOTTOMRIGHT", mmbuttonborder, "BOTTOMRIGHT", -(cut.gui.font.size+2), -(cut.gui.font.size+2))
-      mmbutton:SetPoint("BOTTOMRIGHT", mmbuttonborder, "BOTTOMRIGHT", -(cut.round(cut.gui.mmbtnwidth/3.7)),  -(cut.round(cut.gui.mmbtnheight/3.7)))
---       mmbutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.showhidewindow(params) end, "Reset Button Pressed" )
-
+      mmbutton:SetPoint("TOPLEFT",     mmbuttonborder, "TOPLEFT",      10, 10)
+      mmbutton:SetPoint("BOTTOMRIGHT", mmbuttonborder, "BOTTOMRIGHT", -10, -10)
 
       -- Enable Dragging
       Library.LibDraggable.draggify(mmbuttonborder, cut.updateguicoordinates)
