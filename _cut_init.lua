@@ -28,8 +28,8 @@ cut.gui.mmbtnx          =  nil
 cut.gui.mmbtny          =  nil
 cut.gui.mmbtnobj        =  nil
 cut.gui.visible         =  false
-cut.gui.mmbtnwidth      =  36
-cut.gui.mmbtnheight     =  36
+cut.gui.mmbtnwidth      =  38
+cut.gui.mmbtnheight     =  38
 
 --
 cut.init                =  {}

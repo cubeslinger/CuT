@@ -17,9 +17,6 @@ function cut.createminimapbutton()
 
       -- MiniMapButton Border
       mmbuttonborder = UI.CreateFrame("Texture", "mmBtnIconBorder", mmbtncontext)
---       mmbuttonborder:SetTexture("Rift", "icon_border.dds")
---       mmbuttonborder:SetTexture("Rift", "icon_border_quest.dds")
---       mmbuttonborder:SetTexture("Rift", "sml_icon_border.png.dds")
       mmbuttonborder:SetTexture("Rift", "sml_icon_border_(over)_yellow.png.dds")
       mmbuttonborder:SetHeight(cut.gui.mmbtnheight)
       mmbuttonborder:SetWidth(cut.gui.mmbtnwidth)
@@ -38,8 +35,8 @@ function cut.createminimapbutton()
       mmbutton = UI.CreateFrame("Texture", "mmBtnIcon", mmbuttonborder)
       mmbutton:SetTexture("Rift", "loot_gold_coins.dds")
       mmbutton:SetLayer(1)
-      mmbutton:SetPoint("TOPLEFT",     mmbuttonborder, "TOPLEFT",      10, 10)
-      mmbutton:SetPoint("BOTTOMRIGHT", mmbuttonborder, "BOTTOMRIGHT", -10, -10)
+      mmbutton:SetPoint("TOPLEFT",     mmbuttonborder, "TOPLEFT",      12,  12)
+      mmbutton:SetPoint("BOTTOMRIGHT", mmbuttonborder, "BOTTOMRIGHT", -12, -12)
 
       -- Enable Dragging
       Library.LibDraggable.draggify(mmbuttonborder, cut.updateguicoordinates)
