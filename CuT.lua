@@ -80,7 +80,10 @@ local function createwindow()
    local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
    windowinfo:SetFontSize(cut.gui.font.size )
    windowinfo:SetFontSize(cut.gui.font.size -2 )
-   windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+   local mylabel  =  cut.shown.panellabel[cut.shown.panel]
+   if cut.shown.panel == 3 then   mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>" end
+--    windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+   windowinfo:SetText(string.format("%s", mylabel), true)
    windowinfo:SetLayer(3)
    windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
    windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, function()
@@ -140,7 +143,11 @@ local function createwindow()
                                                                   end
 
                                                                   cut.resizewindow(cut.shown.panel)
-                                                                  cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+--                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+                                                                  local mylabel  =  cut.shown.panellabel[cut.shown.panel]
+                                                                  if cut.shown.panel == 3 then   mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>" end
+                                                                  windowinfo:SetText(string.format("%s", mylabel), true)
+
                                                                end,
                                                                "Flip Panels" )
    cut.shown.windowinfo  =  windowinfo

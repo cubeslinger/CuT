@@ -37,6 +37,7 @@ cut.init.day            =  false
 cut.init.week           =  false
 cut.init.coinbase       =  false
 cut.init.startup        =  false
+cut.init.newweek        =  false
 --
 cut.deltas              =  {}
 --
@@ -45,6 +46,7 @@ cut.save.day            =  {}
 cut.save.week           =  {}
 --
 cut.coinbase            =  {}
+cut.today               =  0
 cut.weekday             =  0
 cut.coinname2idx        =  {}
 --
@@ -122,6 +124,7 @@ function cut.loadvariables(_, addonname)
          local dayoftheyear =  getdayoftheyear()
 
          -- Load Today session data only if we are in the same day
+         cut.today   =  dayoftheyear
          if today then
             lastsession =  today
             if lastsession == dayoftheyear then
@@ -145,7 +148,7 @@ function cut.loadvariables(_, addonname)
                end
                cut.weekday =  weekday
             else
-               cut.weekday  =  getdayoftheyear()
+               cut.weekday =  getdayoftheyear()
             end
          end
       end
@@ -201,8 +204,8 @@ function cut.savevariables(_, addonname)
       end
 
       weekbase =  tbl
-      weekday  =  getdayoftheyear()
-
+--       weekday  =  getdayoftheyear()
+      weekday  =  cut.weekday
    end
 
    return
