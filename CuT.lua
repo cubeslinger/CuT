@@ -304,7 +304,7 @@ end
 
 function cut.updatecurrenciesweek(currency, value, id)
 
-   if not cut.gui.window then cut.gui.window = createwindow() end
+   if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
    if cut.shown.weektbl[currency] then
       updatecurrencyvalue(currency, value, cut.shown.weektbl[currency].value, id)
@@ -324,7 +324,7 @@ function cut.updatecurrenciestoday(currency, value, id)
 
 --    print(string.format(">> cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
 
-   if not cut.gui.window then cut.gui.window = createwindow()  end
+   if not cut.gui.window then cut.gui.window = cut.createwindow()  end
 
    if cut.shown.todaytbl[currency] then
       updatecurrencyvalue(currency, value, cut.shown.todaytbl[currency].value, id)
@@ -367,7 +367,7 @@ end
 
 function cut.updatecurrencies(currency, value, id)
 
-   if not cut.gui.window then cut.gui.window = createwindow() end
+   if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
    if cut.shown.currenttbl[currency] then
       updatecurrencyvalue(currency, value, cut.shown.currenttbl[currency].value, id)
