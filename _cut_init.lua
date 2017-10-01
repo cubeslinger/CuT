@@ -339,6 +339,9 @@ function cut.startmeup()
       -- let's initialize Current database
       cut.initcoinbase()
 
+      -- create window if needed
+      if not cut.gui.window then cut.gui.window = cut.createwindow() end
+      
       -- since Today and Week Panes start hidden, the shown empty window would be too tall.
       -- so i resize it accordingly
       if cut.gui.window then cut.resizewindow(cut.shown.panel) end

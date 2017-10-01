@@ -47,7 +47,8 @@ function cut.changefontsize(newfontsize)
    return
 end
 
-local function createwindow()
+-- local function createwindow()
+function cut.createwindow()
 
    --Global context (parent frame-thing).
    local cutwindow  =  UI.CreateFrame("Frame", "cut", UI.CreateContext("cut_context"))
