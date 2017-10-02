@@ -79,7 +79,9 @@ function cut.createwindow()
    windowinfo:SetFontSize(cut.gui.font.size )
    windowinfo:SetFontSize(cut.gui.font.size -2 )
    local mylabel  =  cut.shown.panellabel[cut.shown.panel]
-   if cut.shown.panel == 3 then   mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>" end
+   if cut.shown.panel == 3  or cut.shown.panel == 6 then   
+      mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>" 
+   end
    windowinfo:SetText(string.format("%s", mylabel), true)
    windowinfo:SetLayer(3)
    windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
@@ -385,6 +387,60 @@ local function createnewline(currency, value, panel, id)
    return t
 end
 
+local function createnotorietynewline(notoriety, value, panel, id)
+   print(string.format("createnotorietynewline: c=%s, v=%s, panel=%s, id=%s", notoriety, value, panel, id))
+   local flag           =  ""
+   local notorietyframe  =  nil
+   local base           =  {}
+   if panel == 1 then
+      flag = "_current_"
+      notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety_frame" .. flag, cut.frames.notorietycontainer)      -- CUT notoriety container
+      base  =  cut.coinbase
+   end
+   if panel == 2 then
+      flag = "_today_"
+      notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety_frame" .. flag, cut.frames.todaynotorietycontainer)
+      base  =  cut.save.notorietytoday
+   end
+   if panel == 3 then
+      flag = "_week_"
+      notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety_frame" .. flag, cut.frames.weeknotorietycontainer)
+      base  =  cut.save.notorietyweek
+   end
+
+   notorietyframe:SetHeight(cut.gui.font.size)
+   notorietyframe:SetLayer(2)
+
+   local notorietylabel  =  UI.CreateFrame("Text", "notoriety_label_" .. flag .. notoriety, notorietyframe)
+   notorietylabel:SetFontSize(cut.gui.font.size)
+   notorietylabel:SetText(string.format("%s:", notoriety))
+   notorietylabel:SetLayer(3)
+   notorietylabel:SetPoint("TOPLEFT",   notorietyframe, "TOPLEFT", cut.gui.borders.left, 0)
+
+   if string.find(id, ',') then
+      -- Mouse Hover IN    => show tooltip
+      notorietyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id)    end, "Event.UI.Input.Mouse.Cursor.In_"  .. notorietyicon:GetName())
+      -- Mouse Hover OUT   => hide tooltip
+      notorietyicon:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() Command.Tooltip(nil)   end, "Event.UI.Input.Mouse.Cursor.Out_" .. notorietyicon:GetName())
+   end
+
+   if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
+   else                 value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
+   end
+
+   local notorietyvalue  =  UI.CreateFrame("Text", "notoriety_value_" .. flag .. notoriety, notorietyframe)
+   notorietyvalue:SetFontSize(cut.gui.font.size )
+   notorietyvalue:SetText(string.format("%s", value), true)
+   notorietyvalue:SetLayer(3)
+   notorietyvalue:SetPoint("TOPLEFT",   notorietylabel, "TOPRIGHT", cut.gui.borders.left, 0)
+   notorietyvalue:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
+
+   local t  =  {  frame=notorietyframe, label=notorietylabel, value=notorietyvalue }
+   
+   return t
+end
+
+
 local function updatecurrencyvalue(currency, value, field, id)
 --    print(string.format("updatecurrencyvalue: currency=%s, value=%s, field=%s, id=%s", currency, value, field, id))
    if id == "coin" then
@@ -485,10 +541,6 @@ local function updatenotorietyvalue()
    return
 end
 
-local function createnotorietynewline()
-   return
-end
-
 function cut.updatenotorietiesothers()
    return
 end
@@ -519,3 +571,14 @@ Command.Event.Attach(Event.Unit.Availability.Full,          cut.startmeup,      
 Command.Event.Attach(Event.Addon.SavedVariables.Load.End,   cut.loadvariables,   "CuT: Load Variables")
 Command.Event.Attach(Event.Addon.SavedVariables.Save.Begin, cut.savevariables,   "CuT: Save Variables")
 -- Load/Save variable and Coinbases initialization -- end
+
+
+--[[
+Error: CuT/CuT.lua:505: attempt to index local 't' (a nil value)
+    In CuT / CuT Notoriety Event, event Event.Faction.Notoriety
+stack traceback:
+	[C]: in function '__index'
+	CuT/CuT.lua:505: in function 'updatenotorieties'
+	CuT/_cut_init.lua:417: in function 'notorietyevent'
+	CuT/_cut_init.lua:566: in function <CuT/_cut_init.lua:566>
+   ]] --
