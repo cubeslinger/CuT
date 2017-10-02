@@ -61,20 +61,17 @@ function cut.createwindow()
    end
    cutwindow:SetLayer(-1)
    cutwindow:SetWidth(cut.gui.width)
---    cutwindow:SetBackgroundColor(0, 0, 0, .5)
    cutwindow:SetBackgroundColor(unpack(cut.color.black))
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Forward, function() cut.changefontsize(2)   end,  "cutwindow_wheel_forward")
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Back,    function() cut.changefontsize(-2)  end,  "cutwindow_wheel_backward")
 
 
    -- Window Title
---    local title =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
    local windowtitle =  UI.CreateFrame("Text", "window_title", cutwindow)
    windowtitle:SetFontSize(cut.gui.font.size )
    windowtitle:SetText(string.format("%s", cut.html.title), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
---    windowtitle:SetEffectGlow({})
    cut.shown.windowtitle   =  windowtitle
 
 
@@ -83,7 +80,6 @@ function cut.createwindow()
    windowinfo:SetFontSize(cut.gui.font.size -2 )
    local mylabel  =  cut.shown.panellabel[cut.shown.panel]
    if cut.shown.panel == 3 then   mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>" end
---    windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
    windowinfo:SetText(string.format("%s", mylabel), true)
    windowinfo:SetLayer(3)
    windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
@@ -91,13 +87,17 @@ function cut.createwindow()
 
                                                                   cut.shown.panel   =  cut.shown.panel + 1
 
-                                                                  if cut.shown.panel > 3 then   cut.shown.panel = 1  end
+                                                                  if cut.shown.panel > 6 then   cut.shown.panel = 1  end
 
                                                                   -- show Current Session
                                                                   if cut.shown.panel == 1 then
                                                                      cut.frames.container:SetVisible(true)
                                                                      cut.frames.todaycontainer:SetVisible(false)
                                                                      cut.frames.weekcontainer:SetVisible(false)
+                                                                     cut.frames.weeknotorietycontainer:SetVisible(false)
+                                                                     cut.frames.notorietycontainer:SetVisible(false)
+                                                                     cut.frames.todaynotorietycontainer:SetVisible(false)
+
                                                                      local var, val = nil
                                                                      for var, val in pairs(cut.shown.todaytbl) do
                                                                         cut.shown.todaytbl[var].frame:SetVisible(false)
@@ -108,13 +108,17 @@ function cut.createwindow()
                                                                      for var, val in pairs(cut.shown.currenttbl) do
                                                                         cut.shown.currenttbl[var].frame:SetVisible(true)
                                                                      end
-
                                                                   end
+
                                                                   -- show Today Session
                                                                   if cut.shown.panel == 2 then
                                                                      cut.frames.todaycontainer:SetVisible(true)
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.weekcontainer:SetVisible(false)
+                                                                     cut.frames.weeknotorietycontainer:SetVisible(false)
+                                                                     cut.frames.notorietycontainer:SetVisible(false)
+                                                                     cut.frames.todaynotorietycontainer:SetVisible(false)
+
                                                                      local var, val = nil
                                                                      for var, val in pairs(cut.shown.currenttbl) do
                                                                         cut.shown.currenttbl[var].frame:SetVisible(false)
@@ -126,11 +130,16 @@ function cut.createwindow()
                                                                         cut.shown.todaytbl[var].frame:SetVisible(true)
                                                                      end
                                                                   end
+
                                                                   -- show Week Session
                                                                   if cut.shown.panel == 3 then
                                                                      cut.frames.weekcontainer:SetVisible(true)
                                                                      cut.frames.container:SetVisible(false)
                                                                      cut.frames.todaycontainer:SetVisible(false)
+                                                                     cut.frames.weeknotorietycontainer:SetVisible(false)
+                                                                     cut.frames.notorietycontainer:SetVisible(false)
+                                                                     cut.frames.todaynotorietycontainer:SetVisible(false)
+
                                                                      local var, val = nil
                                                                      for var, val in pairs(cut.shown.currenttbl) do
                                                                         cut.shown.currenttbl[var].frame:SetVisible(false)
@@ -143,10 +152,76 @@ function cut.createwindow()
                                                                      end
                                                                   end
 
+                                                                  -- show Current Notoriety Session
+                                                                  if cut.shown.panel == 4 then
+                                                                     cut.frames.notorietycontainer:SetVisible(true)
+                                                                     cut.frames.todaynotorietycontainer:SetVisible(false)
+                                                                     cut.frames.weeknotorietycontainer:SetVisible(false)
+                                                                     cut.frames.container:SetVisible(false)
+                                                                     cut.frames.todaycontainer:SetVisible(false)
+                                                                     cut.frames.weekcontainer:SetVisible(false)
+
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.todaynotorietytbl) do
+                                                                        cut.shown.todaynotorietytbl[var].frame:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.weeknotorietytbl) do
+                                                                        cut.shown.weeknotorietytbl[var].frame:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.currentnotorietytbl) do
+                                                                        cut.shown.currentnotorietytbl[var].frame:SetVisible(true)
+                                                                     end
+                                                                  end
+
+                                                                  -- show Today Notoriety Session
+                                                                  if cut.shown.panel == 5 then
+                                                                     cut.frames.todaynotorietycontainer:SetVisible(true)
+                                                                     cut.frames.notorietycontainer:SetVisible(false)
+                                                                     cut.frames.weeknotorietycontainer:SetVisible(false)
+                                                                     cut.frames.container:SetVisible(false)
+                                                                     cut.frames.todaycontainer:SetVisible(false)
+                                                                     cut.frames.weekcontainer:SetVisible(false)
+
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.currentnotorietytbl) do
+                                                                        cut.shown.currentnotorietytbl[var].frame:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.weeknotorietytbl) do
+                                                                        cut.shown.weeknotorietytbl[var].frame:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.todaynotorietytbl) do
+                                                                        cut.shown.todaynotorietytbl[var].frame:SetVisible(true)
+                                                                     end
+                                                                  end
+
+                                                                  -- show Week Notoriety Session
+                                                                  if cut.shown.panel == 6 then
+                                                                     cut.frames.weeknotorietycontainer:SetVisible(true)
+                                                                     cut.frames.notorietycontainer:SetVisible(false)
+                                                                     cut.frames.todaynotorietycontainer:SetVisible(false)
+                                                                     cut.frames.container:SetVisible(false)
+                                                                     cut.frames.todaycontainer:SetVisible(false)
+                                                                     cut.frames.weekcontainer:SetVisible(false)
+
+                                                                     local var, val = nil
+                                                                     for var, val in pairs(cut.shown.currentnotorietytbl) do
+                                                                        cut.shown.currentnotorietytbl[var].frame:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.todaynotorietytbl) do
+                                                                        cut.shown.todaynotorietytbl[var].frame:SetVisible(false)
+                                                                     end
+                                                                     for var, val in pairs(cut.shown.weeknotorietytbl) do
+                                                                        cut.shown.weeknotorietytbl[var].frame:SetVisible(true)
+                                                                     end
+                                                                  end
+
+
                                                                   cut.resizewindow(cut.shown.panel)
 --                                                                   cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
                                                                   local mylabel  =  cut.shown.panellabel[cut.shown.panel]
-                                                                  if cut.shown.panel == 3 then   mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>" end
+                                                                  if cut.shown.panel == 3 or cut.shown.panel == 6 then
+                                                                     mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
+                                                                  end
                                                                   windowinfo:SetText(string.format("%s", mylabel), true)
 
                                                                end,
@@ -189,6 +264,29 @@ function cut.createwindow()
    weekcutframe:SetBackgroundColor(unpack(cut.color.green))
    cut.frames.weekcontainer =  weekcutframe
    cut.frames.weekcontainer:SetVisible(false)
+
+   -- NOTORIETY
+   local cutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame", maskframe)
+   cutnotorietyframe:SetAllPoints(maskframe)
+   cutnotorietyframe:SetLayer(1)
+   cut.frames.notorietycontainer =  cutnotorietyframe
+
+   -- Whole Day Session Data Container
+   local todaycutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame_today", maskframe)
+   todaycutnotorietyframe:SetAllPoints(maskframe)
+   todaycutnotorietyframe:SetLayer(1)
+   todaycutnotorietyframe:SetBackgroundColor(unpack(cut.color.red))
+   cut.frames.todaynotorietycontainer =  todaycutnotorietyframe
+   cut.frames.todaynotorietycontainer:SetVisible(false)
+
+   -- Whole Week Session Data Container
+   local weekcutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame_week", maskframe)
+   weekcutnotorietyframe:SetAllPoints(maskframe)
+   weekcutnotorietyframe:SetLayer(1)
+   weekcutnotorietyframe:SetBackgroundColor(unpack(cut.color.green))
+   cut.frames.weeknotorietycontainer =  weekcutnotorietyframe
+   cut.frames.weeknotorietycontainer:SetVisible(false)
+
 
    -- RESIZER WIDGET
    local corner=  UI.CreateFrame("Text", "corner", cutwindow)
@@ -349,7 +447,6 @@ function cut.updateothers(var, val)
       cut.updatecurrenciestoday(var, (cut.save.day[var].stack + val), cut.save.day[var].id)
 --       print(string.format("post cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
    else
---       cut.save.day[var]   =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.save.day[var]   =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.updatecurrenciestoday(var, val, cut.save.day[var].id)
    end
@@ -357,7 +454,6 @@ function cut.updateothers(var, val)
    if table.contains(cut.save.week, var) then
       cut.updatecurrenciesweek(var, (val + cut.save.week[var].stack), cut.save.week[var].id)
    else
---       cut.save.week[var]    =  { stack=val, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.save.week[var]    =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
       cut.updatecurrenciesweek(var, val, cut.save.week[var].id)
    end
@@ -381,6 +477,38 @@ function cut.updatecurrencies(currency, value, id)
    cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1)
 
    cut.updateothers(currency, value)
+
+   return
+end
+
+local function updatenotorietyvalue()
+   return
+end
+
+local function createnotorietynewline()
+   return
+end
+
+function cut.updatenotorietiesothers()
+   return
+end
+
+function cut.updatenotorieties(notoriety, value, id)
+
+   if not cut.gui.window then cut.gui.window = cut.createwindow() end
+
+   if cut.shown.currentnotorietytbl[notoriety] then
+      updatenotorietyvalue(notoriety, value, cut.shown.currentnotorietytbl[notoriety].value, id)
+   else
+      local t  =  {}
+      t  =  createnotorietynewline(notoriety, value, 1, id)
+      cut.shown.notorietyframes.last            =  t.frame
+      cut.shown.currentnotorietytbl[notoriety]  =  t
+   end
+
+   cut.sortbykey(cut.frames.container, cut.shown.currentnotorietytbl, 1)
+
+   cut.updatenotorietiesothers(notoriety, value)
 
    return
 end

@@ -1,7 +1,7 @@
 Identifier  =  "CuT"
 Name        =  { English = "CuT" }
 NameShort   =  "CuT"
-Version     =  "0.1.12"
+Version     =  "0.2.0"
 Description =  { English = "CUrrency Tracker" }
 Author      =  "marcob@marcob.org"
 Website     =  "https://github.com/cubeslinger/CuT"
@@ -22,9 +22,14 @@ Dependencies = {
 }
 
 SavedVariables = {
-   guidata     =  'character',
-   todaybase   =  'character',
-   today       =  'character',
-   weekbase    =  'character',
-   weekday     =  'character',
+   guidata           =  'character',
+   todaybase         =  'character',
+   today             =  'character',
+   weekbase          =  'character',
+   weekday           =  'character',
+   notorietytoday    =  'character',
+   notorietyday      =  'character',
+   notorietyweek     =  'character',
+   notorietyweekday  =  'character',
+
 }

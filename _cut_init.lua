@@ -38,17 +38,24 @@ cut.init.week           =  false
 cut.init.coinbase       =  false
 cut.init.startup        =  false
 cut.init.newweek        =  false
+cut.init.notorietytoday =  false
+cut.init.notorietyweek  =  false
 --
 cut.deltas              =  {}
+cut.notorietiesdeltas   =  {}
 --
 cut.save                =  {}
 cut.save.day            =  {}
 cut.save.week           =  {}
+cut.save.notorietytoday =  {}
+cut.save.notorietyweek  =  {}
 --
 cut.coinbase            =  {}
 cut.today               =  0
 cut.weekday             =  0
 cut.coinname2idx        =  {}
+cut.notorietyname2idx   =  {}
+cut.notorietybase       =  {}
 --
 cut.timer               =  {}
 cut.timer.flag          =  false
@@ -68,6 +75,19 @@ cut.shown.weekframes       =  {}
 cut.shown.weekframes.last  =  nil
 cut.shown.weektbl          =  {}
 --
+cut.shown.currentnotorietyframes    =  {}
+cut.shown.currentnotorietylast      =  nil
+cut.shown.currentnotorietytbl       =  {}
+--
+cut.shown.todaynotorietyframes      =  {}
+cut.shown.todaynotorietyframes.last =  nil
+cut.shown.todaynotorietytbl         =  {}
+--
+cut.shown.weeknotorietyframes       =  {}
+cut.shown.weeknotorietyframes.last  =  nil
+cut.shown.weeknotorietytbl          =  {}
+
+--
 cut.html                =  {}
 cut.html.silver         =  '#c0c0c0'
 cut.html.gold           =  '#ffd700'
@@ -80,12 +100,16 @@ cut.html.title          =  "<font color=\'"..cut.html.green.."\'>C</font><font c
 cut.shown.panel         =  1
 cut.shown.windowinfo    =  nil
 cut.shown.windowtitle   =  nil
-cut.shown.panellabel    =  {  [1]   =  "Current",
-                              [2]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today</font>",
-                              [3]   =  "<font color=\'"  .. cut.html.green .. "\'>Week</font>"
+cut.shown.panellabel    =  {  [1]   =  "Current Currencies",
+                              [2]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Currencies</font>",
+                              [3]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Currencies</font>",
+                              [4]   =  "Current Notoriey",
+                              [5]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Notoriety</font>",
+                              [6]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Notoriety</font>"
                            }
 --
 cut.frames              =  {}
+cut.frames.container
 --
 cut.color               =  {}
 cut.color.black         =  {  0,  0,  0, .5}
@@ -163,6 +187,46 @@ function cut.loadvariables(_, addonname)
             cut.init.week  =  true
             cut.save.week  =  {}
          end
+
+
+         -- Load Today Notoriety session data only if we are in the same day
+         if notorietyday then
+            if notorietyday   == dayoftheyear then
+               if todaynotorietybase then
+                  cut.save.notorietytoday   =  notorietytoday
+                  local flag, a, b = false, nil, nil
+                  for a,b in pairs(cut.save.notorietytoday) do flag = true break end
+                  cut.init.notorietytoday  =  flag
+               end
+            else
+               cut.save.notorietytoday =  {}
+               cut.init.notorietytoday =  true
+            end
+         else
+            cut.save.notorietytoday   =  {}
+            cut.init.notorietytoday   =  true
+         end
+
+         -- Load Notoriety Week session data only if we are in the same week
+         if notorietyday then
+            if (dayoftheyear - notorietyday) <= 7 then
+               if notorietyweek then
+                  cut.save.notorietyweek   =  notorietyweek
+                  local flag, a, b = false, nil, nil
+                  for a,b in pairs(cut.save.notorietyweek) do flag = true break end
+                  cut.init.notorietyweek   =  flag
+               end
+               cut.notorietyweekday    =  notorietyweekday
+            else
+               cut.notorietyweekday    =  getdayoftheyear()
+               cut.init.notorietyweek  =  true
+               cut.save.notorietyweek  =  {}
+            end
+         else
+            cut.notorietyweekday    =  getdayoftheyear()
+            cut.init.notorietyweek  =  true
+            cut.save.notorietyweek  =  {}
+         end
       end
    end
 
@@ -190,12 +254,9 @@ function cut.savevariables(_, addonname)
       local tbl   =  {}
       local a,b   =  nil, nil
       for a,b in pairs(cut.save.day) do
---          if b.stack ~= 0 then
-            tbl[a]   =  b
-            if cut.deltas[a] then
-               tbl[a].stack = tbl[a].stack + cut.deltas[a]
---                print(string.format("save day  tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
---             end
+         tbl[a]   =  b
+         if cut.deltas[a] then
+            tbl[a].stack = tbl[a].stack + cut.deltas[a]
          end
       end
 
@@ -206,17 +267,13 @@ function cut.savevariables(_, addonname)
       local tbl   =  {}
       local a,b   =  nil, nil
       for a,b in pairs(cut.save.week) do
---          if b.stack ~= 0 then
-            tbl[a]   =  b
-            if cut.deltas[a] then
-               tbl[a].stack = tbl[a].stack + cut.deltas[a]
---                print(string.format("save week tbl[%s].stack=%s cut.deltas[%s]=%s", a, tbl[a].stack, a, cut.deltas[a]))
-            end
---          end
+         tbl[a]   =  b
+         if cut.deltas[a] then
+            tbl[a].stack = tbl[a].stack + cut.deltas[a]
+         end
       end
 
       weekbase =  tbl
---       weekday  =  getdayoftheyear()
       weekday  =  cut.weekday
    end
 
@@ -254,6 +311,26 @@ local function getcoins()
    end
 
    return coins
+end
+
+local function getnotorieties()
+   local notorieties    =  {}
+   local notoriety =  nil
+   for notoriety, _ in pairs(Inspect.Faction.List()) do
+      local detail = Inspect.Faction.Detail(notoriety)
+      notorieties[detail.name] = { stack=detail.notoriety, id=detail.id }
+
+--       local a,b = nil, nil
+--       for a,b in pairs(detail) do
+--          print(string.format("CuT Notoriety:   key=(%s) val=(%s)", a, b))
+--       end
+--
+--       print(string.format("CuT Notoriety: id=%s =>(name=%s) (stack=%s)", notorieties[detail.name].id, detail.name, notorieties[detail.name].stack))
+
+      cut.notorietyname2idx[detail.name] =  notoriety
+   end
+
+   return notorieties
 end
 
 local function currencyevent()
@@ -299,6 +376,49 @@ local function currencyevent()
       return
    end
 
+local function notorietyevent()
+   local current  =  getnotorieties()
+   local var, val =  nil, nil, nil
+   local tbl      =  {}
+   local updated  =  false
+
+   -- find changes
+   for var, tbl in pairs(current) do
+      val   =  tbl.stack
+
+      --[[ -- CURRENT  -------------------------------------- BEGIN ]]--
+            -- Current Session value Update
+      if table.contains(cut.notorietybase, var) then
+         if cut.notorietybase[var].stack == 0 then
+            cut.notorietybase[var].stack =  val
+            --             print(string.format("Rebased notoriety: %s from 0 to %s.", var, val))
+         else
+            if val   ~= (cut.notorietybase[var].stack) then
+               local newvalue =  val - (cut.notorietybase[var].stack)
+               --                cut.updatecurrencies(var, newvalue, cut.notorietybase[var].id)
+               cut.updatenotorieties(var, newvalue, cut.notorietybase[var].id)
+               cut.notorietydeltas[var]   =  newvalue
+               --                print("notorietyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.notorietydeltas[var].."]")
+            end
+         end
+      else
+         -- we found nothing let's create from scratch this new currency
+         local detail = Inspect.Faction.Detail(cut.notorietyname2idx[var])
+         cut.notorietybase[var] =  { stack=detail.notoriety, id=detail.id }
+         cut.updatenotorieties(var, val, detail.id)
+         cut.notorietiesdeltas[var]   =  val
+         --          print("notorietyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
+      end
+      --[[ CURRENT  -------------------------------------- END ]]--
+   end
+
+   -- set the right size for pane
+   cut.resizewindow(cut.shown.panel)
+
+   return
+end
+
+
 function cut.initcoinbase()
 
    if not cut.init.coinbase then
@@ -318,6 +438,31 @@ function cut.initcoinbase()
                Command.Event.Attach(Event.System.Update.Begin, waitforcoins,  "Event.System.Update.Begin")
             end
          end
+      end
+   end
+
+   return
+end
+
+function cut.initnotorietybase()
+
+   if not cut.init.notorietybase then
+
+      while not cut.init.notorietybase do
+         cut.notorietybase   =  getnotorieties()
+
+         -- do we really have a notoriety base? let's count
+         local cnt, a, b = 0, nil, nil
+         for a,b in pairs(cut.notorietybase) do cnt = cnt + 1 break end
+
+--          if cnt > 0 then
+            cut.init.notorietybase   =  true
+--          else
+--             -- we don't have data yet, we wait cut.timer.duration secs...
+--             if not cut.timer.flag then
+--                Command.Event.Attach(Event.System.Update.Begin, waitfornotorietys,  "Event.System.Update.Begin")
+--             end
+--          end
       end
    end
 
@@ -348,8 +493,26 @@ function cut.startmeup()
          end
       end
 
-      -- let's initialize Current database
+      -- if we have Notoriety session data, we restore it in the Notoriety today pane
+      if cut.init.notorietyday then
+         for currency, tbl in pairs(cut.save.notorietyday) do
+            if tbl.stack   ~= 0  then  cut.updatenotorietytoday(currency, tbl.stack, tbl.id)   end
+         end
+      end
+
+      -- if we have Notoriety week data, we restore it in the Notoriety Week panel
+      if cut.init.notorietyweek then
+         for currency, tbl in pairs(cut.save.notorietyweek) do
+            if tbl.stack ~= 0 then  cut.updatenotorietyweek(currency, tbl.stack, tbl.id) end
+         end
+      end
+
+
+      -- let's initialize Current Currencies database
       cut.initcoinbase()
+
+      -- let's initialize Current Notorieties database
+      cut.initnotorietybase()
 
       -- create window if needed
       if not cut.gui.window then cut.gui.window = cut.createwindow() end
@@ -379,7 +542,8 @@ function cut.startmeup()
 --       -- TEST -- END
 
       -- we are ready for events
-      Command.Event.Attach(Event.Currency, currencyevent, "CuT Currency Event")
+      Command.Event.Attach(Event.Currency,            currencyevent,    "CuT Currency Event")
+      Command.Event.Attach(Event.Faction.Notoriety,   notorietyevent,   "CuT Notoriety Event")
 
    end
 
