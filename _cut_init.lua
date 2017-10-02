@@ -109,7 +109,7 @@ cut.shown.panellabel    =  {  [1]   =  "Current Currencies",
                            }
 --
 cut.frames              =  {}
-cut.frames.container
+cut.frames.container    =  {}
 --
 cut.color               =  {}
 cut.color.black         =  {  0,  0,  0, .5}
@@ -333,7 +333,15 @@ local function getnotorieties()
    return notorieties
 end
 
-local function currencyevent()
+-- local function currencyevent(handle, params)
+function cut.currencyevent(handle, params)   
+   if params then 
+      for a,b in pairs(params) do
+         print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
+      end
+   else
+      print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
+   end
 --       print("CURRENCY EVENT")
 
    local current  =  getcoins()
@@ -368,15 +376,25 @@ local function currencyevent()
 --          print("currencyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
       end
       --[[ CURRENT  -------------------------------------- END ]]--
-            end
-
-      -- set the right size for pane
-      cut.resizewindow(cut.shown.panel)
-
-      return
    end
 
-local function notorietyevent()
+   -- set the right size for pane
+   cut.resizewindow(cut.shown.panel)
+
+   return
+end
+
+-- local function notorietyevent(handle, params)
+function cut.notorietyevent(handle, params)
+   if params then 
+      for a,b in pairs(params) do
+         print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
+      end
+   else
+      print("CuT: notorietyevent params is NIL")
+      print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
+   end
+   
    local current  =  getnotorieties()
    local var, val =  nil, nil, nil
    local tbl      =  {}
@@ -542,8 +560,11 @@ function cut.startmeup()
 --       -- TEST -- END
 
       -- we are ready for events
-      Command.Event.Attach(Event.Currency,            currencyevent,    "CuT Currency Event")
-      Command.Event.Attach(Event.Faction.Notoriety,   notorietyevent,   "CuT Notoriety Event")
+--       Command.Event.Attach(Event.Currency,            function(params) currencyevent(params)    end,    "CuT Currency Event")
+--       Command.Event.Attach(Event.Faction.Notoriety,   function(params) notorietyevent(params)   end,   "CuT Notoriety Event")
+      Command.Event.Attach(Event.Currency,            function(handle, params) cut.currencyevent(handle, params) end,    "CuT Currency Event")
+      Command.Event.Attach(Event.Faction.Notoriety,   function(handle, params) cut.notorietyevent(handle, params) end,   "CuT Notoriety Event")
+
 
    end
 
