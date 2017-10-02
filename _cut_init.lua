@@ -134,7 +134,13 @@ function cut.loadvariables(_, addonname)
                   for a,b in pairs(cut.save.day) do flag = true break end
                   cut.init.day  =  flag
                end
+            else
+               cut.save.day   =  {}
+               cut.init.day   =  true
             end
+         else
+            cut.save.day   =  {}
+            cut.init.day   =  true
          end
 
          -- Load Week session data only if we are in the same week
@@ -148,8 +154,14 @@ function cut.loadvariables(_, addonname)
                end
                cut.weekday =  weekday
             else
-               cut.weekday =  getdayoftheyear()
+               cut.weekday    =  getdayoftheyear()
+               cut.init.week  =  true
+               cut.save.week  =  {}
             end
+         else
+            cut.weekday    =  getdayoftheyear()
+            cut.init.week  =  true
+            cut.save.week  =  {}
          end
       end
    end
@@ -341,7 +353,7 @@ function cut.startmeup()
 
       -- create window if needed
       if not cut.gui.window then cut.gui.window = cut.createwindow() end
-      
+
       -- since Today and Week Panes start hidden, the shown empty window would be too tall.
       -- so i resize it accordingly
       if cut.gui.window then cut.resizewindow(cut.shown.panel) end
