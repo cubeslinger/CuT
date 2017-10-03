@@ -42,7 +42,7 @@ cut.init.notorietytoday =  false
 cut.init.notorietyweek  =  false
 --
 cut.deltas              =  {}
-cut.notorietiesdeltas   =  {}
+cut.notorietydeltas     =  {}
 --
 cut.save                =  {}
 cut.save.day            =  {}
@@ -75,9 +75,9 @@ cut.shown.weekframes       =  {}
 cut.shown.weekframes.last  =  nil
 cut.shown.weektbl          =  {}
 --
-cut.shown.currentnotorietyframes    =  {}
-cut.shown.currentnotorietylast      =  nil
-cut.shown.currentnotorietytbl       =  {}
+cut.shown.currentnotorietyframes       =  {}
+cut.shown.currentnotorietyframes.last  =  nil
+cut.shown.currentnotorietytbl          =  {}
 --
 cut.shown.todaynotorietyframes      =  {}
 cut.shown.todaynotorietyframes.last =  nil
@@ -248,9 +248,10 @@ function cut.savevariables(_, addonname)
       a.mmbtnheight  =  nil
       a.mmbtnwidth   =  nil
 
+      -- Save Window position, size, ...
       guidata     =  a
 
-      -- Save Today Session data
+      -- Save Currencies Today Session data
       local tbl   =  {}
       local a,b   =  nil, nil
       for a,b in pairs(cut.save.day) do
@@ -263,7 +264,7 @@ function cut.savevariables(_, addonname)
       todaybase   =  tbl
       today       =  getdayoftheyear()
 
-      -- Save Week Session data
+      -- Save Currencies Week Session data
       local tbl   =  {}
       local a,b   =  nil, nil
       for a,b in pairs(cut.save.week) do
@@ -275,6 +276,34 @@ function cut.savevariables(_, addonname)
 
       weekbase =  tbl
       weekday  =  cut.weekday
+
+      -- Save Notorieties Today Session data
+      local tbl   =  {}
+      local a,b   =  nil, nil
+      for a,b in pairs(cut.save.notorietytoday) do
+         tbl[a]   =  b
+         if cut.notorietydeltas[a] then
+            tbl[a].stack = tbl[a].stack + cut.notorietydeltas[a]
+         end
+      end
+
+      notorietytoday =  tbl
+      notorietyday   =  getdayoftheyear()
+
+      -- Save Notorieties Week Session data
+      local tbl   =  {}
+      local a,b   =  nil, nil
+      for a,b in pairs(cut.save.notorietyweek) do
+         tbl[a]   =  b
+         if cut.notorietydeltas[a] then
+            tbl[a].stack = tbl[a].stack + cut.notorietydeltas[a]
+         end
+      end
+
+      notorietyweek     =  tbl
+      notorietyweekday  =  cut.weekday
+
+
    end
 
    return
@@ -334,14 +363,14 @@ local function getnotorieties()
 end
 
 -- local function currencyevent(handle, params)
-function cut.currencyevent(handle, params)   
-   if params then 
-      for a,b in pairs(params) do
-         print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
-      end
-   else
-      print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
-   end
+function cut.currencyevent(handle, params)
+--    if params then
+--       for a,b in pairs(params) do
+--          print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
+--       end
+--    else
+--       print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
+--    end
 --       print("CURRENCY EVENT")
 
    local current  =  getcoins()
@@ -386,17 +415,17 @@ end
 
 -- local function notorietyevent(handle, params)
 function cut.notorietyevent(handle, params)
-   if params then 
-      for a,b in pairs(params) do
-         print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
-      end
-   else
-      print("CuT: notorietyevent params is NIL")
-      print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
-   end
-   
+--    if params then
+--       for a,b in pairs(params) do
+--          print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
+--       end
+--    else
+--       print("CuT: notorietyevent params is NIL")
+--       print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
+--    end
+
    local current  =  getnotorieties()
-   local var, val =  nil, nil, nil
+   local var, val =  nil, nil
    local tbl      =  {}
    local updated  =  false
 
@@ -414,7 +443,7 @@ function cut.notorietyevent(handle, params)
             if val   ~= (cut.notorietybase[var].stack) then
                local newvalue =  val - (cut.notorietybase[var].stack)
                --                cut.updatecurrencies(var, newvalue, cut.notorietybase[var].id)
-               cut.updatenotorieties(var, newvalue, cut.notorietybase[var].id)
+               cut.updatenotoriety(var, newvalue, cut.notorietybase[var].id)
                cut.notorietydeltas[var]   =  newvalue
                --                print("notorietyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.notorietydeltas[var].."]")
             end
@@ -423,9 +452,9 @@ function cut.notorietyevent(handle, params)
          -- we found nothing let's create from scratch this new currency
          local detail = Inspect.Faction.Detail(cut.notorietyname2idx[var])
          cut.notorietybase[var] =  { stack=detail.notoriety, id=detail.id }
-         cut.updatenotorieties(var, val, detail.id)
-         cut.notorietiesdeltas[var]   =  val
-         --          print("notorietyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
+         cut.updatenotoriety(var, val, detail.id)
+         cut.notorietydeltas[var]   =  val
+         --          print("notorietyevent (2) ["..var.."]=["..val.."]==>["..cut.notorietydeltas[var].."]")
       end
       --[[ CURRENT  -------------------------------------- END ]]--
    end
@@ -576,12 +605,14 @@ function cut.resizewindow(panel)
    if table.contains(cut.gui, "window") then
       local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
 
-      if panel == 1 then if cut.shown.frames.last        then bottom = cut.shown.frames.last:GetBottom()       end end
-      if panel == 2 then if cut.shown.todayframes.last   then bottom = cut.shown.todayframes.last:GetBottom()  end end
-      if panel == 3 then if cut.shown.weekframes.last    then bottom = cut.shown.weekframes.last:GetBottom()   end end
+      if panel == 1 then if cut.shown.frames.last                 then bottom = cut.shown.frames.last:GetBottom()                   end end
+      if panel == 2 then if cut.shown.todayframes.last            then bottom = cut.shown.todayframes.last:GetBottom()              end end
+      if panel == 3 then if cut.shown.weekframes.last             then bottom = cut.shown.weekframes.last:GetBottom()               end end
+      if panel == 4 then if cut.shown.currentnotorietyframes.last then bottom = cut.shown.currentnotorietyframes.last:GetBottom()   end end
+      if panel == 5 then if cut.shown.todaynotorietyframes.last   then bottom = cut.shown.todaynotorietyframes.last:GetBottom()     end end
+      if panel == 6 then if cut.shown.weeknotorietyframes.last    then bottom = cut.shown.weeknotorietyframes.last:GetBottom()      end end
 
       cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
-
    end
 
    return

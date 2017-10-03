@@ -45,9 +45,12 @@ function cut.sortbykey(parent, tbl, panel)
       end
    end
 
-   if panel == 1 then cut.shown.frames.last        =  LASTOBJ  end
-   if panel == 2 then cut.shown.todayframes.last   =  LASTOBJ  end
-   if panel == 3 then cut.shown.weekframes.last    =  LASTOBJ  end
+   if panel == 1 then cut.shown.frames.last                 =  LASTOBJ  end
+   if panel == 2 then cut.shown.todayframes.last            =  LASTOBJ  end
+   if panel == 3 then cut.shown.weekframes.last             =  LASTOBJ  end
+   if panel == 4 then cut.shown.currentnotorietyframes.last =  LASTOBJ  end
+   if panel == 5 then cut.shown.todaynotorietyframes.last   =  LASTOBJ  end
+   if panel == 6 then cut.shown.weeknotorietyframes.last    =  LASTOBJ  end
 
 --    print("EXIT SORT TABLE")
 
