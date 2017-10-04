@@ -347,16 +347,20 @@ local function getnotorieties()
    local notoriety =  nil
    for notoriety, _ in pairs(Inspect.Faction.List()) do
       local detail = Inspect.Faction.Detail(notoriety)
-      notorieties[detail.name] = { stack=detail.notoriety, id=detail.id }
+      if detail then
+         notorieties[detail.name] = { stack=detail.notoriety, id=detail.id }
 
---       local a,b = nil, nil
---       for a,b in pairs(detail) do
---          print(string.format("CuT Notoriety:   key=(%s) val=(%s)", a, b))
---       end
---
---       print(string.format("CuT Notoriety: id=%s =>(name=%s) (stack=%s)", notorieties[detail.name].id, detail.name, notorieties[detail.name].stack))
+   --       local a,b = nil, nil
+   --       for a,b in pairs(detail) do
+   --          print(string.format("CuT Notoriety:   key=(%s) val=(%s)", a, b))
+   --       end
+   --
+   --       print(string.format("CuT Notoriety: id=%s =>(name=%s) (stack=%s)", notorieties[detail.name].id, detail.name, notorieties[detail.name].stack))
 
-      cut.notorietyname2idx[detail.name] =  notoriety
+         cut.notorietyname2idx[detail.name] =  notoriety
+      else
+         print(string.format("Notoriety detail is NIL for: (%s)", notoriety))
+      end
    end
 
    return notorieties
