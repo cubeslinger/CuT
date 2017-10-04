@@ -145,7 +145,8 @@ function cut.loadvariables(_, addonname)
             cut.gui.window =  nil
          end
 
-         local dayoftheyear =  getdayoftheyear()
+         local dayoftheyear   =  getdayoftheyear()
+         local lastsession    =  nil
 
          -- Load Today session data only if we are in the same day
          cut.today   =  dayoftheyear
@@ -188,11 +189,11 @@ function cut.loadvariables(_, addonname)
             cut.save.week  =  {}
          end
 
-
          -- Load Today Notoriety session data only if we are in the same day
          if notorietyday then
-            if notorietyday   == dayoftheyear then
-               if todaynotorietybase then
+            lastsession =  notorietyday
+            if lastsession == cut.today then
+               if notorietytoday then
                   cut.save.notorietytoday   =  notorietytoday
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.notorietytoday) do flag = true break end
@@ -208,8 +209,8 @@ function cut.loadvariables(_, addonname)
          end
 
          -- Load Notoriety Week session data only if we are in the same week
-         if notorietyday then
-            if (dayoftheyear - notorietyday) <= 7 then
+         if notorietyweekday then
+            if (dayoftheyear - notorietyweekday) <= 7 then
                if notorietyweek then
                   cut.save.notorietyweek   =  notorietyweek
                   local flag, a, b = false, nil, nil
@@ -530,23 +531,23 @@ function cut.startmeup()
          cut.gui.mmbtnobj:SetVisible(true)
       end
 
-      -- if we have session data, we restore it in the today pane
+      -- if we have Currencies Today session data, we restore it in the today pane
       if cut.init.day then
          for currency, tbl in pairs(cut.save.day) do
             if tbl.stack   ~= 0  then  cut.updatecurrenciestoday(currency, tbl.stack, tbl.id)   end
          end
       end
 
-      -- if we have week data, we restore it in the Week panel
+      -- if we have Currencies week data, we restore it in the Week panel
       if cut.init.week then
          for currency, tbl in pairs(cut.save.week) do
             if tbl.stack ~= 0 then  cut.updatecurrenciesweek(currency, tbl.stack, tbl.id) end
          end
       end
 
-      -- if we have Notoriety session data, we restore it in the Notoriety today pane
-      if cut.init.notorietyday then
-         for currency, tbl in pairs(cut.save.notorietyday) do
+      -- if we have Today Notoriety session data, we restore it in the Notoriety today pane
+      if cut.init.notorietytoday then
+         for currency, tbl in pairs(cut.save.notorietytoday) do
             if tbl.stack   ~= 0  then  cut.updatenotorietytoday(currency, tbl.stack, tbl.id)   end
          end
       end
