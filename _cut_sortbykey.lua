@@ -4,7 +4,7 @@
 --
 local addon, cut  = ...
 
-function cut.sortbykey(parent, tbl, panel)
+function cut.sortbykey(parent, tbl, tracker, panel)
    local a,b, cnt = nil, nil, 0
 
    -- reset all Pinned Point of Full loot Frames objs
@@ -45,12 +45,20 @@ function cut.sortbykey(parent, tbl, panel)
       end
    end
 
-   if panel == 1 then cut.shown.frames.last                 =  LASTOBJ  end
-   if panel == 2 then cut.shown.todayframes.last            =  LASTOBJ  end
-   if panel == 3 then cut.shown.weekframes.last             =  LASTOBJ  end
-   if panel == 4 then cut.shown.currentnotorietyframes.last =  LASTOBJ  end
-   if panel == 5 then cut.shown.todaynotorietyframes.last   =  LASTOBJ  end
-   if panel == 6 then cut.shown.weeknotorietyframes.last    =  LASTOBJ  end
+--    if panel == 1 then cut.shown.frames.last                 =  LASTOBJ  end
+--    if panel == 2 then cut.shown.todayframes.last            =  LASTOBJ  end
+--    if panel == 3 then cut.shown.weekframes.last             =  LASTOBJ  end
+--    if panel == 4 then cut.shown.currentnotorietyframes.last =  LASTOBJ  end
+--    if panel == 5 then cut.shown.todaynotorietyframes.last   =  LASTOBJ  end
+--    if panel == 6 then cut.shown.weeknotorietyframes.last    =  LASTOBJ  end
+
+   if tracker == 1 and panel == 1 then cut.shown.frames.last                 =  LASTOBJ  end
+   if tracker == 1 and panel == 2 then cut.shown.todayframes.last            =  LASTOBJ  end
+   if tracker == 1 and panel == 3 then cut.shown.weekframes.last             =  LASTOBJ  end
+   if tracker == 2 and panel == 1 then cut.shown.currentnotorietyframes.last =  LASTOBJ  end
+   if tracker == 2 and panel == 2 then cut.shown.todaynotorietyframes.last   =  LASTOBJ  end
+   if tracker == 2 and panel == 3 then cut.shown.weeknotorietyframes.last    =  LASTOBJ  end
+
 
 --    print("EXIT SORT TABLE")
 

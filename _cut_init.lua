@@ -103,10 +103,10 @@ cut.shown.panel         =  1
 cut.shown.tracker       =  1
 cut.shown.windowinfo    =  nil
 cut.shown.windowtitle   =  nil
-cut.shown.panellabel    =  {  [1]   =  "Current Currencies",
+cut.shown.panellabel    =  {  [1]   =  "Session Currencies",
                               [2]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Currencies</font>",
                               [3]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Currencies</font>",
-                              [4]   =  "Current Notoriey",
+                              [4]   =  "Session Notoriey",
                               [5]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Notoriety</font>",
                               [6]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Notoriety</font>"
                            }
@@ -416,7 +416,7 @@ function cut.currencyevent(handle, params)
    end
 
    -- set the right size for pane
-   cut.resizewindow(cut.shown.panel)
+   cut.resizewindow(cut.shown.tracker, cut.shown.panel)
 
    return
 end
@@ -468,7 +468,7 @@ function cut.notorietyevent(handle, params)
    end
 
    -- set the right size for pane
-   cut.resizewindow(cut.shown.panel)
+   cut.resizewindow(cut.shown.tracker, cut.shown.panel)
 
    return
 end
@@ -566,7 +566,7 @@ function cut.startmeup()
 
       -- since Today and Week Panes start hidden, the shown empty window would be too tall.
       -- so i resize it accordingly
-      if cut.gui.window then cut.resizewindow(cut.shown.panel) end
+      if cut.gui.window then cut.resizewindow(cut.shown.tracker, cut.shown.panel) end
 
       -- say "Hello World"
       Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title[1] .. " & " .. cut.html.title[2], cut.version), true)
@@ -586,17 +586,17 @@ function cut.startmeup()
    return
 end
 
-function cut.resizewindow(panel)
+function cut.resizewindow(tracker, panel)
 
    if table.contains(cut.gui, "window") then
       local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
 
-      if panel == 1 then if cut.shown.frames.last                 then bottom = cut.shown.frames.last:GetBottom()                   end end
-      if panel == 2 then if cut.shown.todayframes.last            then bottom = cut.shown.todayframes.last:GetBottom()              end end
-      if panel == 3 then if cut.shown.weekframes.last             then bottom = cut.shown.weekframes.last:GetBottom()               end end
-      if panel == 4 then if cut.shown.currentnotorietyframes.last then bottom = cut.shown.currentnotorietyframes.last:GetBottom()   end end
-      if panel == 5 then if cut.shown.todaynotorietyframes.last   then bottom = cut.shown.todaynotorietyframes.last:GetBottom()     end end
-      if panel == 6 then if cut.shown.weeknotorietyframes.last    then bottom = cut.shown.weeknotorietyframes.last:GetBottom()      end end
+      if tracker == 1 and panel == 1 then if cut.shown.frames.last                 then bottom = cut.shown.frames.last:GetBottom()                   end end
+      if tracker == 1 and panel == 2 then if cut.shown.todayframes.last            then bottom = cut.shown.todayframes.last:GetBottom()              end end
+      if tracker == 1 and panel == 3 then if cut.shown.weekframes.last             then bottom = cut.shown.weekframes.last:GetBottom()               end end
+      if tracker == 2 and panel == 1 then if cut.shown.currentnotorietyframes.last then bottom = cut.shown.currentnotorietyframes.last:GetBottom()   end end
+      if tracker == 2 and panel == 2 then if cut.shown.todaynotorietyframes.last   then bottom = cut.shown.todaynotorietyframes.last:GetBottom()     end end
+      if tracker == 2 and panel == 3 then if cut.shown.weeknotorietyframes.last    then bottom = cut.shown.weeknotorietyframes.last:GetBottom()      end end
 
       cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
    end

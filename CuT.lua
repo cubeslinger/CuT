@@ -55,7 +55,7 @@ function cut.changefontsize(newfontsize)
 
       cut.shown.windowtitle:SetFontSize(cut.gui.font.size)
       cut.shown.windowinfo:SetFontSize(cut.gui.font.size)
-      cut.resizewindow(cut.shown.panel)
+      cut.resizewindow(cut.shown.tracker, cut.shown.panel)
    end
 
    return
@@ -70,7 +70,8 @@ local function managepanels()
    if init then
 
       cut.shown.panel   =  cut.shown.panel + 1
-      if cut.shown.panel > 6 then   cut.shown.panel = 1  end
+--       if cut.shown.panel > 6 then   cut.shown.panel = 1  end
+      if cut.shown.panel > 3 then   cut.shown.panel = 1  end
 
       -- Hide everything
       cut.frames.container:SetVisible(false)
@@ -89,12 +90,12 @@ local function managepanels()
             for var, val in pairs(table) do table[var].frame:SetVisible(false) end
       end
 
-      if cut.shown.panel == 1 then  table =  cut.shown.currenttbl          cut.frames.container:SetVisible(true)                 end
-      if cut.shown.panel == 2 then  table =  cut.shown.todaytbl            cut.frames.todaycontainer:SetVisible(true)            end
-      if cut.shown.panel == 3 then  table =  cut.shown.weektbl             cut.frames.weekcontainer:SetVisible(true)             end
-      if cut.shown.panel == 4 then  table =  cut.shown.currentnotorietytbl cut.frames.notorietycontainer:SetVisible(true)        end
-      if cut.shown.panel == 5 then  table =  cut.shown.todaynotorietytbl   cut.frames.todaynotorietycontainer:SetVisible(true)   end
-      if cut.shown.panel == 6 then  table =  cut.shown.weeknotorietytbl    cut.frames.weeknotorietycontainer:SetVisible(true)    end
+      if cut.shown.panel == 1 and cut.shown.tracker == 1 then  table =  cut.shown.currenttbl          cut.frames.container:SetVisible(true)                 end
+      if cut.shown.panel == 2 and cut.shown.tracker == 1 then  table =  cut.shown.todaytbl            cut.frames.todaycontainer:SetVisible(true)            end
+      if cut.shown.panel == 3 and cut.shown.tracker == 1 then  table =  cut.shown.weektbl             cut.frames.weekcontainer:SetVisible(true)             end
+      if cut.shown.panel == 1 and cut.shown.tracker == 2 then  table =  cut.shown.currentnotorietytbl cut.frames.notorietycontainer:SetVisible(true)        end
+      if cut.shown.panel == 2 and cut.shown.tracker == 2 then  table =  cut.shown.todaynotorietytbl   cut.frames.todaynotorietycontainer:SetVisible(true)   end
+      if cut.shown.panel == 3 and cut.shown.tracker == 2 then  table =  cut.shown.weeknotorietytbl    cut.frames.weeknotorietycontainer:SetVisible(true)    end
 
       local a, b, flag  =  nil, nil, false
       if table then
@@ -107,10 +108,13 @@ local function managepanels()
       end
       -- --------------------------------------------------------------------------
 
-      cut.resizewindow(cut.shown.panel)
+      cut.resizewindow(cut.shown.tracker, cut.shown.panel)
       --          cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
-      local mylabel  =  cut.shown.panellabel[cut.shown.panel]
-      if cut.shown.panel == 3 or cut.shown.panel == 6 then
+      local panel =  cut.shown.panel
+      if cut.shown.tracker == 2 then panel = panel + 3 end
+      local mylabel  =  cut.shown.panellabel[panel]
+--       if cut.shown.panel == 3 then
+      if panel == 3 then
          mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
       end
 
@@ -124,18 +128,25 @@ local function changetracker()
 
    if cut.shown.tracker == 1 then
       cut.shown.tracker =  2
-      cut.shown.panel   =  cut.shown.panel + 3
+      cut.shown.panel   =  cut.shown.panel - 1
    else
       cut.shown.tracker =  1
-      cut.shown.panel   =  cut.shown.panel - 3
+      cut.shown.panel   =  cut.shown.panel - 1
    end
 
+   -- change window Title
    cut.shown.windowtitle:SetText(string.format("%s", cut.html.title[cut.shown.tracker]), true)
+
+   -- change Displayed Panel Name
+   local mylabel = cut.shown.panellabel[cut.shown.panel]
+   if cut.shown.tracker == 2 then mylabel = cut.shown.panellabel[cut.shown.panel + 3] end
+   cut.shown.windowinfo:SetText(string.format("%s", mylabel), true)
 
    managepanels()
 
    return
 end
+
 
 function cut.createwindow()
 
@@ -167,8 +178,12 @@ function cut.createwindow()
    local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
    windowinfo:SetFontSize(cut.gui.font.size )
    windowinfo:SetFontSize(cut.gui.font.size -2 )
-   local mylabel  =  cut.shown.panellabel[cut.shown.panel]
-   if cut.shown.panel == 3  or cut.shown.panel == 6 then
+   local panel =  cut.shown.panel
+   if cut.shown.tracker == 2 then panel = panel + 3 end
+--    local mylabel  =  cut.shown.panellabel[cut.shown.panel]
+   local mylabel  =  cut.shown.panellabel[panel]
+--    if cut.shown.panel == 3  or cut.shown.panel == 6 then
+   if panel == 3 then
       mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
    end
    windowinfo:SetText(string.format("%s", mylabel), true)
@@ -408,7 +423,7 @@ function cut.updatecurrenciesweek(currency, value, id)
       cut.shown.weektbl[currency]         =  t
    end
 
-   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weektbl, 3)
+   cut.sortbykey(cut.frames.weekcontainer, cut.shown.weektbl, 1, 3)
 
    return
 end
@@ -428,7 +443,7 @@ function cut.updatecurrenciestoday(currency, value, id)
       cut.shown.todaytbl[currency]        =  t
    end
 
-   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 2)
+   cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 1, 2)
 
 --    print(string.format("<< cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
 
@@ -469,7 +484,7 @@ function cut.updatecurrencies(currency, value, id)
       cut.shown.currenttbl[currency]   =  t
    end
 
-   cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1)
+   cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1, 1)
 
    cut.updateothercurreciesview(currency, value)
 
@@ -502,7 +517,7 @@ function cut.updatenotorietyweek(notoriety, value, id)
       cut.shown.weeknotorietytbl[notoriety]  =  t
    end
 
-   cut.sortbykey(cut.frames.weeknotorietycontainer, cut.shown.weeknotorietytbl, 6)
+   cut.sortbykey(cut.frames.weeknotorietycontainer, cut.shown.weeknotorietytbl, 2, 3)
 
    return
 end
@@ -522,7 +537,7 @@ function cut.updatenotorietytoday(notoriety, value, id)
       cut.shown.todaynotorietytbl[notoriety] =  t
    end
 
-   cut.sortbykey(cut.frames.todaynotorietycontainer, cut.shown.todaynotorietytbl, 5)
+   cut.sortbykey(cut.frames.todaynotorietycontainer, cut.shown.todaynotorietytbl, 2, 2)
 
    --    print(string.format("<< cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
 
@@ -570,7 +585,7 @@ function cut.updatenotoriety(notoriety, value, id)
       cut.shown.currentnotorietytbl[notoriety]  =  t
    end
 
-   cut.sortbykey(cut.frames.container, cut.shown.currentnotorietytbl, 4)
+   cut.sortbykey(cut.frames.container, cut.shown.currentnotorietytbl, 2, 1)
 
    updateothernotorietyviews(notoriety, value)
 
