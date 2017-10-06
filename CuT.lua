@@ -61,7 +61,82 @@ function cut.changefontsize(newfontsize)
    return
 end
 
--- local function createwindow()
+local function managepanels()
+
+   local init  =  false
+   local a, b  =  nil, nil
+   for a,b in pairs(cut.frames.container) do init = true break end
+
+   if init then
+
+      cut.shown.panel   =  cut.shown.panel + 1
+      if cut.shown.panel > 6 then   cut.shown.panel = 1  end
+
+      -- Hide everything
+      cut.frames.container:SetVisible(false)
+      cut.frames.todaycontainer:SetVisible(false)
+      cut.frames.weekcontainer:SetVisible(false)
+      --
+      cut.frames.notorietycontainer:SetVisible(false)
+      cut.frames.todaynotorietycontainer:SetVisible(false)
+      cut.frames.weeknotorietycontainer:SetVisible(false)
+
+
+      local table =  nil
+      for _, table in ipairs( {  cut.shown.currenttbl,           cut.shown.todaytbl,           cut.shown.weektbl,
+         cut.shown.currentnotorietytbl,  cut.shown.todaynotorietytbl,  cut.shown.weeknotorietytbl  }) do
+            local var, val = nil
+            for var, val in pairs(table) do table[var].frame:SetVisible(false) end
+      end
+
+      if cut.shown.panel == 1 then  table =  cut.shown.currenttbl          cut.frames.container:SetVisible(true)                 end
+      if cut.shown.panel == 2 then  table =  cut.shown.todaytbl            cut.frames.todaycontainer:SetVisible(true)            end
+      if cut.shown.panel == 3 then  table =  cut.shown.weektbl             cut.frames.weekcontainer:SetVisible(true)             end
+      if cut.shown.panel == 4 then  table =  cut.shown.currentnotorietytbl cut.frames.notorietycontainer:SetVisible(true)        end
+      if cut.shown.panel == 5 then  table =  cut.shown.todaynotorietytbl   cut.frames.todaynotorietycontainer:SetVisible(true)   end
+      if cut.shown.panel == 6 then  table =  cut.shown.weeknotorietytbl    cut.frames.weeknotorietycontainer:SetVisible(true)    end
+
+      local a, b, flag  =  nil, nil, false
+      if table then
+         for a, b in pairs (table)  do flag = true break end
+         if flag then
+            for var, val in pairs(table) do
+               table[var].frame:SetVisible(true)
+            end
+         end
+      end
+      -- --------------------------------------------------------------------------
+
+      cut.resizewindow(cut.shown.panel)
+      --          cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+      local mylabel  =  cut.shown.panellabel[cut.shown.panel]
+      if cut.shown.panel == 3 or cut.shown.panel == 6 then
+         mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
+      end
+
+      cut.shown.windowinfo:SetText(string.format("%s", mylabel), true)
+   end
+
+   return
+end
+
+local function changetracker()
+
+   if cut.shown.tracker == 1 then
+      cut.shown.tracker =  2
+      cut.shown.panel   =  cut.shown.panel + 3
+   else
+      cut.shown.tracker =  1
+      cut.shown.panel   =  cut.shown.panel - 3
+   end
+
+   cut.shown.windowtitle:SetText(string.format("%s", cut.html.title[cut.shown.tracker]), true)
+
+   managepanels()
+
+   return
+end
+
 function cut.createwindow()
 
    --Global context (parent frame-thing).
@@ -79,16 +154,16 @@ function cut.createwindow()
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Forward, function() cut.changefontsize(2)   end,  "cutwindow_wheel_forward")
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Back,    function() cut.changefontsize(-2)  end,  "cutwindow_wheel_backward")
 
-
    -- Window Title
    local windowtitle =  UI.CreateFrame("Text", "window_title", cutwindow)
    windowtitle:SetFontSize(cut.gui.font.size )
-   windowtitle:SetText(string.format("%s", cut.html.title), true)
+   windowtitle:SetText(string.format("%s", cut.html.title[1]), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("TOPLEFT",   cutwindow, "TOPLEFT", cut.gui.borders.left, -11)
+   windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
    cut.shown.windowtitle   =  windowtitle
 
-
+   -- Window Panel Info
    local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
    windowinfo:SetFontSize(cut.gui.font.size )
    windowinfo:SetFontSize(cut.gui.font.size -2 )
@@ -99,60 +174,8 @@ function cut.createwindow()
    windowinfo:SetText(string.format("%s", mylabel), true)
    windowinfo:SetLayer(3)
    windowinfo:SetPoint("TOPRIGHT",   cutwindow, "TOPRIGHT", -cut.gui.borders.right, -11)
-   windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click,
-      function()
-         cut.shown.panel   =  cut.shown.panel + 1
-
-         if cut.shown.panel > 6 then   cut.shown.panel = 1  end
-
-         -- Hide everything
-         cut.frames.container:SetVisible(false)
-         cut.frames.todaycontainer:SetVisible(false)
-         cut.frames.weekcontainer:SetVisible(false)
-         --
-         cut.frames.notorietycontainer:SetVisible(false)
-         cut.frames.todaynotorietycontainer:SetVisible(false)
-         cut.frames.weeknotorietycontainer:SetVisible(false)
-
-
-         local table =  nil
-         for _, table in ipairs( {  cut.shown.currenttbl,           cut.shown.todaytbl,           cut.shown.weektbl,
-                                    cut.shown.currentnotorietytbl,  cut.shown.todaynotorietytbl,  cut.shown.weeknotorietytbl  }) do
-            local var, val = nil
-            for var, val in pairs(table) do table[var].frame:SetVisible(false) end
-         end
-
-         if cut.shown.panel == 1 then  table =  cut.shown.currenttbl          cut.frames.container:SetVisible(true)                 end
-         if cut.shown.panel == 2 then  table =  cut.shown.todaytbl            cut.frames.todaycontainer:SetVisible(true)            end
-         if cut.shown.panel == 3 then  table =  cut.shown.weektbl             cut.frames.weekcontainer:SetVisible(true)             end
-         if cut.shown.panel == 4 then  table =  cut.shown.currentnotorietytbl cut.frames.notorietycontainer:SetVisible(true)        end
-         if cut.shown.panel == 5 then  table =  cut.shown.todaynotorietytbl   cut.frames.todaynotorietycontainer:SetVisible(true)   end
-         if cut.shown.panel == 6 then  table =  cut.shown.weeknotorietytbl    cut.frames.weeknotorietycontainer:SetVisible(true)    end
-
-         local a, b, flag  =  nil, nil, false
-         if table then
-            for a, b in pairs (table)  do flag = true break end
-            if flag then
-               for var, val in pairs(table) do
-                  table[var].frame:SetVisible(true)
-               end
-            end
-         end
-         -- --------------------------------------------------------------------------
-
-         cut.resizewindow(cut.shown.panel)
---          cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
-         local mylabel  =  cut.shown.panellabel[cut.shown.panel]
-         if cut.shown.panel == 3 or cut.shown.panel == 6 then
-            mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
-         end
-         windowinfo:SetText(string.format("%s", mylabel), true)
-
-      end,
-      "Flip Panels" )
-
+   windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, managepanels, "Flip Panels" )
    cut.shown.windowinfo  =  windowinfo
-
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
@@ -215,11 +238,6 @@ function cut.createwindow()
 
 
    -- RESIZER WIDGET
---    local corner=  UI.CreateFrame("Text", "corner", cutwindow)
---    local text  =  "<font color=\'"..cut.html.red.."\'>o</font>"
---    corner:SetText(text, true)
---    corner:SetFontSize(cut.gui.font.size -2 )
-
    local corner=  UI.CreateFrame("Texture", "corner", cutwindow)
    corner:SetTexture("Rift", "chat_resize_(normal).png.dds")
    corner:SetHeight(cut.gui.font.size)

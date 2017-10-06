@@ -95,9 +95,12 @@ cut.html.platinum       =  '#e5e4e2'
 cut.html.white          =  '#ffffff'
 cut.html.red            =  '#ff0000'
 cut.html.green          =  '#00ff00'
-cut.html.title          =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
+cut.html.title          =  {}
+cut.html.title[1]       =  "<font color=\'"..cut.html.green.."\'>C</font><font color=\'"..cut.html.white.."\'>u</font><font color=\'"..cut.html.red.."\'>T</font>"
+cut.html.title[2]       =  "<font color=\'"..cut.html.green.."\'>N</font><font color=\'"..cut.html.white.."\'>o</font><font color=\'"..cut.html.red.."\'>T</font>"
 --
 cut.shown.panel         =  1
+cut.shown.tracker       =  1
 cut.shown.windowinfo    =  nil
 cut.shown.windowtitle   =  nil
 cut.shown.panellabel    =  {  [1]   =  "Current Currencies",
@@ -507,14 +510,7 @@ function cut.initnotorietybase()
          local cnt, a, b = 0, nil, nil
          for a,b in pairs(cut.notorietybase) do cnt = cnt + 1 break end
 
---          if cnt > 0 then
-            cut.init.notorietybase   =  true
---          else
---             -- we don't have data yet, we wait cut.timer.duration secs...
---             if not cut.timer.flag then
---                Command.Event.Attach(Event.System.Update.Begin, waitfornotorietys,  "Event.System.Update.Begin")
---             end
---          end
+         cut.init.notorietybase   =  true
       end
    end
 
@@ -559,7 +555,6 @@ function cut.startmeup()
          end
       end
 
-
       -- let's initialize Current Currencies database
       cut.initcoinbase()
 
@@ -574,7 +569,7 @@ function cut.startmeup()
       if cut.gui.window then cut.resizewindow(cut.shown.panel) end
 
       -- say "Hello World"
-      Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title, cut.version), true)
+      Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title[1] .. " & " .. cut.html.title[2], cut.version), true)
 
       -- restore user defined window visibility
       cut.gui.window:SetVisible(cut.gui.visible)
@@ -582,23 +577,9 @@ function cut.startmeup()
       -- ...don't come around here no more...
       cut.init.startup   =  true
 
---       -- TEST -- BEGIN
---       -- Show Available Currency Categories
---       local a, b = nil, nil
---       local c, d = nil, nil
---       for a, b in pairs(Inspect.Currency.Category.List()) do
---          local id, tbl = nil, nil
---          tbl  =  Inspect.Currency.Category.Detail(a)
---          print(string.format("Name=[%s], ID=[%s]", tbl.name, tbl.id))
---       end
---       -- TEST -- END
-
       -- we are ready for events
---       Command.Event.Attach(Event.Currency,            function(params) currencyevent(params)    end,    "CuT Currency Event")
---       Command.Event.Attach(Event.Faction.Notoriety,   function(params) notorietyevent(params)   end,   "CuT Notoriety Event")
       Command.Event.Attach(Event.Currency,            function(handle, params) cut.currencyevent(handle, params) end,    "CuT Currency Event")
       Command.Event.Attach(Event.Faction.Notoriety,   function(handle, params) cut.notorietyevent(handle, params) end,   "CuT Notoriety Event")
-
 
    end
 
