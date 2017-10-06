@@ -103,13 +103,21 @@ cut.shown.panel         =  1
 cut.shown.tracker       =  1
 cut.shown.windowinfo    =  nil
 cut.shown.windowtitle   =  nil
+-- cut.shown.panellabel    =  {  [1]   =  "Session Currencies",
+--                               [2]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Currencies</font>",
+--                               [3]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Currencies</font>",
+--                               [4]   =  "Session Notoriey",
+--                               [5]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Notoriety</font>",
+--                               [6]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Notoriety</font>"
+--                            }
 cut.shown.panellabel    =  {  [1]   =  "Session Currencies",
-                              [2]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Currencies</font>",
-                              [3]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Currencies</font>",
+                              [2]   =  "Today Currencies",
+                              [3]   =  "Week Currencies",
                               [4]   =  "Session Notoriey",
-                              [5]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Notoriety</font>",
-                              [6]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Notoriety</font>"
+                              [5]   =  "Today Notoriety",
+                              [6]   =  "Week Notoriety"
                            }
+
 --
 cut.frames              =  {}
 cut.frames.container    =  {}
@@ -117,7 +125,10 @@ cut.frames.container    =  {}
 cut.color               =  {}
 cut.color.black         =  {  0,  0,  0, .5}
 cut.color.red           =  { .2,  0,  0, .5}
-cut.color.green         =  { .0, .2,  0, .5}
+cut.color.green         =  {  0, .2,  0, .5}
+cut.color.blue          =  {  0,  0,  6, .1}
+cut.color.lightblue     =  {  0,  0, .4, .1}
+cut.color.darkblue      =  {  0,  0, .2, .1}
 cut.color.darkgrey      =  { .2, .2, .2, .5}
 --
 cut.session             =  {}
