@@ -407,6 +407,11 @@ function cut.currencyevent(handle, params)
          if cut.coinbase[var].stack == 0 then
             cut.coinbase[var].stack =  val
             --             print(string.format("Rebased currency: %s from 0 to %s.", var, val))
+            -- Rebase to 1 
+            --
+            local newvalue =  1
+            cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+            cut.deltas[var]   =  newvalue            
          else
             if val   ~= (cut.coinbase[var].stack) then
                local newvalue =  val - (cut.coinbase[var].stack)
