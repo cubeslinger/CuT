@@ -293,8 +293,8 @@ function cut.createwindow()
 end
 
 
-local function createnewline(currency, value, panel, id)
---    print(string.format("createnewline: c=%s, v=%s, panel=%s, id=%s", currency, value, panel, id))
+local function createnewcurrencyline(currency, value, panel, id)
+--    print(string.format("createnewcurrencyline: c=%s, v=%s, panel=%s, id=%s", currency, value, panel, id))
    local flag           =  ""
    local currencyframe  =  nil
    local base           =  {}
@@ -355,9 +355,9 @@ local function createnewline(currency, value, panel, id)
    return t
 end
 
-local function createnotorietynewline(notoriety, value, panel, id)
+local function createnewnotorietyline(notoriety, value, panel, id)
 
---    print(string.format("createnotorietynewline: c=%s, v=%s, panel=%s, id=%s", notoriety, value, panel, id))
+--    print(string.format("createnewnotorietyline: c=%s, v=%s, panel=%s, id=%s", notoriety, value, panel, id))
 
    local flag           =  ""
    local notorietyframe  =  nil
@@ -378,12 +378,31 @@ local function createnotorietynewline(notoriety, value, panel, id)
    notorietyframe:SetHeight(cut.gui.font.size)
    notorietyframe:SetLayer(2)
 
-   local notorietylabel  =  UI.CreateFrame("Text", "notoriety_label_" .. flag .. notoriety, notorietyframe)
+   --
+   -- Color Faction Name by Reputation standing
+   --
+   local color          =  {}
+   local desc           =  nil
+   local notorietylabel =  UI.CreateFrame("Text", "notoriety_label_" .. flag .. notoriety, notorietyframe)
+   if cut.notorietybase[notoriety] then
+      local notorietyid    =  cut.notorietybase[notoriety].id
+      local notorietytotal =  Inspect.Faction.Detail(notorietyid).notoriety
+      desc, color          =  cut.notorietycolor(notorietytotal)
+      if color == nil then color =  { r = .98,    g = .98,     b = .98,     }  end
+      print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
+   else
+      color =  { r = .98,    g = .98,     b = .98,     }
+   end
+
+   notorietylabel:SetFontColor(color.r, color.g, color.b)
    notorietylabel:SetFontSize(cut.gui.font.size)
    notorietylabel:SetText(string.format("%s:", notoriety))
    notorietylabel:SetLayer(3)
    notorietylabel:SetPoint("TOPLEFT",   notorietyframe, "TOPLEFT", cut.gui.borders.left, 0)
 
+   --
+   -- Notoriety Value
+   --
    if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
    else                 value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
    end
@@ -424,7 +443,7 @@ function cut.updatecurrenciesweek(currency, value, id)
       updatecurrencyvalue(currency, value, cut.shown.weektbl[currency].value, id)
    else
       local t  =  {}
-      t  =  createnewline(currency, value, 3, id)
+      t  =  createnewcurrencyline(currency, value, 3, id)
       cut.shown.weekframes.last           =  t.frame
       cut.shown.weektbl[currency]         =  t
    end
@@ -444,7 +463,7 @@ function cut.updatecurrenciestoday(currency, value, id)
       updatecurrencyvalue(currency, value, cut.shown.todaytbl[currency].value, id)
    else
       local t  =  {}
-      t  =  createnewline(currency, value, 2, id)
+      t  =  createnewcurrencyline(currency, value, 2, id)
       cut.shown.todayframes.last          =  t.frame
       cut.shown.todaytbl[currency]        =  t
    end
@@ -485,7 +504,7 @@ function cut.updatecurrencies(currency, value, id)
       updatecurrencyvalue(currency, value, cut.shown.currenttbl[currency].value, id)
    else
       local t  =  {}
-      t  =  createnewline(currency, value, 1, id)
+      t  =  createnewcurrencyline(currency, value, 1, id)
       cut.shown.frames.last            =  t.frame
       cut.shown.currenttbl[currency]   =  t
    end
@@ -510,15 +529,29 @@ local function updatenotorietyvalue(notoriey, value, field, id)
    return
 end
 
+local function updatenotorietystanding(id, field)
+
+   local color          =  {}
+   local desc           =  nil
+   local notorietytotal =  Inspect.Faction.Detail(id).notoriety
+   desc, color          =  cut.notorietycolor(notorietytotal)
+   if color == nil then color =  { r = .98,    g = .98,     b = .98,     }  end
+
+   field:SetFontColor(color.r, color.g, color.b)
+
+   return
+end
+
 function cut.updatenotorietyweek(notoriety, value, id)
 
    if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
    if cut.shown.weeknotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.weeknotorietytbl[notoriety].value, id)
+      updatenotorietystanding(id, cut.shown.weeknotorietytbl[notoriety].label)
    else
       local t  =  {}
-      t  =  createnotorietynewline(notoriety, value, 6, id)
+      t  =  createnewnotorietyline(notoriety, value, 6, id)
       cut.shown.weeknotorietyframes.last     =  t.frame
       cut.shown.weeknotorietytbl[notoriety]  =  t
    end
@@ -536,9 +569,10 @@ function cut.updatenotorietytoday(notoriety, value, id)
 
    if cut.shown.todaynotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.todaynotorietytbl[notoriety].value, id)
+      updatenotorietystanding(id, cut.shown.todaynotorietytbl[notoriety].label)
    else
       local t  =  {}
-      t  =  createnotorietynewline(notoriety, value, 5, id)
+      t  =  createnewnotorietyline(notoriety, value, 5, id)
       cut.shown.todaynotorietyframes.last    =  t.frame
       cut.shown.todaynotorietytbl[notoriety] =  t
    end
@@ -582,7 +616,7 @@ function cut.updatenotoriety(notoriety, value, id)
       updatenotorietyvalue(notoriety, value, cut.shown.currentnotorietytbl[notoriety].value, id)
    else
       local t  =  {}
-      t  =  createnotorietynewline(notoriety, value, 4, id)
+      t  =  createnewnotorietyline(notoriety, value, 4, id)
 --       local a, b =   nil, nil
 --       for a, b in pairs (t) do
 --          print(string.format("cut.updatenotorieties key=%s val=%s", a, b ))

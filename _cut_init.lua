@@ -407,11 +407,11 @@ function cut.currencyevent(handle, params)
          if cut.coinbase[var].stack == 0 then
             cut.coinbase[var].stack =  val
             --             print(string.format("Rebased currency: %s from 0 to %s.", var, val))
-            -- Rebase to 1 
+            -- Rebase to 1
             --
             local newvalue =  1
             cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-            cut.deltas[var]   =  newvalue            
+            cut.deltas[var]   =  newvalue
          else
             if val   ~= (cut.coinbase[var].stack) then
                local newvalue =  val - (cut.coinbase[var].stack)
@@ -543,6 +543,12 @@ function cut.startmeup()
          cut.gui.mmbtnobj:SetVisible(true)
       end
 
+      -- let's initialize Current Currencies database
+      cut.initcoinbase()
+
+      -- let's initialize Current Notorieties database
+      cut.initnotorietybase()
+
       -- if we have Currencies Today session data, we restore it in the today pane
       if cut.init.day then
          for currency, tbl in pairs(cut.save.day) do
@@ -571,11 +577,11 @@ function cut.startmeup()
          end
       end
 
-      -- let's initialize Current Currencies database
-      cut.initcoinbase()
-
-      -- let's initialize Current Notorieties database
-      cut.initnotorietybase()
+--       -- let's initialize Current Currencies database
+--       cut.initcoinbase()
+--
+--       -- let's initialize Current Notorieties database
+--       cut.initnotorietybase()
 
       -- create window if needed
       if not cut.gui.window then cut.gui.window = cut.createwindow() end
@@ -619,3 +625,49 @@ function cut.resizewindow(tracker, panel)
 
    return
 end
+
+function cut.notorietycolor(notoriety)
+
+   local rep   =  "Neutral"
+   local color =  {}
+   if notoriety   <  3000                          then  rep   =  "Neutral"    color  =  { r = .98,    g = .98,    b = .98    }	end   -- 8
+   if notoriety   >  2999  and   notoriety < 10000 then  rep   =  "Friendly"   color  =  { r = 0,      g = .797,   b = 0      }  end   -- 3
+   if notoriety   >  9999  and   notoriety < 20000 then  rep   =  "Decorated"  color  =  { r = .148,   g = .496,   b = .977	}  end   -- 4
+   if notoriety   > 19999  and   notoriety < 35000 then  rep   =  "Honored"    color  =  { r = .676,   g = .281,   b = .98    }  end   -- 5
+   if notoriety   > 34999  and   notoriety < 60000 then  rep   =  "Revered"    color  =  { r = 1,      g = 1,      b = 0      }  end   -- 6
+   if notoriety   > 59999  and   notoriety < 90000 then  rep   =  "Glorified"  color  =  { r = 1,      g = .5,     b = 0      }  end   -- 7
+   if notoriety   > 90000                          then  rep   =  "Venerated"  color  =  { r = .98,    g = .98,    b = .98	   }  end   -- 8
+
+   print(string.format("cut.notorietycolor: rep(%s) color(%s,%s,%s)", rep, color.r, color.g, color.b))
+
+   return rep, color
+end
+
+--[[
+
+   Neutral     –       0 to 2,999
+   Friendly    –   3,000 to 9,999
+   Decorated   –  10,000 to 19,999
+   Honored     –  20,000 to 34,999
+   Revered     –  35,000 to 59,999
+   Glorified   –  60,000 to 89,999
+   Venerated   –  90,000
+
+   local rep   =  "Neutral"
+   if notoriety   >  2999  and   notoriety < 10000 then rep = "Friendly"   end
+   if notoriety   >  9999  and   notoriety < 20000 then rep = "Decorated"  end
+   if notoriety   > 19999  and   notoriety < 35000 then rep = "Honored"    end
+   if notoriety   > 34999  and   notoriety < 60000 then rep = "Revered"    end
+   if notoriety   > 59999  and   notoriety < 90000 then rep = "Glorified"  end
+   if notoriety   > 90000                          then rep = "Venerated"  end
+
+   if        rarityName == "sellable"  then color  =  { r = .55375, g = .55375, b = .55375,  }  -- 1
+      elseif rarityName == "common"    then color  =  { r = .98,    g = .98     b = .98,     }  -- 2
+      elseif rarityName == "uncommon"  then color  =  { r = 0,      g = .797,   b = 0,       }  -- 3
+      elseif rarityName == "rare"      then color  =  { r = .148,   g = .496,   b = .977,    }  -- 4
+      elseif rarityName == "epic"      then color  =  { r = .676,   g = .281,   b = .98,     }  -- 5
+      elseif rarityName == "quest"     then color  =  { r = 1,      g = 1,      b = 0,       }  -- 6
+      elseif rarityName == "relic"     then color  =  { r = 1,      g = .5,     b = 0,       }  -- 7
+      else                                  color  =  { r = .98,    g = .98     b = .98,     }  -- 8
+
+   ]] --
