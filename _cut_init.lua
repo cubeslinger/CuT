@@ -620,7 +620,6 @@ function cut.resizewindow(tracker, panel)
 end
 
 function cut.notorietycolor(notoriety)
-
    local rep   =  "Neutral"
    local color =  {}
    if notoriety   <  3000                          then  rep   =  "Neutral"    color  =  { r = .98,    g = .98,    b = .98    }	end   -- 8
@@ -631,7 +630,7 @@ function cut.notorietycolor(notoriety)
    if notoriety   > 59999  and   notoriety < 90000 then  rep   =  "Glorified"  color  =  { r = 1,      g = .5,     b = 0      }  end   -- 7
    if notoriety   > 90000                          then  rep   =  "Venerated"  color  =  { r = .98,    g = .98,    b = .98	   }  end   -- 8
 
---    print(string.format("cut.notorietycolor: rep(%s) color(%s,%s,%s)", rep, color.r, color.g, color.b))
+--    print(string.format("cut.notorietycolor: notoriety(%s) rep(%s) color(%s,%s,%s)", notoriety, rep, color.r, color.g, color.b))
 
    return rep, color
 end

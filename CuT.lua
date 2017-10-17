@@ -387,18 +387,15 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    --
    -- Color Faction Name by Reputation standing
    --
-   local color          =  {}
-   local desc           =  nil
+   local color          =  { r = .98,    g = .98,     b = .98,     }
+   local desc           =  '<unknown>'
    local notorietylabel =  UI.CreateFrame("Text", "notoriety_label_" .. flag .. notoriety, notorietyframe)
    if cut.notorietybase[notoriety] then
       local notorietyid    =  cut.notorietybase[notoriety].id
       local notorietytotal =  Inspect.Faction.Detail(notorietyid).notoriety
-      desc, color          =  cut.notorietycolor(notorietytotal)
-      if color == nil then color =  { r = .98,    g = .98,     b = .98,     }  end
---       print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
-   else
-      color =  { r = .98,    g = .98,     b = .98,     }
-   end
+      desc, color          =  cut.notorietycolor(notorietytotal)      
+      print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
+   end 
 
    notorietylabel:SetFontColor(color.r, color.g, color.b)
    notorietylabel:SetFontSize(cut.gui.font.size)
@@ -548,11 +545,11 @@ end
 
 local function updatenotorietystanding(id, factionname, standing)
 
-   local color          =  {}
-   local desc           =  nil
+   local color          =  { r = .98,    g = .98,     b = .98,     }
+   local desc           =  '<unknown>'
    local notorietytotal =  Inspect.Faction.Detail(id).notoriety
    desc, color          =  cut.notorietycolor(notorietytotal)
-   if color == nil then color =  { r = .98,    g = .98,     b = .98,     }  end
+   print(string.format("desc(%s) color(%s)", desc, color))
 
    factionname:SetFontColor(color.r, color.g, color.b)
    standing:SetFontColor(color.r, color.g, color.b)
