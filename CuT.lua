@@ -114,7 +114,7 @@ local function managepanels()
       if cut.shown.tracker == 2 then panel = panel + 3 end
       local mylabel  =  cut.shown.panellabel[panel]
 --       if cut.shown.panel == 3 then
-      if panel == 3 then
+      if panel == 3 or panel == 6 then
          mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
       end
 
@@ -360,21 +360,27 @@ local function createnewnotorietyline(notoriety, value, panel, id)
 --    print(string.format("createnewnotorietyline: c=%s, v=%s, panel=%s, id=%s", notoriety, value, panel, id))
 
    local flag           =  ""
-   local notorietyframe  =  nil
+   local notorietyframe =  nil
+   local container      =  nil
 
-   if panel == 4 then
-      flag = "_current_"
-      notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag .. "frame", cut.frames.notorietycontainer)      -- CUT notoriety container
-   end
-   if panel == 5 then
-      flag = "_today_"
-      notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", cut.frames.todaynotorietycontainer)
-   end
-   if panel == 6 then
-      flag = "_week_"
-      notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", cut.frames.weeknotorietycontainer)
-   end
+--    if panel == 4 then
+--       flag = "_current_"
+--       notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag .. "frame", cut.frames.notorietycontainer)      -- CUT notoriety container
+--    end
+--    if panel == 5 then
+--       flag = "_today_"
+--       notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", cut.frames.todaynotorietycontainer)
+--    end
+--    if panel == 6 then
+--       flag = "_week_"
+--       notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", cut.frames.weeknotorietycontainer)
+--    end
 
+   if panel == 4 then   flag = "_current_"   container   =  cut.frames.notorietycontainer       end
+   if panel == 5 then   flag = "_today_"     container   =  cut.frames.todaynotorietycontainer  end
+   if panel == 6 then   flag = "_week_"      container   =  cut.frames.weeknotorietycontainer   end
+
+   notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", container)
    notorietyframe:SetHeight(cut.gui.font.size)
    notorietyframe:SetLayer(2)
 
@@ -389,7 +395,7 @@ local function createnewnotorietyline(notoriety, value, panel, id)
       local notorietytotal =  Inspect.Faction.Detail(notorietyid).notoriety
       desc, color          =  cut.notorietycolor(notorietytotal)
       if color == nil then color =  { r = .98,    g = .98,     b = .98,     }  end
-      print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
+--       print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
    else
       color =  { r = .98,    g = .98,     b = .98,     }
    end
@@ -399,6 +405,17 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietylabel:SetText(string.format("%s:", notoriety))
    notorietylabel:SetLayer(3)
    notorietylabel:SetPoint("TOPLEFT",   notorietyframe, "TOPLEFT", cut.gui.borders.left, 0)
+
+   --
+   -- Notoriety Standing Name
+   --
+   local notorietystanding =  UI.CreateFrame("Text", "notoriety_standing_" .. flag .. notoriety, notorietyframe)
+   notorietystanding:SetFontSize(cut.gui.font.size )
+   notorietystanding:SetFontColor(color.r, color.g, color.b)
+   notorietystanding:SetWidth(cut.gui.font.size*4)
+   notorietystanding:SetText(string.format("%s", (desc or '<unknown>')), true)
+   notorietystanding:SetLayer(3)
+   notorietystanding:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
 
    --
    -- Notoriety Value
@@ -411,10 +428,10 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietyvalue:SetFontSize(cut.gui.font.size )
    notorietyvalue:SetText(string.format("%s", value), true)
    notorietyvalue:SetLayer(3)
---    notorietyvalue:SetPoint("TOPLEFT",   notorietylabel, "TOPRIGHT", cut.gui.borders.left, 0)
-   notorietyvalue:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
+--    notorietyvalue:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
+   notorietyvalue:SetPoint("TOPRIGHT",  notorietystanding, "TOPLEFT", -cut.gui.borders.right, 0)
 
-   local t  =  {  frame=notorietyframe, label=notorietylabel, value=notorietyvalue }
+   local t  =  {  frame=notorietyframe, label=notorietylabel, value=notorietyvalue, standing=notorietystanding }
 
    return t
 end
@@ -529,7 +546,7 @@ local function updatenotorietyvalue(notoriey, value, field, id)
    return
 end
 
-local function updatenotorietystanding(id, field)
+local function updatenotorietystanding(id, factionname, standing)
 
    local color          =  {}
    local desc           =  nil
@@ -537,7 +554,9 @@ local function updatenotorietystanding(id, field)
    desc, color          =  cut.notorietycolor(notorietytotal)
    if color == nil then color =  { r = .98,    g = .98,     b = .98,     }  end
 
-   field:SetFontColor(color.r, color.g, color.b)
+   factionname:SetFontColor(color.r, color.g, color.b)
+   standing:SetFontColor(color.r, color.g, color.b)
+   standing:SetText(desc)
 
    return
 end
@@ -548,7 +567,7 @@ function cut.updatenotorietyweek(notoriety, value, id)
 
    if cut.shown.weeknotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.weeknotorietytbl[notoriety].value, id)
-      updatenotorietystanding(id, cut.shown.weeknotorietytbl[notoriety].label)
+      updatenotorietystanding(id, cut.shown.weeknotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing)
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 6, id)
@@ -569,7 +588,7 @@ function cut.updatenotorietytoday(notoriety, value, id)
 
    if cut.shown.todaynotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.todaynotorietytbl[notoriety].value, id)
-      updatenotorietystanding(id, cut.shown.todaynotorietytbl[notoriety].label)
+      updatenotorietystanding(id, cut.shown.todaynotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing)
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 5, id)

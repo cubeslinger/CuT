@@ -103,13 +103,6 @@ cut.shown.panel         =  1
 cut.shown.tracker       =  1
 cut.shown.windowinfo    =  nil
 cut.shown.windowtitle   =  nil
--- cut.shown.panellabel    =  {  [1]   =  "Session Currencies",
---                               [2]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Currencies</font>",
---                               [3]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Currencies</font>",
---                               [4]   =  "Session Notoriey",
---                               [5]   =  "<font color=\'"  .. cut.html.red   .. "\'>Today Notoriety</font>",
---                               [6]   =  "<font color=\'"  .. cut.html.green .. "\'>Week Notoriety</font>"
---                            }
 cut.shown.panellabel    =  {  [1]   =  "Session Currencies",
                               [2]   =  "Today Currencies",
                               [3]   =  "Week Currencies",
@@ -638,36 +631,7 @@ function cut.notorietycolor(notoriety)
    if notoriety   > 59999  and   notoriety < 90000 then  rep   =  "Glorified"  color  =  { r = 1,      g = .5,     b = 0      }  end   -- 7
    if notoriety   > 90000                          then  rep   =  "Venerated"  color  =  { r = .98,    g = .98,    b = .98	   }  end   -- 8
 
-   print(string.format("cut.notorietycolor: rep(%s) color(%s,%s,%s)", rep, color.r, color.g, color.b))
+--    print(string.format("cut.notorietycolor: rep(%s) color(%s,%s,%s)", rep, color.r, color.g, color.b))
 
    return rep, color
 end
-
---[[
-
-   Neutral     –       0 to 2,999
-   Friendly    –   3,000 to 9,999
-   Decorated   –  10,000 to 19,999
-   Honored     –  20,000 to 34,999
-   Revered     –  35,000 to 59,999
-   Glorified   –  60,000 to 89,999
-   Venerated   –  90,000
-
-   local rep   =  "Neutral"
-   if notoriety   >  2999  and   notoriety < 10000 then rep = "Friendly"   end
-   if notoriety   >  9999  and   notoriety < 20000 then rep = "Decorated"  end
-   if notoriety   > 19999  and   notoriety < 35000 then rep = "Honored"    end
-   if notoriety   > 34999  and   notoriety < 60000 then rep = "Revered"    end
-   if notoriety   > 59999  and   notoriety < 90000 then rep = "Glorified"  end
-   if notoriety   > 90000                          then rep = "Venerated"  end
-
-   if        rarityName == "sellable"  then color  =  { r = .55375, g = .55375, b = .55375,  }  -- 1
-      elseif rarityName == "common"    then color  =  { r = .98,    g = .98     b = .98,     }  -- 2
-      elseif rarityName == "uncommon"  then color  =  { r = 0,      g = .797,   b = 0,       }  -- 3
-      elseif rarityName == "rare"      then color  =  { r = .148,   g = .496,   b = .977,    }  -- 4
-      elseif rarityName == "epic"      then color  =  { r = .676,   g = .281,   b = .98,     }  -- 5
-      elseif rarityName == "quest"     then color  =  { r = 1,      g = 1,      b = 0,       }  -- 6
-      elseif rarityName == "relic"     then color  =  { r = 1,      g = .5,     b = 0,       }  -- 7
-      else                                  color  =  { r = .98,    g = .98     b = .98,     }  -- 8
-
-   ]] --
