@@ -620,17 +620,57 @@ function cut.resizewindow(tracker, panel)
 end
 
 function cut.notorietycolor(notoriety)
-   local rep   =  "Neutral"
-   local color =  {}
-   if notoriety   <  3000                          then  rep   =  "Neutral"    color  =  { r = .98,    g = .98,    b = .98    }	end   -- 8
-   if notoriety   >  2999  and   notoriety < 10000 then  rep   =  "Friendly"   color  =  { r = 0,      g = .797,   b = 0      }  end   -- 3
-   if notoriety   >  9999  and   notoriety < 20000 then  rep   =  "Decorated"  color  =  { r = .148,   g = .496,   b = .977	}  end   -- 4
-   if notoriety   > 19999  and   notoriety < 35000 then  rep   =  "Honored"    color  =  { r = .676,   g = .281,   b = .98    }  end   -- 5
-   if notoriety   > 34999  and   notoriety < 60000 then  rep   =  "Revered"    color  =  { r = 1,      g = 1,      b = 0      }  end   -- 6
-   if notoriety   > 59999  and   notoriety < 90000 then  rep   =  "Glorified"  color  =  { r = 1,      g = .5,     b = 0      }  end   -- 7
-   if notoriety   > 90000                          then  rep   =  "Venerated"  color  =  { r = .98,    g = .98,    b = .98	   }  end   -- 8
+   local repcolors   =  {  [1] = { r = .243,   g = 0,      b = 0      },
+                           [2] = { r = 0,      g = 1,      b = .0     },
+                           [3] = { r = .148,   g = .496,   b = .977	 },
+                           [4] = { r = .676,   g = .281,   b = .98    },
+                           [5] = { r = 1,      g = 1,      b = 0      },
+                           [6] = { r = 1,      g = .5,     b = 0      },
+                           [7] = { r = .98,    g = .98,    b = .98	 }
+                           }
+   local idx         =  1
 
---    print(string.format("cut.notorietycolor: notoriety(%s) rep(%s) color(%s,%s,%s)", notoriety, rep, color.r, color.g, color.b))
+   -- code taken from by AutoFactionBar by dargor@gmx.net -- begin
+   local n = notoriety - 23000 -- neutral starts at 23000; notoriety at least neutral
+   rep = "Neutral"
+   nMax = 3000
+   if n >= 3000 then -- at least friendly
+      rep   =  "Friendly"
+      n     =  n - 3000
+      nMax  =  10000
+      idx   =  2
+      if n >= 10000 then -- at least decorated
+         rep   =  "Decorated"
+         n     =  n - 10000
+         nMax  =  20000
+         idx   =  3
+         if n >= 20000 then -- at least honored
+            rep   =  "Honored"
+            n     =  n - 20000
+            nMax  =  35000
+            idx   =  4
+            if n >= 35000 then -- at least revered
+               rep   =  "Revered"
+               n     =  n - 35000
+               nMax  =  60000
+               idx   =  5
+               if n >= 60000 then -- at least glorified
+                  rep   =  "Glorified"
+                  n     =  n - 60000
+                  nMax  =  90000
+                  idx   =  6
+                  if n >= 90000 then -- at least venerated (Patch 2.3)
+                     rep   =  "Venerated"
+                     n     =  n - 90000
+                     nMax  =  120000
+                     idx   =  7
+                  end
+               end
+            end
+         end
+      end
+   end
+   -- code taken from by AutoFactionBar by dargor@gmx.net -- end
 
-   return rep, color
+   return rep, repcolors[idx]
 end

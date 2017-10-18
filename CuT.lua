@@ -363,19 +363,6 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    local notorietyframe =  nil
    local container      =  nil
 
---    if panel == 4 then
---       flag = "_current_"
---       notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag .. "frame", cut.frames.notorietycontainer)      -- CUT notoriety container
---    end
---    if panel == 5 then
---       flag = "_today_"
---       notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", cut.frames.todaynotorietycontainer)
---    end
---    if panel == 6 then
---       flag = "_week_"
---       notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", cut.frames.weeknotorietycontainer)
---    end
-
    if panel == 4 then   flag = "_current_"   container   =  cut.frames.notorietycontainer       end
    if panel == 5 then   flag = "_today_"     container   =  cut.frames.todaynotorietycontainer  end
    if panel == 6 then   flag = "_week_"      container   =  cut.frames.weeknotorietycontainer   end
@@ -393,9 +380,9 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    if cut.notorietybase[notoriety] then
       local notorietyid    =  cut.notorietybase[notoriety].id
       local notorietytotal =  Inspect.Faction.Detail(notorietyid).notoriety
-      desc, color          =  cut.notorietycolor(notorietytotal)      
-      print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
-   end 
+      desc, color          =  cut.notorietycolor(notorietytotal)
+--       print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
+   end
 
    notorietylabel:SetFontColor(color.r, color.g, color.b)
    notorietylabel:SetFontSize(cut.gui.font.size)
@@ -409,7 +396,7 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    local notorietystanding =  UI.CreateFrame("Text", "notoriety_standing_" .. flag .. notoriety, notorietyframe)
    notorietystanding:SetFontSize(cut.gui.font.size )
    notorietystanding:SetFontColor(color.r, color.g, color.b)
-   notorietystanding:SetWidth(cut.gui.font.size*4)
+   notorietystanding:SetWidth(cut.gui.font.size*5)
    notorietystanding:SetText(string.format("%s", (desc or '<unknown>')), true)
    notorietystanding:SetLayer(3)
    notorietystanding:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
@@ -489,27 +476,6 @@ function cut.updatecurrenciestoday(currency, value, id)
    return
 end
 
-function cut.updateothercurreciesview(var, val)
-
-   if table.contains(cut.save.day, var) then
---       print(string.format("pre  cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
-      cut.updatecurrenciestoday(var, (cut.save.day[var].stack + val), cut.save.day[var].id)
---       print(string.format("post cut.save.day[%s].stack=%s", var, cut.save.day[var].stack))
-   else
-      cut.save.day[var]   =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
-      cut.updatecurrenciestoday(var, val, cut.save.day[var].id)
-   end
-
-   if table.contains(cut.save.week, var) then
-      cut.updatecurrenciesweek(var, (val + cut.save.week[var].stack), cut.save.week[var].id)
-   else
-      cut.save.week[var]    =  { stack=0, icon=cut.coinbase[var].icon, id=cut.coinbase[var].id, smax=cut.coinbase[var].stackMax }
-      cut.updatecurrenciesweek(var, val, cut.save.week[var].id)
-   end
-
-   return
-end
-
 function cut.updatecurrencies(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = cut.createwindow() end
@@ -525,7 +491,21 @@ function cut.updatecurrencies(currency, value, id)
 
    cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1, 1)
 
-   cut.updateothercurreciesview(currency, value)
+   if table.contains(cut.save.day, currency) then
+--       print(string.format("pre  cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
+      cut.updatecurrenciestoday(currency, (cut.save.day[currency].stack + value), cut.save.day[currency].id)
+--       print(string.format("post cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
+   else
+      cut.save.day[currency]   =  { stack=0, icon=cut.coinbase[currency].icon, id=cut.coinbase[currency].id, smax=cut.coinbase[currency].stackMax }
+      cut.updatecurrenciestoday(currency, value, cut.save.day[currency].id)
+   end
+
+   if table.contains(cut.save.week, currency) then
+      cut.updatecurrenciesweek(currency, (value + cut.save.week[currency].stack), cut.save.week[currency].id)
+   else
+      cut.save.week[currency]    =  { stack=0, icon=cut.coinbase[currency].icon, id=cut.coinbase[currency].id, smax=cut.coinbase[currency].stackMax }
+      cut.updatecurrenciesweek(currency, value, cut.save.week[currency].id)
+   end
 
    return
 end
@@ -549,7 +529,7 @@ local function updatenotorietystanding(id, factionname, standing)
    local desc           =  '<unknown>'
    local notorietytotal =  Inspect.Faction.Detail(id).notoriety
    desc, color          =  cut.notorietycolor(notorietytotal)
-   print(string.format("desc(%s) color(%s)", desc, color))
+--    print(string.format("desc(%s) color(%s)", desc, color))
 
    factionname:SetFontColor(color.r, color.g, color.b)
    standing:SetFontColor(color.r, color.g, color.b)
@@ -600,30 +580,6 @@ function cut.updatenotorietytoday(notoriety, value, id)
    return
 end
 
-
-local function updateothernotorietyviews(var, val)
-
---    print(string.format("updateothernotorietyviews(var=%s, val=%s)", var, val))
-
-   if table.contains(cut.save.notorietytoday, var) then
-      --       print(string.format("pre  cut.save.notorietytoday[%s].stack=%s", var, cut.save.notorietytoday[var].stack))
-      cut.updatenotorietytoday(var, (cut.save.notorietytoday[var].stack + val), cut.save.notorietytoday[var].id)
-      --       print(string.format("post cut.save.notorietytoday[%s].stack=%s", var, cut.save.notorietytoday[var].stack))
-   else
-      cut.save.notorietytoday[var]   =  { stack=0, id=cut.notorietybase[var].id }
-      cut.updatenotorietytoday(var, val, cut.save.notorietytoday[var].id)
-   end
-
-   if table.contains(cut.save.notorietyweek, var) then
-      cut.updatenotorietyweek(var, (val + cut.save.notorietyweek[var].stack), cut.save.notorietyweek[var].id)
-   else
-      cut.save.notorietyweek[var]    =  { stack=0, id=cut.notorietybase[var].id }
-      cut.updatenotorietyweek(var, val, cut.save.notorietyweek[var].id)
-   end
-
-   return
-end
-
 function cut.updatenotoriety(notoriety, value, id)
 
    if not cut.gui.window then cut.gui.window = cut.createwindow() end
@@ -643,7 +599,21 @@ function cut.updatenotoriety(notoriety, value, id)
 
    cut.sortbykey(cut.frames.container, cut.shown.currentnotorietytbl, 2, 1)
 
-   updateothernotorietyviews(notoriety, value)
+   if table.contains(cut.save.notorietytoday, notoriety) then
+      --       print(string.format("pre  cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
+      cut.updatenotorietytoday(notoriety, (cut.save.notorietytoday[notoriety].stack + value), cut.save.notorietytoday[notoriety].id)
+      --       print(string.format("post cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
+   else
+      cut.save.notorietytoday[notoriety]   =  { stack=0, id=cut.notorietybase[notoriety].id }
+      cut.updatenotorietytoday(notoriety, value, cut.save.notorietytoday[notoriety].id)
+   end
+
+   if table.contains(cut.save.notorietyweek, notoriety) then
+      cut.updatenotorietyweek(notoriety, (value + cut.save.notorietyweek[notoriety].stack), cut.save.notorietyweek[notoriety].id)
+   else
+      cut.save.notorietyweek[notoriety]    =  { stack=0, id=cut.notorietybase[notoriety].id }
+      cut.updatenotorietyweek(notoriety, value, cut.save.notorietyweek[notoriety].id)
+   end
 
    return
 end
