@@ -357,14 +357,6 @@ local function getnotorieties()
       local detail = Inspect.Faction.Detail(notoriety)
       if detail then
          notorieties[detail.name] = { stack=detail.notoriety, id=detail.id }
-
-   --       local a,b = nil, nil
-   --       for a,b in pairs(detail) do
-   --          print(string.format("CuT Notoriety:   key=(%s) val=(%s)", a, b))
-   --       end
-   --
-   --       print(string.format("CuT Notoriety: id=%s =>(name=%s) (stack=%s)", notorieties[detail.name].id, detail.name, notorieties[detail.name].stack))
-
          cut.notorietyname2idx[detail.name] =  notoriety
       else
          print(string.format("Notoriety detail is NIL for: (%s)", notoriety))
@@ -374,16 +366,15 @@ local function getnotorieties()
    return notorieties
 end
 
--- local function currencyevent(handle, params)
 function cut.currencyevent(handle, params)
---    if params then
---       for a,b in pairs(params) do
---          print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
---       end
---    else
---       print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
---    end
---       print("CURRENCY EVENT")
+   if params then
+      for a,b in pairs(params) do
+         print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
+      end
+   else
+      print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
+   end
+      print("CURRENCY EVENT")
 
    local current  =  getcoins()
    local var, val =  nil, nil, nil
@@ -432,14 +423,14 @@ end
 
 -- local function notorietyevent(handle, params)
 function cut.notorietyevent(handle, params)
---    if params then
---       for a,b in pairs(params) do
---          print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
---       end
---    else
---       print("CuT: notorietyevent params is NIL")
---       print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
---    end
+   if params then
+      for a,b in pairs(params) do
+         print(string.format("CuT: notorietyevent params key=%s value=%s", a, b))
+      end
+   else
+      print("CuT: notorietyevent params is NIL")
+      print(string.format("CuT: notorietyevent params handle=%s params=%s", handle, params))
+   end
 
    local current  =  getnotorieties()
    local var, val =  nil, nil
@@ -619,86 +610,32 @@ function cut.resizewindow(tracker, panel)
    return
 end
 
--- function cut.notorietycolor(notoriety)
---    local repcolors   =  {  [1] = { r = .243,   g = 0,      b = 0      },
---                            [2] = { r = 0,      g = 1,      b = .0     },
---                            [3] = { r = .148,   g = .496,   b = .977	 },
---                            [4] = { r = .676,   g = .281,   b = .98    },
---                            [5] = { r = 1,      g = 1,      b = 0      },
---                            [6] = { r = 1,      g = .5,     b = 0      },
---                            [7] = { r = .98,    g = .98,    b = .98	 }
---                            }
---    local idx         =  1
---
---    -- code taken from by AutoFactionBar by dargor@gmx.net -- begin
---    local n = notoriety - 23000 -- neutral starts at 23000; notoriety at least neutral
---    rep = "Neutral"
---    nMax = 3000
---    if n >= 3000 then -- at least friendly
---       rep   =  "Friendly"
---       n     =  n - 3000
---       nMax  =  10000
---       idx   =  2
---       if n >= 10000 then -- at least decorated
---          rep   =  "Decorated"
---          n     =  n - 10000
---          nMax  =  20000
---          idx   =  3
---          if n >= 20000 then -- at least honored
---             rep   =  "Honored"
---             n     =  n - 20000
---             nMax  =  35000
---             idx   =  4
---             if n >= 35000 then -- at least revered
---                rep   =  "Revered"
---                n     =  n - 35000
---                nMax  =  60000
---                idx   =  5
---                if n >= 60000 then -- at least glorified
---                   rep   =  "Glorified"
---                   n     =  n - 60000
---                   nMax  =  90000
---                   idx   =  6
---                   if n >= 90000 then -- at least venerated (Patch 2.3)
---                      rep   =  "Venerated"
---                      n     =  n - 90000
---                      nMax  =  120000
---                      idx   =  7
---                   end
---                end
---             end
---          end
---       end
---    end
---    -- code taken from by AutoFactionBar by dargor@gmx.net -- end
---
---    return rep, repcolors[idx]
--- end
 
 function cut.notorietycolor(notoriety)
 
-   repstack =  {  {  val=3000,   rep="Friendly",   color={ r = 0,      g = 1,      b = .0     } },
-                  {  val=10000,  rep="Decorated",  color={ r = .148,   g = .496,   b = .977	 } },
-                  {  val=20000,  rep="Honored",    color={ r = .676,   g = .281,   b = .98    } },
-                  {  val=35000,  rep="Revered",    color={ r = 1,      g = 1,      b = 0      } },
-                  {  val=60000,  rep="Glorified",  color={ r = 1,      g = .5,     b = 0      } },
-                  {  val=90000,  rep="Venerated",  color={ r = .98,    g = .98,    b = .98	 } }
-                }
-
    local mynotoriety =  notoriety - 23000                      -- We Start at -23000 (Neutral)
    local repstring   =  "Neutral"
---    local color       =  { r = .243,   g = 0,      b = 0      } -- Neutral
-   local color       =  { r = .8,   g = 0,      b = 0      } -- Neutral
+   local color       =  { r = .8,   g = 0,      b = 0      }   -- Neutral
+   local percent     =  0
+   local repstack    =  {  {  val=3000,   rep="Friendly",   color={ r = 0,      g = 1,      b = .0     },   max=10000 },
+                           {  val=10000,  rep="Decorated",  color={ r = .148,   g = .496,   b = .977	 },   max=20000 },
+                           {  val=20000,  rep="Honored",    color={ r = .676,   g = .281,   b = .98    },   max=35000 },
+                           {  val=35000,  rep="Revered",    color={ r = 1,      g = 1,      b = 0      },   max=60000 },
+                           {  val=60000,  rep="Glorified",  color={ r = 1,      g = .5,     b = 0      },   max=90000 },
+                           {  val=90000,  rep="Venerated",  color={ r = .98,    g = .98,    b = .98	 },   max=120000 }
+                        }
 
    for _, tbl in pairs(repstack) do
       if mynotoriety >= tbl.val then
          mynotoriety =  mynotoriety - tbl.val
          repstring   =  tbl.rep
          color       =  tbl.color
+         percent     =  math.ceil((1000 * mynotoriety) / tbl.max) / 10
+--          print(string.format("Percent: %s%% ", percent))
       else
          break
       end
    end
 
-   return repstring, color
+   return repstring, color, percent
 end

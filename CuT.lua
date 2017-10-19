@@ -376,11 +376,11 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    if cut.notorietybase[notoriety] then
       local notorietyid    =  cut.notorietybase[notoriety].id
       local notorietytotal =  Inspect.Faction.Detail(notorietyid).notoriety
-      desc, color          =  cut.notorietycolor(notorietytotal)
+      desc, color, percent =  cut.notorietycolor(notorietytotal)
 --       print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
    end
 
-   notorietylabel:SetFontColor(color.r, color.g, color.b)
+--    notorietylabel:SetFontColor(color.r, color.g, color.b)
    notorietylabel:SetFontSize(cut.gui.font.size)
    notorietylabel:SetText(string.format("%s:", notoriety))
    notorietylabel:SetLayer(3)
@@ -398,6 +398,17 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietystanding:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
 
    --
+   -- Notoriety Percent
+   --
+   local notorietypercent =  UI.CreateFrame("Text", "notoriety_percent_" .. flag .. notoriety, notorietyframe)
+   notorietypercent:SetFontSize(cut.gui.font.size - 2)
+   notorietypercent:SetFontColor(color.r, color.g, color.b)
+   notorietypercent:SetWidth(cut.gui.font.size*3)
+   notorietypercent:SetText(string.format("%s%%", percent), true)
+   notorietypercent:SetLayer(3)
+   notorietypercent:SetPoint("TOPRIGHT",  notorietystanding, "TOPLEFT", -cut.gui.borders.right, 0)
+
+   --
    -- Notoriety Value
    --
    if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
@@ -408,10 +419,9 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietyvalue:SetFontSize(cut.gui.font.size )
    notorietyvalue:SetText(string.format("%s", value), true)
    notorietyvalue:SetLayer(3)
---    notorietyvalue:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
-   notorietyvalue:SetPoint("TOPRIGHT",  notorietystanding, "TOPLEFT", -cut.gui.borders.right, 0)
+   notorietyvalue:SetPoint("TOPRIGHT",  notorietypercent, "TOPLEFT", -cut.gui.borders.right, 0)
 
-   local t  =  {  frame=notorietyframe, label=notorietylabel, value=notorietyvalue, standing=notorietystanding }
+   local t  =  {  frame=notorietyframe, label=notorietylabel, value=notorietyvalue, standing=notorietystanding, percent=notorietypercent }
 
    return t
 end
@@ -519,17 +529,21 @@ local function updatenotorietyvalue(notoriey, value, field, id)
    return
 end
 
-local function updatenotorietystanding(id, factionname, standing)
+local function updatenotorietystanding(id, factionname, standing, perc)
 
    local color          =  { r = .98,    g = .98,     b = .98,     }
    local desc           =  '<unknown>'
+   local percent        =  0
    local notorietytotal =  Inspect.Faction.Detail(id).notoriety
-   desc, color          =  cut.notorietycolor(notorietytotal)
---    print(string.format("desc(%s) color(%s)", desc, color))
+   desc, color, percent =  cut.notorietycolor(notorietytotal)
 
-   factionname:SetFontColor(color.r, color.g, color.b)
+   --    factionname:SetFontColor(color.r, color.g, color.b)
+
    standing:SetFontColor(color.r, color.g, color.b)
    standing:SetText(desc)
+
+   perc:SetText(string.format("%s%%", percent))
+   perc:SetFontColor(color.r, color.g, color.b)
 
    return
 end
@@ -540,7 +554,7 @@ function cut.updatenotorietyweek(notoriety, value, id)
 
    if cut.shown.weeknotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.weeknotorietytbl[notoriety].value, id)
-      updatenotorietystanding(id, cut.shown.weeknotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing)
+      updatenotorietystanding(id, cut.shown.weeknotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing, cut.shown.todaynotorietytbl[notoriety].percent)
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 6, id)
@@ -561,7 +575,7 @@ function cut.updatenotorietytoday(notoriety, value, id)
 
    if cut.shown.todaynotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.todaynotorietytbl[notoriety].value, id)
-      updatenotorietystanding(id, cut.shown.todaynotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing)
+      updatenotorietystanding(id, cut.shown.todaynotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing, cut.shown.todaynotorietytbl[notoriety].percent)
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 5, id)
