@@ -367,14 +367,14 @@ local function getnotorieties()
 end
 
 function cut.currencyevent(handle, params)
-   if params then
-      for a,b in pairs(params) do
-         print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
-      end
-   else
-      print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
-   end
-      print("CURRENCY EVENT")
+--    if params then
+--       for a,b in pairs(params) do
+--          print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
+--       end
+--    else
+--       print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
+--    end
+--    print("CURRENCY EVENT")
 
    local current  =  getcoins()
    local var, val =  nil, nil, nil
@@ -421,16 +421,15 @@ function cut.currencyevent(handle, params)
    return
 end
 
--- local function notorietyevent(handle, params)
 function cut.notorietyevent(handle, params)
-   if params then
-      for a,b in pairs(params) do
-         print(string.format("CuT: notorietyevent params key=%s value=%s", a, b))
-      end
-   else
-      print("CuT: notorietyevent params is NIL")
-      print(string.format("CuT: notorietyevent params handle=%s params=%s", handle, params))
-   end
+--    if params then
+--       for a,b in pairs(params) do
+--          print(string.format("CuT: notorietyevent params key=%s value=%s", a, b))
+--       end
+--    else
+--       print("CuT: notorietyevent params is NIL")
+--       print(string.format("CuT: notorietyevent params handle=%s params=%s", handle, params))
+--    end
 
    local current  =  getnotorieties()
    local var, val =  nil, nil
@@ -561,12 +560,6 @@ function cut.startmeup()
          end
       end
 
---       -- let's initialize Current Currencies database
---       cut.initcoinbase()
---
---       -- let's initialize Current Notorieties database
---       cut.initnotorietybase()
-
       -- create window if needed
       if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
@@ -610,19 +603,16 @@ function cut.resizewindow(tracker, panel)
    return
 end
 
-
 function cut.notorietycolor(notoriety)
 
-   local mynotoriety =  notoriety - 23000                      -- We Start at -23000 (Neutral)
-   local repstring   =  "Neutral"
-   local color       =  { r = .8,   g = 0,      b = 0      }   -- Neutral
-   local percent     =  0
-   local repstack    =  {  {  val=3000,   rep="Friendly",   color={ r = 0,      g = 1,      b = .0     },   max=10000 },
-                           {  val=10000,  rep="Decorated",  color={ r = .148,   g = .496,   b = .977	 },   max=20000 },
-                           {  val=20000,  rep="Honored",    color={ r = .676,   g = .281,   b = .98    },   max=35000 },
-                           {  val=35000,  rep="Revered",    color={ r = 1,      g = 1,      b = 0      },   max=60000 },
-                           {  val=60000,  rep="Glorified",  color={ r = 1,      g = .5,     b = 0      },   max=90000 },
-                           {  val=90000,  rep="Venerated",  color={ r = .98,    g = .98,    b = .98	 },   max=120000 }
+   local mynotoriety, repstring, color, percent =  notoriety, "", {}, 0
+   local repstack    =  {  {  val=23000,  rep="Neutral",    color={ r = .8,   g = 0,    b = 0   },   max=3000  },
+                           {  val=3000,   rep="Friendly",   color={ r = 0,    g = 1,    b = .0  },   max=10000 },
+                           {  val=10000,  rep="Decorated",  color={ r = .148, g = .496, b = .977},   max=20000 },
+                           {  val=20000,  rep="Honored",    color={ r = .676, g = .281, b = .98 },   max=35000 },
+                           {  val=35000,  rep="Revered",    color={ r = 1,    g = 1,    b = 0   },   max=60000 },
+                           {  val=60000,  rep="Glorified",  color={ r = 1,    g = .5,   b = 0   },   max=90000 },
+                           {  val=90000,  rep="Venerated",  color={ r = .98,  g = .98,  b = .98 },   max=120000 }
                         }
 
    for _, tbl in pairs(repstack) do
@@ -631,7 +621,6 @@ function cut.notorietycolor(notoriety)
          repstring   =  tbl.rep
          color       =  tbl.color
          percent     =  math.ceil((1000 * mynotoriety) / tbl.max) / 10
---          print(string.format("Percent: %s%% ", percent))
       else
          break
       end
