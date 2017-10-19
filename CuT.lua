@@ -50,6 +50,8 @@ function cut.changefontsize(newfontsize)
             tbl.frame:SetHeight(cut.gui.font.size)
             tbl.label:SetFontSize(cut.gui.font.size)
             tbl.value:SetFontSize(cut.gui.font.size)
+            tbl.standing:SetFontSize(cut.gui.font.size)
+            tbl.percent:SetFontSize(cut.gui.font.size - 2)
          end
       end
 
@@ -176,14 +178,13 @@ function cut.createwindow()
 
    -- Window Panel Info
    local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
-   windowinfo:SetFontSize(cut.gui.font.size )
    windowinfo:SetFontSize(cut.gui.font.size -2 )
    local panel =  cut.shown.panel
    if cut.shown.tracker == 2 then panel = panel + 3 end
 --    local mylabel  =  cut.shown.panellabel[cut.shown.panel]
    local mylabel  =  cut.shown.panellabel[panel]
 --    if cut.shown.panel == 3  or cut.shown.panel == 6 then
-   if panel == 3 then
+   if panel == 3 or panel == 6 then
       mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
    end
    windowinfo:SetText(string.format("%s", mylabel), true)
