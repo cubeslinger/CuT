@@ -619,58 +619,86 @@ function cut.resizewindow(tracker, panel)
    return
 end
 
-function cut.notorietycolor(notoriety)
-   local repcolors   =  {  [1] = { r = .243,   g = 0,      b = 0      },
-                           [2] = { r = 0,      g = 1,      b = .0     },
-                           [3] = { r = .148,   g = .496,   b = .977	 },
-                           [4] = { r = .676,   g = .281,   b = .98    },
-                           [5] = { r = 1,      g = 1,      b = 0      },
-                           [6] = { r = 1,      g = .5,     b = 0      },
-                           [7] = { r = .98,    g = .98,    b = .98	 }
-                           }
-   local idx         =  1
+-- function cut.notorietycolor(notoriety)
+--    local repcolors   =  {  [1] = { r = .243,   g = 0,      b = 0      },
+--                            [2] = { r = 0,      g = 1,      b = .0     },
+--                            [3] = { r = .148,   g = .496,   b = .977	 },
+--                            [4] = { r = .676,   g = .281,   b = .98    },
+--                            [5] = { r = 1,      g = 1,      b = 0      },
+--                            [6] = { r = 1,      g = .5,     b = 0      },
+--                            [7] = { r = .98,    g = .98,    b = .98	 }
+--                            }
+--    local idx         =  1
+--
+--    -- code taken from by AutoFactionBar by dargor@gmx.net -- begin
+--    local n = notoriety - 23000 -- neutral starts at 23000; notoriety at least neutral
+--    rep = "Neutral"
+--    nMax = 3000
+--    if n >= 3000 then -- at least friendly
+--       rep   =  "Friendly"
+--       n     =  n - 3000
+--       nMax  =  10000
+--       idx   =  2
+--       if n >= 10000 then -- at least decorated
+--          rep   =  "Decorated"
+--          n     =  n - 10000
+--          nMax  =  20000
+--          idx   =  3
+--          if n >= 20000 then -- at least honored
+--             rep   =  "Honored"
+--             n     =  n - 20000
+--             nMax  =  35000
+--             idx   =  4
+--             if n >= 35000 then -- at least revered
+--                rep   =  "Revered"
+--                n     =  n - 35000
+--                nMax  =  60000
+--                idx   =  5
+--                if n >= 60000 then -- at least glorified
+--                   rep   =  "Glorified"
+--                   n     =  n - 60000
+--                   nMax  =  90000
+--                   idx   =  6
+--                   if n >= 90000 then -- at least venerated (Patch 2.3)
+--                      rep   =  "Venerated"
+--                      n     =  n - 90000
+--                      nMax  =  120000
+--                      idx   =  7
+--                   end
+--                end
+--             end
+--          end
+--       end
+--    end
+--    -- code taken from by AutoFactionBar by dargor@gmx.net -- end
+--
+--    return rep, repcolors[idx]
+-- end
 
-   -- code taken from by AutoFactionBar by dargor@gmx.net -- begin
-   local n = notoriety - 23000 -- neutral starts at 23000; notoriety at least neutral
-   rep = "Neutral"
-   nMax = 3000
-   if n >= 3000 then -- at least friendly
-      rep   =  "Friendly"
-      n     =  n - 3000
-      nMax  =  10000
-      idx   =  2
-      if n >= 10000 then -- at least decorated
-         rep   =  "Decorated"
-         n     =  n - 10000
-         nMax  =  20000
-         idx   =  3
-         if n >= 20000 then -- at least honored
-            rep   =  "Honored"
-            n     =  n - 20000
-            nMax  =  35000
-            idx   =  4
-            if n >= 35000 then -- at least revered
-               rep   =  "Revered"
-               n     =  n - 35000
-               nMax  =  60000
-               idx   =  5
-               if n >= 60000 then -- at least glorified
-                  rep   =  "Glorified"
-                  n     =  n - 60000
-                  nMax  =  90000
-                  idx   =  6
-                  if n >= 90000 then -- at least venerated (Patch 2.3)
-                     rep   =  "Venerated"
-                     n     =  n - 90000
-                     nMax  =  120000
-                     idx   =  7
-                  end
-               end
-            end
-         end
+function cut.notorietycolor(notoriety)
+
+   repstack =  {  {  val=3000,   rep="Friendly",   color={ r = 0,      g = 1,      b = .0     } },
+                  {  val=10000,  rep="Decorated",  color={ r = .148,   g = .496,   b = .977	 } },
+                  {  val=20000,  rep="Honored",    color={ r = .676,   g = .281,   b = .98    } },
+                  {  val=35000,  rep="Revered",    color={ r = 1,      g = 1,      b = 0      } },
+                  {  val=60000,  rep="Glorified",  color={ r = 1,      g = .5,     b = 0      } },
+                  {  val=90000,  rep="Venerated",  color={ r = .98,    g = .98,    b = .98	 } }
+                }
+
+   local mynotoriety =  notoriety - 23000                      -- We Start at -23000 (Neutral)
+   local repstring   =  "Neutral"
+--    local color       =  { r = .243,   g = 0,      b = 0      } -- Neutral
+   local color       =  { r = .8,   g = 0,      b = 0      } -- Neutral
+
+   for _, tbl in pairs(repstack) do
+      if mynotoriety >= tbl.val then
+         mynotoriety =  mynotoriety - tbl.val
+         repstring   =  tbl.rep
+         color       =  tbl.color
+      else
+         break
       end
    end
-   -- code taken from by AutoFactionBar by dargor@gmx.net -- end
 
-   return rep, repcolors[idx]
+   return repstring, color
 end

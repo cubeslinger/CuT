@@ -210,15 +210,14 @@ function cut.createwindow()
    local cutframe =  UI.CreateFrame("Frame", "cut_frame", maskframe)
    cutframe:SetAllPoints(maskframe)
    cutframe:SetLayer(1)
-   cutframe:SetBackgroundColor(unpack(cut.color.blue))
+--    cutframe:SetBackgroundColor(unpack(cut.color.blue))
    cut.frames.container =  cutframe
 
    -- Whole Day Session Data Container
    local todaycutframe =  UI.CreateFrame("Frame", "cut_frame_today", maskframe)
    todaycutframe:SetAllPoints(maskframe)
    todaycutframe:SetLayer(1)
---    todaycutframe:SetBackgroundColor(unpack(cut.color.red))
-   todaycutframe:SetBackgroundColor(unpack(cut.color.lightblue))
+--    todaycutframe:SetBackgroundColor(unpack(cut.color.lightblue))
    cut.frames.todaycontainer =  todaycutframe
    cut.frames.todaycontainer:SetVisible(false)
 
@@ -226,8 +225,7 @@ function cut.createwindow()
    local weekcutframe =  UI.CreateFrame("Frame", "cut_frame_week", maskframe)
    weekcutframe:SetAllPoints(maskframe)
    weekcutframe:SetLayer(1)
---    weekcutframe:SetBackgroundColor(unpack(cut.color.green))
-   weekcutframe:SetBackgroundColor(unpack(cut.color.darkblue))
+--    weekcutframe:SetBackgroundColor(unpack(cut.color.darkblue))
    cut.frames.weekcontainer =  weekcutframe
    cut.frames.weekcontainer:SetVisible(false)
 
@@ -235,7 +233,7 @@ function cut.createwindow()
    local cutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame", maskframe)
    cutnotorietyframe:SetAllPoints(maskframe)
    cutnotorietyframe:SetLayer(1)
-   cutnotorietyframe:SetBackgroundColor(unpack(cut.color.blue))
+--    cutnotorietyframe:SetBackgroundColor(unpack(cut.color.blue))
    cut.frames.notorietycontainer =  cutnotorietyframe
    cut.frames.notorietycontainer:SetVisible(false)
 
@@ -243,8 +241,7 @@ function cut.createwindow()
    local todaycutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame_today", maskframe)
    todaycutnotorietyframe:SetAllPoints(maskframe)
    todaycutnotorietyframe:SetLayer(1)
---    todaycutnotorietyframe:SetBackgroundColor(unpack(cut.color.red))
-   todaycutnotorietyframe:SetBackgroundColor(unpack(cut.color.lightblue))
+--    todaycutnotorietyframe:SetBackgroundColor(unpack(cut.color.lightblue))
    cut.frames.todaynotorietycontainer =  todaycutnotorietyframe
    cut.frames.todaynotorietycontainer:SetVisible(false)
 
@@ -252,8 +249,7 @@ function cut.createwindow()
    local weekcutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame_week", maskframe)
    weekcutnotorietyframe:SetAllPoints(maskframe)
    weekcutnotorietyframe:SetLayer(1)
---    weekcutnotorietyframe:SetBackgroundColor(unpack(cut.color.green))
-   weekcutnotorietyframe:SetBackgroundColor(unpack(cut.color.darkblue))
+--    weekcutnotorietyframe:SetBackgroundColor(unpack(cut.color.darkblue))
    cut.frames.weeknotorietycontainer =  weekcutnotorietyframe
    cut.frames.weeknotorietycontainer:SetVisible(false)
 
