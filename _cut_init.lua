@@ -367,110 +367,148 @@ local function getnotorieties()
 end
 
 function cut.currencyevent(handle, params)
---    if params then
---       for a,b in pairs(params) do
---          print(string.format("CuT: currencyevent params key=%s value=%s", a, b))
---       end
---    else
---       print(string.format("CuT: currencyevent params handle=%s params=%s", handle, params))
---    end
---    print("CURRENCY EVENT")
 
-   local current  =  getcoins()
-   local var, val =  nil, nil, nil
-   local tbl      =  {}
+   local id, var, val   =  nil, nil, nil
+   local t              =  {}
    local updated  =  false
 
-   -- find changes
-   for var, tbl in pairs(current) do
-      val   =  tbl.stack
+   if params then
 
-      --[[ -- CURRENT  -------------------------------------- BEGIN ]]--
-            -- Current Session value Update
-      if table.contains(cut.coinbase, var) then
-         if cut.coinbase[var].stack == 0 then
-            cut.coinbase[var].stack =  val
-            --             print(string.format("Rebased currency: %s from 0 to %s.", var, val))
-            -- Rebase to 1
-            --
-            local newvalue =  1
-            cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-            cut.deltas[var]   =  newvalue
-         else
-            if val   ~= (cut.coinbase[var].stack) then
-               local newvalue =  val - (cut.coinbase[var].stack)
-               cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-               cut.deltas[var]   =  newvalue
---                print("currencyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.deltas[var].."]")
+      for id, val in pairs(params) do
+
+         if val > 0 then
+
+            t     =  Inspect.Currency.Detail(id)
+            var   =  t.name
+
+            if cut.coinbase[var] then
+               if cut.coinbase[var].stack == 0 then
+                  cut.coinbase[var].stack =  val
+                  --
+                  -- HACK: Rebase to 1
+                  --
+                  local newvalue =  1
+                  cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+                  cut.deltas[var]   =  newvalue
+               else
+                  if val   ~= (cut.coinbase[var].stack) then
+                     local newvalue =  val - (cut.coinbase[var].stack)
+                     cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+                     cut.deltas[var]   =  newvalue
+                  end
+               end
+            else
+               -- we found nothing let's create from scratch this new currency
+               cut.coinbase[var] =  { stack=t.stack, icon=t.icon, id=t.id, smax=t.stackMax }
+               cut.updatecurrencies(var, val, t.id)
+               cut.deltas[var]   =  val
             end
+         else
+            print(string.format("CuT: currencyevent, value is (%s) for %s", val, id))
          end
-      else
-         -- we found nothing let's create from scratch this new currency
-         local detail = Inspect.Currency.Detail(cut.coinname2idx[var])
-         cut.coinbase[var] =  { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
-         cut.updatecurrencies(var, val, detail.id)
-         cut.deltas[var]   =  val
---          print("currencyevent (2) ["..var.."]=["..val.."]==>["..cut.deltas[var].."]")
       end
-      --[[ CURRENT  -------------------------------------- END ]]--
-   end
 
-   -- set the right size for pane
-   cut.resizewindow(cut.shown.tracker, cut.shown.panel)
+      -- set the right size for pane
+      cut.resizewindow(cut.shown.tracker, cut.shown.panel)
+   end
 
    return
 end
 
 function cut.notorietyevent(handle, params)
---    if params then
---       for a,b in pairs(params) do
---          print(string.format("CuT: notorietyevent params key=%s value=%s", a, b))
---       end
---    else
---       print("CuT: notorietyevent params is NIL")
---       print(string.format("CuT: notorietyevent params handle=%s params=%s", handle, params))
---    end
 
-   local current  =  getnotorieties()
-   local var, val =  nil, nil
-   local tbl      =  {}
+   local id, var, val   =  nil, nil, nil
+   local t              =  {}
    local updated  =  false
 
-   -- find changes
-   for var, tbl in pairs(current) do
-      val   =  tbl.stack
+   if params then
 
-      --[[ -- CURRENT  -------------------------------------- BEGIN ]]--
-            -- Current Session value Update
-      if table.contains(cut.notorietybase, var) then
-         if cut.notorietybase[var].stack == 0 then
-            cut.notorietybase[var].stack =  val
-            --             print(string.format("Rebased notoriety: %s from 0 to %s.", var, val))
-         else
-            if val   ~= (cut.notorietybase[var].stack) then
-               local newvalue =  val - (cut.notorietybase[var].stack)
-               --                cut.updatecurrencies(var, newvalue, cut.notorietybase[var].id)
-               cut.updatenotoriety(var, newvalue, cut.notorietybase[var].id)
-               cut.notorietydeltas[var]   =  newvalue
-               --                print("notorietyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.notorietydeltas[var].."]")
+      for id, val in pairs(params) do
+
+         if val > 0 then
+
+            t     =  Inspect.Faction.Detail(id)
+            var   =  t.name
+
+            if table.contains(cut.notorietybase, var) then
+               if cut.notorietybase[var].stack == 0 then
+                  cut.notorietybase[var].stack =  val
+               else
+                  if val   ~= (cut.notorietybase[var].stack) then
+                     local newvalue =  val - (cut.notorietybase[var].stack)
+                     cut.updatenotoriety(var, newvalue, cut.notorietybase[var].id)
+                     cut.notorietydeltas[var]   =  newvalue
+                  end
+               end
+            else
+               -- we found nothing let's create from scratch this new currency
+               cut.notorietybase[var] =  { stack=t.notoriety, id=t.id }
+               cut.updatenotoriety(var, val, t.id)
+               cut.notorietydeltas[var]   =  val
             end
+         else
+            print(string.format("CuT: notorietyevent, value is (%s) for %s", val, id))
          end
-      else
-         -- we found nothing let's create from scratch this new currency
-         local detail = Inspect.Faction.Detail(cut.notorietyname2idx[var])
-         cut.notorietybase[var] =  { stack=detail.notoriety, id=detail.id }
-         cut.updatenotoriety(var, val, detail.id)
-         cut.notorietydeltas[var]   =  val
-         --          print("notorietyevent (2) ["..var.."]=["..val.."]==>["..cut.notorietydeltas[var].."]")
       end
-      --[[ CURRENT  -------------------------------------- END ]]--
-   end
 
-   -- set the right size for pane
-   cut.resizewindow(cut.shown.tracker, cut.shown.panel)
+      -- set the right size for pane
+      cut.resizewindow(cut.shown.tracker, cut.shown.panel)
+   end
 
    return
 end
+
+
+-- function cut.notorietyevent(handle, params)
+-- --    if params then
+-- --       for a,b in pairs(params) do
+-- --          print(string.format("CuT: notorietyevent params key=%s value=%s", a, b))
+-- --       end
+-- --    else
+-- --       print("CuT: notorietyevent params is NIL")
+-- --       print(string.format("CuT: notorietyevent params handle=%s params=%s", handle, params))
+-- --    end
+--
+--    local current  =  getnotorieties()
+--    local var, val =  nil, nil
+--    local tbl      =  {}
+--    local updated  =  false
+--
+--    -- find changes
+--    for var, tbl in pairs(current) do
+--       val   =  tbl.stack
+--
+--       --[[ -- CURRENT  -------------------------------------- BEGIN ]]--
+--             -- Current Session value Update
+--       if table.contains(cut.notorietybase, var) then
+--          if cut.notorietybase[var].stack == 0 then
+--             cut.notorietybase[var].stack =  val
+--             --             print(string.format("Rebased notoriety: %s from 0 to %s.", var, val))
+--          else
+--             if val   ~= (cut.notorietybase[var].stack) then
+--                local newvalue =  val - (cut.notorietybase[var].stack)
+--                --                cut.updatecurrencies(var, newvalue, cut.notorietybase[var].id)
+--                cut.updatenotoriety(var, newvalue, cut.notorietybase[var].id)
+--                cut.notorietydeltas[var]   =  newvalue
+--                --                print("notorietyevent (1) ["..var.."]=>"..newvalue.."]==>["..cut.notorietydeltas[var].."]")
+--             end
+--          end
+--       else
+--          -- we found nothing let's create from scratch this new currency
+--          local detail = Inspect.Faction.Detail(cut.notorietyname2idx[var])
+--          cut.notorietybase[var] =  { stack=detail.notoriety, id=detail.id }
+--          cut.updatenotoriety(var, val, detail.id)
+--          cut.notorietydeltas[var]   =  val
+--          --          print("notorietyevent (2) ["..var.."]=["..val.."]==>["..cut.notorietydeltas[var].."]")
+--       end
+--       --[[ CURRENT  -------------------------------------- END ]]--
+--    end
+--
+--    -- set the right size for pane
+--    cut.resizewindow(cut.shown.tracker, cut.shown.panel)
+--
+--    return
+-- end
 
 
 function cut.initcoinbase()
