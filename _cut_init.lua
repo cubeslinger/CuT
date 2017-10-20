@@ -350,29 +350,34 @@ function cut.currencyevent(handle, params)
          if val > 0 then
 
             t     =  Inspect.Currency.Detail(id)
-            var   =  t.name
 
-            if cut.coinbase[var] then
-               if cut.coinbase[var].stack == 0 then
-                  cut.coinbase[var].stack =  val
-                  --
-                  -- HACK: Rebase to 1
-                  --
-                  local newvalue =  1
-                  cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-                  cut.deltas[var]   =  newvalue
-               else
-                  if val   ~= (cut.coinbase[var].stack) then
-                     local newvalue =  val - (cut.coinbase[var].stack)
+            if t then
+               var   =  t.name
+
+               if cut.coinbase[var] then
+                  if cut.coinbase[var].stack == 0 then
+                     cut.coinbase[var].stack =  val
+                     --
+                     -- HACK: Rebase to 1
+                     --
+                     local newvalue =  1
                      cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
                      cut.deltas[var]   =  newvalue
+                  else
+                     if val   ~= (cut.coinbase[var].stack) then
+                        local newvalue =  val - (cut.coinbase[var].stack)
+                        cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+                        cut.deltas[var]   =  newvalue
+                     end
                   end
+               else
+                  -- we found nothing let's create from scratch this new currency
+                  cut.coinbase[var] =  { stack=t.stack, icon=t.icon, id=t.id, smax=t.stackMax }
+                  cut.updatecurrencies(var, val, t.id)
+                  cut.deltas[var]   =  val
                end
             else
-               -- we found nothing let's create from scratch this new currency
-               cut.coinbase[var] =  { stack=t.stack, icon=t.icon, id=t.id, smax=t.stackMax }
-               cut.updatecurrencies(var, val, t.id)
-               cut.deltas[var]   =  val
+               print(string.format("CuT: currencyevent ERROR! no details for, currency id (%s): %s", val, id))
             end
          else
             print(string.format("CuT: currencyevent, value is (%s) for %s", val, id))
@@ -399,23 +404,27 @@ function cut.notorietyevent(handle, params)
          if val > 0 then
 
             t     =  Inspect.Faction.Detail(id)
-            var   =  t.name
+            if t  then
+               var   =  t.name
 
-            if cut.notorietybase[var] then
-               if cut.notorietybase[var].stack == 0 then
-                  cut.notorietybase[var].stack =  val
-               else
-                  if val   ~= (cut.notorietybase[var].stack) then
-                     local newvalue =  val - (cut.notorietybase[var].stack)
-                     cut.updatenotoriety(var, newvalue, cut.notorietybase[var].id)
-                     cut.notorietydeltas[var]   =  newvalue
+               if cut.notorietybase[var] then
+                  if cut.notorietybase[var].stack == 0 then
+                     cut.notorietybase[var].stack =  val
+                  else
+                     if val   ~= (cut.notorietybase[var].stack) then
+                        local newvalue =  val - (cut.notorietybase[var].stack)
+                        cut.updatenotoriety(var, newvalue, cut.notorietybase[var].id)
+                        cut.notorietydeltas[var]   =  newvalue
+                     end
                   end
+               else
+                  -- we found nothing let's create from scratch this new currency
+                  cut.notorietybase[var] =  { stack=t.notoriety, id=t.id }
+                  cut.updatenotoriety(var, val, t.id)
+                  cut.notorietydeltas[var]   =  val
                end
             else
-               -- we found nothing let's create from scratch this new currency
-               cut.notorietybase[var] =  { stack=t.notoriety, id=t.id }
-               cut.updatenotoriety(var, val, t.id)
-               cut.notorietydeltas[var]   =  val
+               print(string.format("CuT: notorietyevent ERROR! no details for, faction id (%s): %s", val, id))
             end
          else
             print(string.format("CuT: notorietyevent, value is (%s) for %s", val, id))
