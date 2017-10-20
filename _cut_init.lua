@@ -107,8 +107,8 @@ cut.shown.panellabel    =  {  [1]   =  "Session Currencies",
                               [2]   =  "Today Currencies",
                               [3]   =  "Week Currencies",
                               [4]   =  "Session Notoriey",
-                              [5]   =  "Today Notoriety",
-                              [6]   =  "Week Notoriety"
+                              [5]   =  "Today Notorieties",
+                              [6]   =  "Week Notorieties"
                            }
 
 --
@@ -117,6 +117,7 @@ cut.frames.container    =  {}
 --
 cut.color               =  {}
 cut.color.black         =  {  0,  0,  0, .5}
+cut.color.deepblack     =  {  0,  0,  0,  1}
 cut.color.red           =  { .2,  0,  0, .5}
 cut.color.green         =  {  0, .2,  0, .5}
 cut.color.blue          =  {  0,  0,  6, .1}
