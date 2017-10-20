@@ -57,6 +57,7 @@ function cut.changefontsize(newfontsize)
 
       -- window title
       cut.shown.windowtitle:SetFontSize(cut.gui.font.size)
+      cut.shown.cutversion:SetFontSize(cut.round(cut.gui.font.size/2))
       cut.shown.windowinfo:SetFontSize(cut.gui.font.size)
       cut.shown.titleicon:SetHeight(cut.gui.font.size)
       cut.shown.titleicon:SetWidth(cut.gui.font.size)
@@ -187,7 +188,7 @@ function cut.createwindow()
    titleicon:SetWidth(cut.gui.font.size)
    titleicon:SetLayer(3)
    titleicon:SetPoint("CENTERLEFT", titleframe, "CENTERLEFT", cut.gui.borders.left*2, 1)
-   cut.shown.titleicon   =  windowtitle
+   cut.shown.titleicon   =  titleicon
 
    -- Window Title
    local windowtitle =  UI.CreateFrame("Text", "window_title", titleframe)
@@ -197,6 +198,15 @@ function cut.createwindow()
    windowtitle:SetPoint("CENTERLEFT",   titleicon, "CENTERRIGHT", cut.gui.borders.left*2, 0)
    windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
    cut.shown.windowtitle   =  windowtitle
+
+   -- CuT Version
+   local titleversion =  UI.CreateFrame("Text", "cut_title_version", titleframe)
+   titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
+   titleversion:SetText(string.format("%s", 'v.'..cut.version), true)
+   titleversion:SetLayer(3)
+   titleversion:SetPoint("CENTERLEFT", windowtitle, "CENTERRIGHT", cut.gui.borders.left*2, 0)
+   titleversion:EventAttach( Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
+   cut.shown.cutversion   =  titleversion
 
    -- Iconize Button
    local iconizebutton = UI.CreateFrame("Texture", "cut_iconize button", titleframe)
