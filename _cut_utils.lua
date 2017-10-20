@@ -76,7 +76,6 @@ function cut.updateguicoordinates(win, newx, newy)
    if win ~= nil then
       local winName = win:GetName()
 
---       if winName == "mmBtnIcon" then
       if winName == "mmBtnIconBorder" then
          cut.gui.mmbtnx =  cut.round(newx)
          cut.gui.mmbtny =  cut.round(newy)

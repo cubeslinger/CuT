@@ -9,6 +9,7 @@ function cut.sortbykey(parent, tbl, tracker, panel)
 
    -- reset all Pinned Point of Full loot Frames objs
    for idx, obj in pairs(tbl) do
+
       -- ClearAll() reset also: height, width, so we save Height and then Set it again
       local height   =  obj.frame:GetHeight()
 
@@ -22,14 +23,12 @@ function cut.sortbykey(parent, tbl, tracker, panel)
    local keys  =  {}
    local idx   = nil
    for idx, _ in pairs(tbl) do table.insert(keys, idx) end
---    table.sort(keys, function(a,b) print(string.format("a=%s b=%s", a, b)) return a < b  end)
    table.sort(keys, function(a,b) return a < b  end)
 
    local FIRST    =  true
    local LASTOBJ  =  nil
 
    for idx, _ in ipairs(keys) do
---       print(string.format("FIRST=%s LASTOBJ=%s keys=%s idx=%s keys[idx]=%s", FIRST, LASTOBJ, keys, idx, keys[idx]))
       if FIRST then
          FIRST = false
          tbl[keys[idx]].frame:SetPoint("TOPLEFT",   parent,   "TOPLEFT",  cut.gui.borders.left,   cut.gui.borders.top)
@@ -45,22 +44,12 @@ function cut.sortbykey(parent, tbl, tracker, panel)
       end
    end
 
---    if panel == 1 then cut.shown.frames.last                 =  LASTOBJ  end
---    if panel == 2 then cut.shown.todayframes.last            =  LASTOBJ  end
---    if panel == 3 then cut.shown.weekframes.last             =  LASTOBJ  end
---    if panel == 4 then cut.shown.currentnotorietyframes.last =  LASTOBJ  end
---    if panel == 5 then cut.shown.todaynotorietyframes.last   =  LASTOBJ  end
---    if panel == 6 then cut.shown.weeknotorietyframes.last    =  LASTOBJ  end
-
    if tracker == 1 and panel == 1 then cut.shown.frames.last                 =  LASTOBJ  end
    if tracker == 1 and panel == 2 then cut.shown.todayframes.last            =  LASTOBJ  end
    if tracker == 1 and panel == 3 then cut.shown.weekframes.last             =  LASTOBJ  end
    if tracker == 2 and panel == 1 then cut.shown.currentnotorietyframes.last =  LASTOBJ  end
    if tracker == 2 and panel == 2 then cut.shown.todaynotorietyframes.last   =  LASTOBJ  end
    if tracker == 2 and panel == 3 then cut.shown.weeknotorietyframes.last    =  LASTOBJ  end
-
-
---    print("EXIT SORT TABLE")
 
    return
 end

@@ -72,7 +72,6 @@ local function managepanels()
    if init then
 
       cut.shown.panel   =  cut.shown.panel + 1
---       if cut.shown.panel > 6 then   cut.shown.panel = 1  end
       if cut.shown.panel > 3 then   cut.shown.panel = 1  end
 
       -- Hide everything
@@ -86,10 +85,11 @@ local function managepanels()
 
 
       local table =  nil
-      for _, table in ipairs( {  cut.shown.currenttbl,           cut.shown.todaytbl,           cut.shown.weektbl,
-         cut.shown.currentnotorietytbl,  cut.shown.todaynotorietytbl,  cut.shown.weeknotorietytbl  }) do
-            local var, val = nil
-            for var, val in pairs(table) do table[var].frame:SetVisible(false) end
+      for _, table in ipairs( {  cut.shown.currenttbl, cut.shown.todaytbl, cut.shown.weektbl, cut.shown.currentnotorietytbl, cut.shown.todaynotorietytbl, cut.shown.weeknotorietytbl  }) do
+         local var, val = nil
+         for var, val in pairs(table) do
+            table[var].frame:SetVisible(false)
+         end
       end
 
       if cut.shown.panel == 1 and cut.shown.tracker == 1 then  table =  cut.shown.currenttbl          cut.frames.container:SetVisible(true)                 end
@@ -111,11 +111,11 @@ local function managepanels()
       -- --------------------------------------------------------------------------
 
       cut.resizewindow(cut.shown.tracker, cut.shown.panel)
-      --          cut.shown.windowinfo:SetText(string.format("%s", cut.shown.panellabel[cut.shown.panel]), true)
+
       local panel =  cut.shown.panel
       if cut.shown.tracker == 2 then panel = panel + 3 end
+
       local mylabel  =  cut.shown.panellabel[panel]
---       if cut.shown.panel == 3 then
       if panel == 3 or panel == 6 then
          mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
       end
@@ -179,11 +179,11 @@ function cut.createwindow()
    -- Window Panel Info
    local windowinfo =  UI.CreateFrame("Text", "window_info", cutwindow)
    windowinfo:SetFontSize(cut.gui.font.size -2 )
+
    local panel =  cut.shown.panel
    if cut.shown.tracker == 2 then panel = panel + 3 end
---    local mylabel  =  cut.shown.panellabel[cut.shown.panel]
+
    local mylabel  =  cut.shown.panellabel[panel]
---    if cut.shown.panel == 3  or cut.shown.panel == 6 then
    if panel == 3 or panel == 6 then
       mylabel = mylabel .. "<font color=\'"  .. cut.html.green .. "\'>(" ..tostring(cut.today - cut.weekday) .. ")</font>"
    end
@@ -211,14 +211,12 @@ function cut.createwindow()
    local cutframe =  UI.CreateFrame("Frame", "cut_frame", maskframe)
    cutframe:SetAllPoints(maskframe)
    cutframe:SetLayer(1)
---    cutframe:SetBackgroundColor(unpack(cut.color.blue))
    cut.frames.container =  cutframe
 
    -- Whole Day Session Data Container
    local todaycutframe =  UI.CreateFrame("Frame", "cut_frame_today", maskframe)
    todaycutframe:SetAllPoints(maskframe)
    todaycutframe:SetLayer(1)
---    todaycutframe:SetBackgroundColor(unpack(cut.color.lightblue))
    cut.frames.todaycontainer =  todaycutframe
    cut.frames.todaycontainer:SetVisible(false)
 
@@ -226,7 +224,6 @@ function cut.createwindow()
    local weekcutframe =  UI.CreateFrame("Frame", "cut_frame_week", maskframe)
    weekcutframe:SetAllPoints(maskframe)
    weekcutframe:SetLayer(1)
---    weekcutframe:SetBackgroundColor(unpack(cut.color.darkblue))
    cut.frames.weekcontainer =  weekcutframe
    cut.frames.weekcontainer:SetVisible(false)
 
@@ -234,7 +231,6 @@ function cut.createwindow()
    local cutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame", maskframe)
    cutnotorietyframe:SetAllPoints(maskframe)
    cutnotorietyframe:SetLayer(1)
---    cutnotorietyframe:SetBackgroundColor(unpack(cut.color.blue))
    cut.frames.notorietycontainer =  cutnotorietyframe
    cut.frames.notorietycontainer:SetVisible(false)
 
@@ -242,7 +238,6 @@ function cut.createwindow()
    local todaycutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame_today", maskframe)
    todaycutnotorietyframe:SetAllPoints(maskframe)
    todaycutnotorietyframe:SetLayer(1)
---    todaycutnotorietyframe:SetBackgroundColor(unpack(cut.color.lightblue))
    cut.frames.todaynotorietycontainer =  todaycutnotorietyframe
    cut.frames.todaynotorietycontainer:SetVisible(false)
 
@@ -250,7 +245,6 @@ function cut.createwindow()
    local weekcutnotorietyframe =  UI.CreateFrame("Frame", "cut_notoriety_frame_week", maskframe)
    weekcutnotorietyframe:SetAllPoints(maskframe)
    weekcutnotorietyframe:SetLayer(1)
---    weekcutnotorietyframe:SetBackgroundColor(unpack(cut.color.darkblue))
    cut.frames.weeknotorietycontainer =  weekcutnotorietyframe
    cut.frames.weeknotorietycontainer:SetVisible(false)
 
@@ -291,7 +285,6 @@ end
 
 
 local function createnewcurrencyline(currency, value, panel, id)
---    print(string.format("createnewcurrencyline: c=%s, v=%s, panel=%s, id=%s", currency, value, panel, id))
    local flag           =  ""
    local currencyframe  =  nil
    local base           =  {}
@@ -354,8 +347,6 @@ end
 
 local function createnewnotorietyline(notoriety, value, panel, id)
 
---    print(string.format("createnewnotorietyline: c=%s, v=%s, panel=%s, id=%s", notoriety, value, panel, id))
-
    local flag           =  ""
    local notorietyframe =  nil
    local container      =  nil
@@ -367,7 +358,6 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietyframe  =  UI.CreateFrame("Frame", "cut_notoriety" .. flag  .. "frame", container)
    notorietyframe:SetHeight(cut.gui.font.size)
    notorietyframe:SetLayer(2)
-
    --
    -- Color Faction Name by Reputation standing
    --
@@ -378,15 +368,11 @@ local function createnewnotorietyline(notoriety, value, panel, id)
       local notorietyid    =  cut.notorietybase[notoriety].id
       local notorietytotal =  Inspect.Faction.Detail(notorietyid).notoriety
       desc, color, percent =  cut.notorietycolor(notorietytotal)
---       print(string.format("notoriety(%s) total(%s) color(%s,%s,%s) desc(%s)", notoriety, notorietytotal, color.r, color.g, color.b, desc))
    end
-
---    notorietylabel:SetFontColor(color.r, color.g, color.b)
    notorietylabel:SetFontSize(cut.gui.font.size)
    notorietylabel:SetText(string.format("%s:", notoriety))
    notorietylabel:SetLayer(3)
    notorietylabel:SetPoint("TOPLEFT",   notorietyframe, "TOPLEFT", cut.gui.borders.left, 0)
-
    --
    -- Notoriety Standing Name
    --
@@ -397,7 +383,6 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietystanding:SetText(string.format("%s", (desc or '<unknown>')), true)
    notorietystanding:SetLayer(3)
    notorietystanding:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
-
    --
    -- Notoriety Percent
    --
@@ -408,7 +393,6 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietypercent:SetText(string.format("%s%%", percent), true)
    notorietypercent:SetLayer(3)
    notorietypercent:SetPoint("TOPRIGHT",  notorietystanding, "TOPLEFT", -cut.gui.borders.right, 0)
-
    --
    -- Notoriety Value
    --
@@ -429,7 +413,7 @@ end
 
 
 local function updatecurrencyvalue(currency, value, field, id)
---    print(string.format("updatecurrencyvalue: currency=%s, value=%s, field=%s, id=%s", currency, value, field, id))
+
    if id == "coin" then
       value    =  cut.printmoney(value)
    else
@@ -463,8 +447,6 @@ end
 
 function cut.updatecurrenciestoday(currency, value, id)
 
---    print(string.format(">> cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
-
    if not cut.gui.window then cut.gui.window = cut.createwindow()  end
 
    if cut.shown.todaytbl[currency] then
@@ -477,8 +459,6 @@ function cut.updatecurrenciestoday(currency, value, id)
    end
 
    cut.sortbykey(cut.frames.todaycontainer, cut.shown.todaytbl, 1, 2)
-
---    print(string.format("<< cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
 
    return
 end
@@ -499,9 +479,7 @@ function cut.updatecurrencies(currency, value, id)
    cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1, 1)
 
    if table.contains(cut.save.day, currency) then
---       print(string.format("pre  cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
       cut.updatecurrenciestoday(currency, (cut.save.day[currency].stack + value), cut.save.day[currency].id)
---       print(string.format("post cut.save.day[%s].stack=%s", currency, cut.save.day[currency].stack))
    else
       cut.save.day[currency]   =  { stack=0, icon=cut.coinbase[currency].icon, id=cut.coinbase[currency].id, smax=cut.coinbase[currency].stackMax }
       cut.updatecurrenciestoday(currency, value, cut.save.day[currency].id)
@@ -536,9 +514,8 @@ local function updatenotorietystanding(id, factionname, standing, perc)
    local desc           =  '<unknown>'
    local percent        =  0
    local notorietytotal =  Inspect.Faction.Detail(id).notoriety
-   desc, color, percent =  cut.notorietycolor(notorietytotal)
 
-   --    factionname:SetFontColor(color.r, color.g, color.b)
+   desc, color, percent =  cut.notorietycolor(notorietytotal)
 
    standing:SetFontColor(color.r, color.g, color.b)
    standing:SetText(desc)
@@ -570,8 +547,6 @@ end
 
 function cut.updatenotorietytoday(notoriety, value, id)
 
-   --    print(string.format(">> cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
-
    if not cut.gui.window then cut.gui.window = cut.createwindow()  end
 
    if cut.shown.todaynotorietytbl[notoriety] then
@@ -586,8 +561,6 @@ function cut.updatenotorietytoday(notoriety, value, id)
 
    cut.sortbykey(cut.frames.todaynotorietycontainer, cut.shown.todaynotorietytbl, 2, 2)
 
-   --    print(string.format("<< cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
-
    return
 end
 
@@ -600,10 +573,6 @@ function cut.updatenotoriety(notoriety, value, id)
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 4, id)
---       local a, b =   nil, nil
---       for a, b in pairs (t) do
---          print(string.format("cut.updatenotorieties key=%s val=%s", a, b ))
---       end
       cut.shown.currentnotorietyframes.last     =  t.frame
       cut.shown.currentnotorietytbl[notoriety]  =  t
    end
@@ -611,9 +580,7 @@ function cut.updatenotoriety(notoriety, value, id)
    cut.sortbykey(cut.frames.container, cut.shown.currentnotorietytbl, 2, 1)
 
    if table.contains(cut.save.notorietytoday, notoriety) then
-      --       print(string.format("pre  cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
       cut.updatenotorietytoday(notoriety, (cut.save.notorietytoday[notoriety].stack + value), cut.save.notorietytoday[notoriety].id)
-      --       print(string.format("post cut.save.notorietytoday[%s].stack=%s", notoriety, cut.save.notorietytoday[notoriety].stack))
    else
       cut.save.notorietytoday[notoriety]   =  { stack=0, id=cut.notorietybase[notoriety].id }
       cut.updatenotorietytoday(notoriety, value, cut.save.notorietytoday[notoriety].id)

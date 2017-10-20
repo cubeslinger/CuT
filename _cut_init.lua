@@ -336,36 +336,6 @@ local function waitforcoins()
    return
 end
 
-local function getcoins()
-   local coins    =  {}
-   local currency =  nil
-   for currency, _ in pairs(Inspect.Currency.List()) do
-      local detail = Inspect.Currency.Detail(currency)
-      coins[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
-      --       print(string.format("CuT: %s =>(%s) (%s) (%s) stackMax=%s", currency, detail.name, detail.stack, detail.icon, detail.stackMax))
-
-      cut.coinname2idx[detail.name] =  currency
-   end
-
-   return coins
-end
-
-local function getnotorieties()
-   local notorieties    =  {}
-   local notoriety =  nil
-   for notoriety, _ in pairs(Inspect.Faction.List()) do
-      local detail = Inspect.Faction.Detail(notoriety)
-      if detail then
-         notorieties[detail.name] = { stack=detail.notoriety, id=detail.id }
-         cut.notorietyname2idx[detail.name] =  notoriety
-      else
-         print(string.format("Notoriety detail is NIL for: (%s)", notoriety))
-      end
-   end
-
-   return notorieties
-end
-
 function cut.currencyevent(handle, params)
 
    local id, var, val   =  nil, nil, nil
@@ -430,7 +400,6 @@ function cut.notorietyevent(handle, params)
             t     =  Inspect.Faction.Detail(id)
             var   =  t.name
 
---             if table.contains(cut.notorietybase, var) then
             if cut.notorietybase[var] then
                if cut.notorietybase[var].stack == 0 then
                   cut.notorietybase[var].stack =  val
@@ -459,49 +428,6 @@ function cut.notorietyevent(handle, params)
    return
 end
 
-function cut.initcoinbase()
-
-   if not cut.init.coinbase then
-
-      while not cut.init.coinbase do
-         cut.coinbase   =  getcoins()
-
-         -- do we really have a coin base? let's count
-         local cnt, a,b = 0, nil, nil
-         for a,b in pairs(cut.coinbase) do cnt = cnt + 1 break end
-
-         if cnt > 0 then
-            cut.init.coinbase   =  true
-         else
-            -- we don't have data yet, we wait cut.timer.duration secs...
-            if not cut.timer.flag then
-               Command.Event.Attach(Event.System.Update.Begin, waitforcoins,  "Event.System.Update.Begin")
-            end
-         end
-      end
-   end
-
-   return
-end
-
-function cut.initnotorietybase()
-
-   if not cut.init.notorietybase then
-
-      while not cut.init.notorietybase do
-         cut.notorietybase   =  getnotorieties()
-
-         -- do we really have a notoriety base? let's count
-         local cnt, a, b = 0, nil, nil
-         for a,b in pairs(cut.notorietybase) do cnt = cnt + 1 break end
-
-         cut.init.notorietybase   =  true
-      end
-   end
-
-   return
-end
-
 function cut.startmeup()
 
    if not cut.init.startup then
@@ -513,10 +439,36 @@ function cut.startmeup()
       end
 
       -- let's initialize Current Currencies database
-      cut.initcoinbase()
+      if not cut.init.coinbase then
+
+         local currency =  nil
+
+         for currency, _ in pairs(Inspect.Currency.List()) do
+            local detail = Inspect.Currency.Detail(currency)
+            cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
+            --       print(string.format("CuT: %s =>(%s) (%s) (%s) stackMax=%s", currency, detail.name, detail.stack, detail.icon, detail.stackMax))
+            cut.coinname2idx[detail.name] =  currency
+         end
+
+         cut.init.coinbase =  true
+      end
 
       -- let's initialize Current Notorieties database
-      cut.initnotorietybase()
+      if not cut.init.notorietybase then
+
+         local notoriety =  nil
+         for notoriety, _ in pairs(Inspect.Faction.List()) do
+            local detail = Inspect.Faction.Detail(notoriety)
+            if detail then
+               cut.notorietybase[detail.name] = { stack=detail.notoriety, id=detail.id }
+               cut.notorietyname2idx[detail.name] =  notoriety
+            else
+               print(string.format("Notoriety detail is NIL for: (%s)", notoriety))
+            end
+         end
+
+         cut.init.notorietybase  =  true
+      end
 
       -- if we have Currencies Today session data, we restore it in the today pane
       if cut.init.day then
