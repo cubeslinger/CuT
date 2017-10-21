@@ -5,6 +5,15 @@
 --
 local addon, cut = ...
 
+local function showtilebar(show)
+   print(string.format("showtilebar(%s)", show))
+   if show then   cut.shown.titleframe:SetVisible(true)
+   else           cut.shown.titleframe:SetVisible(false)    
+   end
+   
+   return
+end
+
 local function updateguicoordinates(win, x, y)
    if win ~= nil then
       local winname = win:GetName()
@@ -51,16 +60,17 @@ function cut.changefontsize(newfontsize)
             tbl.label:SetFontSize(cut.gui.font.size)
             tbl.value:SetFontSize(cut.gui.font.size)
             tbl.standing:SetFontSize(cut.gui.font.size)
-            tbl.percent:SetFontSize(cut.gui.font.size - 2)
+--             tbl.percent:SetFontSize(cut.gui.font.size - 2)
+            tbl.percent:SetFontSize(cut.gui.font.size * .75)
          end
       end
 
       -- window title
-      cut.shown.windowtitle:SetFontSize(cut.gui.font.size)
+      cut.shown.windowtitle:SetFontSize(cut.gui.font.size*.75)
       cut.shown.cutversion:SetFontSize(cut.round(cut.gui.font.size/2))
-      cut.shown.windowinfo:SetFontSize(cut.gui.font.size)
-      cut.shown.titleicon:SetHeight(cut.gui.font.size)
-      cut.shown.titleicon:SetWidth(cut.gui.font.size)
+      cut.shown.windowinfo:SetFontSize(cut.gui.font.size*.75)
+      cut.shown.titleicon:SetHeight(cut.gui.font.size*.75)
+      cut.shown.titleicon:SetWidth(cut.gui.font.size*.75)
       cut.resizewindow(cut.shown.tracker, cut.shown.panel)
    end
 
@@ -172,27 +182,34 @@ function cut.createwindow()
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Back,    function() cut.changefontsize(-1)  end,  "cutwindow_wheel_backward")
 
    local titleframe =  UI.CreateFrame("Frame", "Cut_title_frame", cutwindow)
---    titleframe:SetPoint("TOPLEFT",     cutwindow, "TOPLEFT")
---    titleframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT")
    titleframe:SetPoint("TOPLEFT",     cutwindow, "TOPLEFT")
    titleframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT")
-
-   titleframe:SetHeight(cut.gui.font.size * 2)
+--    titleframe:SetHeight(cut.gui.font.size * 2)
+   titleframe:SetHeight(cut.gui.font.size)
    titleframe:SetBackgroundColor(unpack(cut.color.deepblack))
    titleframe:SetLayer(1)
+--    -- Mouse Hover IN    => show Title Bar
+--    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() showtilebar(true)    end, "cut_title_frame_Cursor.In_"  .. currencyframe:GetName())
+--    -- Mouse Hover OUT   => hide Title Bar
+--    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showtilebar(false)   end, "cut_title_frame_Cursor.Out_" .. currencyframe:GetName())     
+--    titleframe:SetVisible(false)
+   cut.shown.titleframe =  titleframe
 
    -- Title Icon
    titleicon = UI.CreateFrame("Texture", "cut_tile_icon", titleframe)
    titleicon:SetTexture("Rift", "loot_gold_coins.dds")
-   titleicon:SetHeight(cut.gui.font.size)
-   titleicon:SetWidth(cut.gui.font.size)
+--    titleicon:SetHeight(cut.gui.font.size)
+--    titleicon:SetWidth(cut.gui.font.size)
+   titleicon:SetHeight(cut.gui.font.size*.75)
+   titleicon:SetWidth(cut.gui.font.size*.75)
    titleicon:SetLayer(3)
    titleicon:SetPoint("CENTERLEFT", titleframe, "CENTERLEFT", cut.gui.borders.left*2, 1)
    cut.shown.titleicon   =  titleicon
 
    -- Window Title
    local windowtitle =  UI.CreateFrame("Text", "window_title", titleframe)
-   windowtitle:SetFontSize(cut.gui.font.size )
+--    windowtitle:SetFontSize(cut.gui.font.size )
+   windowtitle:SetFontSize(cut.gui.font.size*.75)
    windowtitle:SetText(string.format("%s", cut.html.title[1]), true)
    windowtitle:SetLayer(3)
    windowtitle:SetPoint("CENTERLEFT",   titleicon, "CENTERRIGHT", cut.gui.borders.left*2, 0)
@@ -201,6 +218,7 @@ function cut.createwindow()
 
    -- CuT Version
    local titleversion =  UI.CreateFrame("Text", "cut_title_version", titleframe)
+--    titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
    titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
    titleversion:SetText(string.format("%s", 'v.'..cut.version), true)
    titleversion:SetLayer(3)
@@ -211,8 +229,10 @@ function cut.createwindow()
    -- Iconize Button
    local iconizebutton = UI.CreateFrame("Texture", "cut_iconize button", titleframe)
    iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
-   iconizebutton:SetHeight(cut.gui.font.size)
-   iconizebutton:SetWidth(cut.gui.font.size)
+--    iconizebutton:SetHeight(cut.gui.font.size)
+--    iconizebutton:SetWidth(cut.gui.font.size)
+   iconizebutton:SetHeight(cut.gui.font.size*.75)
+   iconizebutton:SetWidth(cut.gui.font.size*.75)
    iconizebutton:SetLayer(3)
    iconizebutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.showhidewindow() end, "CuT Iconize Button Pressed" )
    iconizebutton:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right*2, 1)
@@ -220,7 +240,8 @@ function cut.createwindow()
 
    -- Window Panel Info
    local windowinfo =  UI.CreateFrame("Text", "window_info", titleframe)
-   windowinfo:SetFontSize(cut.gui.font.size -2 )
+--    windowinfo:SetFontSize(cut.gui.font.size -2 )
+   windowinfo:SetFontSize(cut.gui.font.size*.75)
    local panel =  cut.shown.panel
    if cut.shown.tracker == 2 then panel = panel + 3 end
    local mylabel  =  cut.shown.panellabel[panel]
@@ -229,13 +250,9 @@ function cut.createwindow()
    end
    windowinfo:SetText(string.format("%s", mylabel), true)
    windowinfo:SetLayer(3)
-   --    windowinfo:SetPoint("TOPRIGHT",   titleframe, "TOPRIGHT", -cut.gui.borders.right, 1)
---    windowinfo:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right*2, 1)
    windowinfo:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERLEFT", -cut.gui.borders.right*2, 1)
    windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, managepanels, "Flip Panels" )
    cut.shown.windowinfo  =  windowinfo
-
-
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
@@ -243,7 +260,7 @@ function cut.createwindow()
    externalcutframe:SetPoint("TOPRIGHT",    titleframe, "BOTTOMRIGHT",    - cut.gui.borders.right, cut.gui.borders.top)
    externalcutframe:SetPoint("BOTTOMLEFT",  cutwindow, "BOTTOMLEFT",  cut.gui.borders.left,    - cut.gui.borders.bottom)
    externalcutframe:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", - cut.gui.borders.right, - cut.gui.borders.bottom)
-   externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))
+   externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))  
    externalcutframe:SetLayer(1)
 
    -- MASK FRAME
@@ -254,7 +271,7 @@ function cut.createwindow()
    -- CUT CONTAINER FRAME
    local cutframe =  UI.CreateFrame("Frame", "cut_frame", maskframe)
    cutframe:SetAllPoints(maskframe)
-   cutframe:SetLayer(1)
+   cutframe:SetLayer(1)  
    cut.frames.container =  cutframe
 
    -- Whole Day Session Data Container
@@ -349,7 +366,7 @@ local function createnewcurrencyline(currency, value, panel, id)
       base  =  cut.save.week
    end
 
-   currencyframe:SetHeight(cut.gui.font.size)
+   currencyframe:SetHeight(cut.gui.font.size) 
    currencyframe:SetLayer(2)
 
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. flag .. currency, currencyframe)
@@ -433,7 +450,8 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    -- Notoriety Percent
    --
    local notorietypercent =  UI.CreateFrame("Text", "notoriety_percent_" .. flag .. notoriety, notorietyframe)
-   notorietypercent:SetFontSize(cut.gui.font.size - 2)
+--    notorietypercent:SetFontSize(cut.gui.font.size - 2)
+   notorietypercent:SetFontSize(cut.gui.font.size * .75)
    notorietypercent:SetFontColor(color.r, color.g, color.b)
    notorietypercent:SetWidth(cut.gui.font.size*3)
    notorietypercent:SetText(string.format("%s%%", percent), true)
