@@ -434,7 +434,7 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietylabel:SetFontSize(cut.gui.font.size)
    notorietylabel:SetText(string.format("%s:", notoriety))
    notorietylabel:SetLayer(3)
-   notorietylabel:SetPoint("TOPLEFT",   notorietyframe, "TOPLEFT", cut.gui.borders.left, 0)
+   notorietylabel:SetPoint("CENTERLEFT",   notorietyframe, "CENTERLEFT", cut.gui.borders.left, 0)
    --
    -- Notoriety Standing Name
    --
