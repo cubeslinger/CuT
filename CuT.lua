@@ -8,9 +8,9 @@ local addon, cut = ...
 local function showtilebar(show)
    print(string.format("showtilebar(%s)", show))
    if show then   cut.shown.titleframe:SetVisible(true)
-   else           cut.shown.titleframe:SetVisible(false)    
+   else           cut.shown.titleframe:SetVisible(false)
    end
-   
+
    return
 end
 
@@ -191,7 +191,7 @@ function cut.createwindow()
 --    -- Mouse Hover IN    => show Title Bar
 --    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() showtilebar(true)    end, "cut_title_frame_Cursor.In_"  .. currencyframe:GetName())
 --    -- Mouse Hover OUT   => hide Title Bar
---    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showtilebar(false)   end, "cut_title_frame_Cursor.Out_" .. currencyframe:GetName())     
+--    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showtilebar(false)   end, "cut_title_frame_Cursor.Out_" .. currencyframe:GetName())
 --    titleframe:SetVisible(false)
    cut.shown.titleframe =  titleframe
 
@@ -260,7 +260,7 @@ function cut.createwindow()
    externalcutframe:SetPoint("TOPRIGHT",    titleframe, "BOTTOMRIGHT",    - cut.gui.borders.right, cut.gui.borders.top)
    externalcutframe:SetPoint("BOTTOMLEFT",  cutwindow, "BOTTOMLEFT",  cut.gui.borders.left,    - cut.gui.borders.bottom)
    externalcutframe:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", - cut.gui.borders.right, - cut.gui.borders.bottom)
-   externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))  
+   externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))
    externalcutframe:SetLayer(1)
 
    -- MASK FRAME
@@ -271,7 +271,7 @@ function cut.createwindow()
    -- CUT CONTAINER FRAME
    local cutframe =  UI.CreateFrame("Frame", "cut_frame", maskframe)
    cutframe:SetAllPoints(maskframe)
-   cutframe:SetLayer(1)  
+   cutframe:SetLayer(1)
    cut.frames.container =  cutframe
 
    -- Whole Day Session Data Container
@@ -366,7 +366,7 @@ local function createnewcurrencyline(currency, value, panel, id)
       base  =  cut.save.week
    end
 
-   currencyframe:SetHeight(cut.gui.font.size) 
+   currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
 
    local currencylabel  =  UI.CreateFrame("Text", "currency_label_" .. flag .. currency, currencyframe)
@@ -402,6 +402,7 @@ local function createnewcurrencyline(currency, value, panel, id)
    currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
+   cut.attachTT(currencyvalue, currency)
 
    local t  =  {  frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue }
    return t
@@ -533,6 +534,7 @@ function cut.updatecurrencies(currency, value, id)
 
    if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
+   -- Session
    if cut.shown.currenttbl[currency] then
       updatecurrencyvalue(currency, value, cut.shown.currenttbl[currency].value, id)
    else
@@ -544,6 +546,7 @@ function cut.updatecurrencies(currency, value, id)
 
    cut.sortbykey(cut.frames.container, cut.shown.currenttbl, 1, 1)
 
+   -- Today
    if table.contains(cut.save.day, currency) then
       cut.updatecurrenciestoday(currency, (cut.save.day[currency].stack + value), cut.save.day[currency].id)
    else
@@ -551,6 +554,7 @@ function cut.updatecurrencies(currency, value, id)
       cut.updatecurrenciestoday(currency, value, cut.save.day[currency].id)
    end
 
+   -- Week
    if table.contains(cut.save.week, currency) then
       cut.updatecurrenciesweek(currency, (value + cut.save.week[currency].stack), cut.save.week[currency].id)
    else

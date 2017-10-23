@@ -30,7 +30,7 @@ cut.gui.mmbtnobj        =  nil
 cut.gui.visible         =  false
 cut.gui.mmbtnwidth      =  38
 cut.gui.mmbtnheight     =  38
-
+cut.gui.ttobj           =  nil
 --
 cut.init                =  {}
 cut.init.day            =  false
@@ -40,8 +40,11 @@ cut.init.startup        =  false
 cut.init.newweek        =  false
 cut.init.notorietytoday =  false
 cut.init.notorietyweek  =  false
+cut.init.tt             =  false
 --
 cut.deltas              =  {}
+cut.deltaup             =  {}
+cut.deltadown           =  {}
 cut.notorietydeltas     =  {}
 --
 cut.save                =  {}
@@ -126,7 +129,9 @@ cut.color.darkblue      =  {  0,  0, .2, .1}
 cut.color.darkgrey      =  { .2, .2, .2, .5}
 --
 cut.session             =  {}
-
+--
+cut.ttframes            =  {}
+--
 
 
 local function getdayoftheyear()
@@ -145,7 +150,8 @@ function cut.loadvariables(_, addonname)
             local key, val = nil, nil
             for key, val in pairs(a) do
                if val and  key ~= minwidth    and  key ~= minheight  and key ~= maxwidth    and key ~= maxheight  and
-                           key ~= height      and  key ~= mmbtnobj   and key ~= mmbtnheight and key ~= mmbtnwidth then
+                           key ~= height      and  key ~= mmbtnobj   and key ~= mmbtnheight and key ~= mmbtnwidth and
+                           key ~= ttobj   then
                   cut.gui[key]   =  val
    --                print(string.format("Importing %s: %s", key, val))
                end
@@ -256,6 +262,7 @@ function cut.savevariables(_, addonname)
       a.mmbtnobj     =  nil
       a.mmbtnheight  =  nil
       a.mmbtnwidth   =  nil
+      a.ttobj        =  nil
 
       -- Save Window position, size, ...
       guidata     =  a
@@ -318,25 +325,6 @@ function cut.savevariables(_, addonname)
    return
 end
 
-local function waitforcoins()
-
-   local now = Inspect.Time.Frame()
-
--- first run
-   if cut.timer.start == nil then
-      cut.timer.start = now
-      cut.timer.flag  = true
-   else
-      if (now - cut.timer.start) >= cut.timer.duration then
-         cut.timer.flag    =  false
-         cut.timer.start   =  nil
-         Command.Event.Detach(Event.System.Update.Begin, waitforcoins,  "Event.System.Update.Begin")
-      end
-   end
-
-   return
-end
-
 function cut.currencyevent(handle, params)
 
    local id, var, val   =  nil, nil, nil
@@ -357,17 +345,32 @@ function cut.currencyevent(handle, params)
                if cut.coinbase[var] then
                   if cut.coinbase[var].stack == 0 then
                      cut.coinbase[var].stack =  val
-                     --
-                     -- HACK: Rebase to 1
-                     --
-                     local newvalue =  1
-                     cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-                     cut.deltas[var]   =  newvalue
+--                      --
+--                      -- HACK: Rebase to 0
+--                      --
+--                      local newvalue =  1
+--                      cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
+--                      cut.deltas[var]   =  newvalue
                   else
                      if val   ~= (cut.coinbase[var].stack) then
+                        local oldvalue =  cut.coinbase[var].stack
                         local newvalue =  val - (cut.coinbase[var].stack)
                         cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
                         cut.deltas[var]   =  newvalue
+                        if oldvalue > newvalue then
+                           if cut.deltaup[var] then
+                              cut.deltaup[var] = cut.deltaup[var] + newvalue
+                           else
+                              cut.deltaup[var] = newvalue
+                           end
+                        else
+                           if cut.deltadown[var] then
+                              cut.deltadown[var] = cut.deltadown[var] - (newvalue)
+                           else
+                              cut.deltadown[var] = newvalue
+                           end
+                        end
+                        print(string.format("Currencyevent: delta(%s) deltaup(%s) deltadown(%s)", cut.deltas[var], cut.deltaup[var], cut.deltadown[var]))
                      end
                   end
                else
@@ -375,18 +378,26 @@ function cut.currencyevent(handle, params)
                   cut.coinbase[var] =  { stack=t.stack, icon=t.icon, id=t.id, smax=t.stackMax }
                   cut.updatecurrencies(var, val, t.id)
                   cut.deltas[var]   =  val
+                  if val > 0 then
+                     cut.deltaup[var]     =  val
+                  else
+                     cut.deltadown[var]   =  val
+                  end
+                  print(string.format("Currencyevent: delta(%s) deltaup(%s) deltadown(%s)", cut.deltas[var], cut.deltaup[var], cut.deltadown[var]))
                end
-            else
-               print(string.format("CuT: currencyevent ERROR! no details for, currency id (%s): %s", val, id))
+--             else
+--                print(string.format("CuT: currencyevent ERROR! no details for, currency id (%s): %s", val, id))
             end
-         else
-            print(string.format("CuT: currencyevent, value is (%s) for %s", val, id))
+--          else
+--             print(string.format("CuT: currencyevent, value is (%s) for %s", val, id))
          end
       end
 
       -- set the right size for pane
       cut.resizewindow(cut.shown.tracker, cut.shown.panel)
+
    end
+
 
    return
 end
