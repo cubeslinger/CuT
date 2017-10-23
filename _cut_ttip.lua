@@ -9,7 +9,7 @@ local addon, cut = ...
 -- cut.ttframes =  {}
 
 local tWINWIDTH   =  150
-local tWINHEIGHT  =  cut.gui.font.size * 6
+local tWINHEIGHT  =  cut.gui.font.size * 8
 
 local function _newTT()
 
@@ -35,7 +35,7 @@ local function _newTT()
 
    -- TT Text Field
    local tttext     =  UI.CreateFrame("Text", "cut_ttip_text_frame", cut.ttframes.ttframe)
-   tttext:SetFontSize(cut.gui.font.size * .75)
+   tttext:SetFontSize(cut.gui.font.size)
    tttext:SetText("", true)
    tttext:SetLayer(10)
    tttext:SetFontColor(1, 1, 1)
@@ -54,7 +54,7 @@ local function showTT(o, var)
 
       -- update tooltip
       cut.ttframes.tttext:SetText("")
-      cut.ttframes.tttext:SetText(string.format("Var: %s\nIn: %s\nOut: %s\nBalance: %s", var, (cut.deltaup[var] or 0), (cut.deltadown[var] or 0), (cut.deltas[var] or 0)), true)
+      cut.ttframes.tttext:SetText(string.format("%s\nIn: %s\nOut: %s\nBalance: %s", var, (cut.deltaup[var] or 0), (cut.deltadown[var] or 0), (cut.deltas[var] or 0)), true)
 --       -- resize tooltip
 --       cut.gui.ttobj:SetHeight((cut.ttframes.tttext:GetBottom() - cut.ttframes.tttext:GetTop()) + cut.gui.borders.top + cut.gui.borders.bottom)
 
