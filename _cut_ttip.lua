@@ -29,6 +29,7 @@ local function _newTT()
    ttframe:SetPoint("TOPRIGHT",     ttwindow,    "TOPRIGHT",     -cut.gui.borders.right,    cut.gui.borders.top)
    ttframe:SetPoint("BOTTOMLEFT",   ttwindow,    "BOTTOMLEFT",    cut.gui.borders.right,   -cut.gui.borders.bottom)
    ttframe:SetPoint("BOTTOMRIGHT",  ttwindow,    "BOTTOMRIGHT",  -cut.gui.borders.right,   -cut.gui.borders.bottom)
+   ttframe:SetBackgroundColor(unpack(cut.color.darkgrey))
    cut.ttframes.ttframe  =	ttframe
 
 --    -- TT Text Field
@@ -45,7 +46,7 @@ local function _newTT()
    tttext1:SetFontSize(cut.gui.font.size)
    tttext1:SetText("", true)
    tttext1:SetLayer(10)
-   tttext1:SetFontColor(1, 1, 1)
+   tttext1:SetFontColor(unpack(cut.color.yellow))
    tttext1:SetPoint( "TOPCENTER", cut.ttframes.ttframe, "TOPCENTER")
    cut.ttframes.tttext1 =  tttext1
 
@@ -55,7 +56,7 @@ local function _newTT()
    tttext2:SetText("", true)
    tttext2:SetLayer(10)
    tttext2:SetFontColor(1, 1, 1)
-   tttext2:SetPoint( "TOPLEFT", cut.ttframes.ttframe, "TOPLEFT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight() + cut.gui.borders.top)
+   tttext2:SetPoint( "TOPLEFT", cut.ttframes.ttframe, "TOPLEFT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight() + cut.gui.borders.top * 8)
    cut.ttframes.tttext2   =  tttext2
 
    -- TT In value
@@ -64,7 +65,7 @@ local function _newTT()
    tttext3:SetText("", true)
    tttext3:SetLayer(10)
    tttext3:SetFontColor(1, 1, 1)
-   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.ttframe, "TOPRIGHT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()  + cut.gui.borders.top )
+   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.ttframe, "TOPRIGHT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()  + cut.gui.borders.top * 8)
    cut.ttframes.tttext3   =  tttext3
 
    -- TT Out Label
@@ -73,7 +74,6 @@ local function _newTT()
    tttext4:SetText("", true)
    tttext4:SetLayer(10)
    tttext4:SetFontColor(1, 1, 1)
-   tttext4:SetAllPoints(cut.ttframes.ttframe)
    tttext4:SetPoint( "TOPLEFT", cut.ttframes.tttext2, "BOTTOMLEFT")
    cut.ttframes.tttext4   =  tttext4
 
@@ -83,7 +83,6 @@ local function _newTT()
    tttext5:SetText("", true)
    tttext5:SetLayer(10)
    tttext5:SetFontColor(1, 1, 1)
-   tttext5:SetAllPoints(cut.ttframes.ttframe)
    tttext5:SetPoint( "TOPRIGHT", cut.ttframes.tttext3, "BOTTOMRIGHT")
    cut.ttframes.tttext5   =  tttext5
 

@@ -22,10 +22,10 @@ cut.gui.minheight       =  20
 cut.gui.maxwidth        =  1000
 cut.gui.maxheight       =  500
 cut.gui.borders         =  {}
-cut.gui.borders.left    =  2
-cut.gui.borders.right   =  2
-cut.gui.borders.bottom  =  2
-cut.gui.borders.top     =  2
+cut.gui.borders.left    =  4
+cut.gui.borders.right   =  4
+cut.gui.borders.bottom  =  4
+cut.gui.borders.top     =  4
 cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
@@ -131,6 +131,7 @@ cut.color.blue          =  {  0,  0,  6, .1}
 cut.color.lightblue     =  {  0,  0, .4, .1}
 cut.color.darkblue      =  {  0,  0, .2, .1}
 cut.color.darkgrey      =  { .2, .2, .2, .5}
+cut.color.yellow        =  {  1,  1,  0, .5}
 --
 cut.session             =  {}
 --
@@ -358,7 +359,8 @@ function cut.currencyevent(handle, params)
                         cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
 
                         -- Income/Outcome counters
-                        local realdiff    =  (cut.deltas[var] or 0) - val
+--                         local realdiff    =  (cut.deltas[var] or 0) - val
+                        local realdiff    =  newvalue
                         local myin, myout =  0, 0
                         if realdiff > 0   then  myin = realdiff   myout  =  0
                         else                    myin = 0          myout  =  realdiff

@@ -604,8 +604,11 @@ function cut.updatenotorietyweek(notoriety, value, id)
       updatenotorietyvalue(notoriety, value, cut.shown.weeknotorietytbl[notoriety].value, id)
       updatenotorietystanding(   id,
                                  cut.shown.weeknotorietytbl[notoriety].label,
-                                 cut.shown.todaynotorietytbl[notoriety].standing,
-                                 cut.shown.todaynotorietytbl[notoriety].percent
+--                                  cut.shown.todaynotorietytbl[notoriety].standing,
+--                                  cut.shown.todaynotorietytbl[notoriety].percent
+                                 cut.shown.weeknotorietytbl[notoriety].standing,
+                                 cut.shown.weeknotorietytbl[notoriety].percent
+
                              )
    else
       local t  =  {}
