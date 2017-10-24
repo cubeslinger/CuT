@@ -6,8 +6,6 @@
 
 local addon, cut = ...
 
--- cut.ttframes =  {}
-
 local tWINWIDTH   =  150
 local tWINHEIGHT  =  cut.gui.font.size * 8
 
@@ -48,13 +46,45 @@ local function _newTT()
 
 end
 
-local function showTT(o, var)
+local function showTT(o, var, panel, id)
 
    if o and var then
 
+      local tip   =  ""
+      local tips  =  {  ["1"] =  {  ["1"] = (cut.balance.current[var].income  or 0),
+                                    ["2"] = (cut.balance.current[var].outcome or 0),
+                                    ["3"] = (cut.balance.current[var].income  or 0) + (cut.balance.current[var].outcome or 0)
+                                 },
+                        ["2"] =  {  ["1"] = (cut.balance.today[var].income    or 0),
+                                    ["2"] = (cut.balance.today[var].outcome   or 0),
+                                    ["3"] = (cut.balance.today[var].income    or 0) + (cut.balance.today[var].outcome   or 0)
+                                 },
+                        ["3"] =  {  ["1"] = (cut.balance.week[var].income     or 0),
+                                    ["2"] = (cut.balance.week[var].outcome    or 0),
+                                    ["3"] = (cut.balance.week[var].income     or 0) + (cut.balance.week[var].outcome    or 0)
+                                 }
+                     }
+
       -- update tooltip
       cut.ttframes.tttext:SetText("")
-      cut.ttframes.tttext:SetText(string.format("%s\nIn: %s\nOut: %s\nBalance: %s", var, (cut.deltaup[var] or 0), (cut.deltadown[var] or 0), (cut.deltas[var] or 0)), true)
+
+      print("ID ["..id.."] panel["..panel.."]")
+      if id == 'coin'  then
+         tip   =  string.format( "%s\nIn: %s\nOut: %s\nBalance: %s",
+            var,
+            cut.printmoney(tips[tostring(panel)]["1"]),
+            cut.printmoney(tips[tostring(panel)]["2"]),
+            cut.printmoney(tips[tostring(panel)]["3"]) )
+      else
+         tip   =  string.format( "%s\nIn: %s\nOut: %s\nBalance: %s",
+            var,
+            tips[tostring(panel)]["1"],
+            tips[tostring(panel)]["2"],
+            tips[tostring(panel)]["3"] )
+      end
+
+      cut.ttframes.tttext:SetText( tip, true)
+
 --       -- resize tooltip
 --       cut.gui.ttobj:SetHeight((cut.ttframes.tttext:GetBottom() - cut.ttframes.tttext:GetTop()) + cut.gui.borders.top + cut.gui.borders.bottom)
 
@@ -72,7 +102,7 @@ local function showTT(o, var)
    return
 end
 
-function cut.attachTT(o, var)
+function cut.attachTT(o, var, panel, id)
 
    if o and var then
 
@@ -82,9 +112,9 @@ function cut.attachTT(o, var)
       end
 
       -- Mouse Hover IN    => show tooltip
-      o:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() showTT(o, var)      end, "Event.UI.Input.Mouse.Cursor.In_"  .. o:GetName())
+      o:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() showTT(o, var, panel, id)   end, "Event.UI.Input.Mouse.Cursor.In_"  .. o:GetName())
       -- Mouse Hover OUT   => show tooltip
-      o:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showTT(nil, nil)   end, "Event.UI.Input.Mouse.Cursor.Out_" .. o:GetName())
+      o:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showTT(nil, nil, nil, nil)  end, "Event.UI.Input.Mouse.Cursor.Out_" .. o:GetName())
    end
 
    return

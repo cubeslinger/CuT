@@ -8,6 +8,11 @@ local addon, cut = ...
 cut.addon               =  Inspect.Addon.Detail(Inspect.Addon.Current())["name"]
 cut.version             =  Inspect.Addon.Detail(Inspect.Addon.Current())["toc"]["Version"]
 --
+local function getdayoftheyear()
+   local week = os.date("*t", os.time())
+   return(week.yday)
+end
+--
 cut.gui                 =  {}
 cut.gui.x               =  nil
 cut.gui.y               =  nil
@@ -36,15 +41,14 @@ cut.init                =  {}
 cut.init.day            =  false
 cut.init.week           =  false
 cut.init.coinbase       =  false
+cut.init.notorietybase  =  false
 cut.init.startup        =  false
 cut.init.newweek        =  false
-cut.init.notorietytoday =  false
 cut.init.notorietyweek  =  false
 cut.init.tt             =  false
 --
 cut.deltas              =  {}
-cut.deltaup             =  {}
-cut.deltadown           =  {}
+cut.balance             =  {  current  =  {},   today =  {},   week  =  {} }
 cut.notorietydeltas     =  {}
 --
 cut.save                =  {}
@@ -54,7 +58,8 @@ cut.save.notorietytoday =  {}
 cut.save.notorietyweek  =  {}
 --
 cut.coinbase            =  {}
-cut.today               =  0
+cut.week                =  0
+cut.today               =  getdayoftheyear()
 cut.weekday             =  0
 cut.coinname2idx        =  {}
 cut.notorietyname2idx   =  {}
@@ -89,7 +94,6 @@ cut.shown.todaynotorietytbl         =  {}
 cut.shown.weeknotorietyframes       =  {}
 cut.shown.weeknotorietyframes.last  =  nil
 cut.shown.weeknotorietytbl          =  {}
-
 --
 cut.html                =  {}
 cut.html.silver         =  '#c0c0c0'
@@ -133,13 +137,6 @@ cut.session             =  {}
 cut.ttframes            =  {}
 --
 
-
-local function getdayoftheyear()
-   local today = os.date("*t", os.time())
-   return(today.yday)
-end
-
-
 function cut.loadvariables(_, addonname)
    if addon.name == addonname then
 
@@ -163,12 +160,12 @@ function cut.loadvariables(_, addonname)
          local lastsession    =  nil
 
          -- Load Today session data only if we are in the same day
-         cut.today   =  dayoftheyear
-         if today then
-            lastsession =  today
+         cut.week   =  dayoftheyear
+         if week then
+            lastsession =  week
             if lastsession == dayoftheyear then
-               if todaybase then
-                  cut.save.day   =  todaybase
+               if weekbase then
+                  cut.save.day   =  weekbase
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.day) do flag = true break end
                   cut.init.day  =  flag
@@ -206,20 +203,20 @@ function cut.loadvariables(_, addonname)
          -- Load Today Notoriety session data only if we are in the same day
          if notorietyday then
             lastsession =  notorietyday
-            if lastsession == cut.today then
-               if notorietytoday then
-                  cut.save.notorietytoday   =  notorietytoday
+            if lastsession == cut.week then
+               if notorietyweek then
+                  cut.save.notorietyweek   =  notorietyweek
                   local flag, a, b = false, nil, nil
-                  for a,b in pairs(cut.save.notorietytoday) do flag = true break end
-                  cut.init.notorietytoday  =  flag
+                  for a,b in pairs(cut.save.notorietyweek) do flag = true break end
+                  cut.init.notorietyweek  =  flag
                end
             else
-               cut.save.notorietytoday =  {}
-               cut.init.notorietytoday =  true
+               cut.save.notorietyweek =  {}
+               cut.init.notorietyweek =  true
             end
          else
-            cut.save.notorietytoday   =  {}
-            cut.init.notorietytoday   =  true
+            cut.save.notorietyweek   =  {}
+            cut.init.notorietyweek   =  true
          end
 
          -- Load Notoriety Week session data only if we are in the same week
@@ -277,8 +274,8 @@ function cut.savevariables(_, addonname)
          end
       end
 
-      todaybase   =  tbl
-      today       =  getdayoftheyear()
+      weekbase   =  tbl
+      week       =  getdayoftheyear()
 
       -- Save Currencies Week Session data
       local tbl   =  {}
@@ -296,14 +293,14 @@ function cut.savevariables(_, addonname)
       -- Save Notorieties Today Session data
       local tbl   =  {}
       local a,b   =  nil, nil
-      for a,b in pairs(cut.save.notorietytoday) do
+      for a,b in pairs(cut.save.notorietyweek) do
          tbl[a]   =  b
          if cut.notorietydeltas[a] then
             tbl[a].stack = tbl[a].stack + cut.notorietydeltas[a]
          end
       end
 
-      notorietytoday =  tbl
+      notorietyweek =  tbl
       notorietyday   =  getdayoftheyear()
 
       -- Save Notorieties Week Session data
@@ -319,6 +316,8 @@ function cut.savevariables(_, addonname)
       notorietyweek     =  tbl
       notorietyweekday  =  cut.weekday
 
+
+      balance           =  cut.balance
 
    end
 
@@ -340,6 +339,7 @@ function cut.currencyevent(handle, params)
             t     =  Inspect.Currency.Detail(id)
 
             if t then
+
                var   =  t.name
 
                if cut.coinbase[var] then
@@ -356,34 +356,41 @@ function cut.currencyevent(handle, params)
                         local oldvalue =  cut.coinbase[var].stack
                         local newvalue =  val - (cut.coinbase[var].stack)
                         cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
-                        cut.deltas[var]   =  newvalue
-                        if oldvalue > newvalue then
-                           if cut.deltaup[var] then
-                              cut.deltaup[var] = cut.deltaup[var] + newvalue
-                           else
-                              cut.deltaup[var] = newvalue
-                           end
-                        else
-                           if cut.deltadown[var] then
-                              cut.deltadown[var] = cut.deltadown[var] - (newvalue)
-                           else
-                              cut.deltadown[var] = newvalue
-                           end
+
+                        -- Income/Outcome counters
+                        local realdiff    =  (cut.deltas[var] or 0) - val
+                        local myin, myout =  0, 0
+                        if realdiff > 0   then  myin = realdiff   myout  =  0
+                        else                    myin = 0          myout  =  realdiff
                         end
-                        print(string.format("Currencyevent: delta(%s) deltaup(%s) deltadown(%s)", cut.deltas[var], cut.deltaup[var], cut.deltadown[var]))
+                        if not cut.balance.current[var]  then cut.balance.current[var] =  {  income   = 0, outcome =  0 }  end
+                        if not cut.balance.today[var]    then cut.balance.today[var]   =  {  income   = 0, outcome =  0 }  end
+                        if not cut.balance.week[var]     then cut.balance.week[var]    =  {  income   = 0, outcome =  0 }  end
+                        cut.balance.current[var]   =  {  income   = (cut.balance.current[var].income or 0) + myin, outcome =  (cut.balance.current[var].outcome or 0)   + myout }
+                        cut.balance.today[var]     =  {  income   = (cut.balance.today[var].income or 0)   + myin, outcome =  (cut.balance.today[var].outcome or 0)     + myout }
+                        cut.balance.week[var]      =  {  income   = (cut.balance.week[var].income or 0)    + myin, outcome =  (cut.balance.week[var].outcome or 0)      + myout }
+
+                        cut.deltas[var]   =  newvalue
                      end
                   end
                else
                   -- we found nothing let's create from scratch this new currency
-                  cut.coinbase[var] =  { stack=t.stack, icon=t.icon, id=t.id, smax=t.stackMax }
+
+                  -- Balance
+                  local myin, myout = 0, 0
+                  if val > 0 then   myin = val myout  =  0
+                  else              myin = 0   myout  =  val
+                  end
+                  if not cut.balance.current[var]  then cut.balance.current[var] =  {  income   = 0, outcome =  0 }  end
+                  if not cut.balance.today[var]    then cut.balance.today[var]   =  {  income   = 0, outcome =  0 }  end
+                  if not cut.balance.week[var]     then cut.balance.week[var]    =  {  income   = 0, outcome =  0 }  end
+                  cut.balance.current[var]   =  {  income   =  myin, outcome  =  myout }
+                  cut.balance.today[var]     =  {  income   = (cut.balance.today[var].income or 0) + myin, outcome   =  (cut.balance.today[var].outcome or 0)  + myout }
+                  cut.balance.week[var]      =  {  income   = (cut.balance.week[var].income or 0)  + myin, outcome   =  (cut.balance.week[var].outcome or 0)   + myout }
+                  --
+                  cut.coinbase[var] =  {  stack=t.stack, icon=t.icon, id=t.id, smax=t.stackMax }
                   cut.updatecurrencies(var, val, t.id)
                   cut.deltas[var]   =  val
-                  if val > 0 then
-                     cut.deltaup[var]     =  val
-                  else
-                     cut.deltadown[var]   =  val
-                  end
-                  print(string.format("Currencyevent: delta(%s) deltaup(%s) deltadown(%s)", cut.deltas[var], cut.deltaup[var], cut.deltadown[var]))
                end
 --             else
 --                print(string.format("CuT: currencyevent ERROR! no details for, currency id (%s): %s", val, id))
@@ -491,10 +498,10 @@ function cut.startmeup()
          cut.init.notorietybase  =  true
       end
 
-      -- if we have Currencies Today session data, we restore it in the today pane
+      -- if we have Currencies Today session data, we restore it in the week pane
       if cut.init.day then
          for currency, tbl in pairs(cut.save.day) do
-            if tbl.stack   ~= 0  then  cut.updatecurrenciestoday(currency, tbl.stack, tbl.id)   end
+            if tbl.stack   ~= 0  then  cut.updatecurrenciesweek(currency, tbl.stack, tbl.id)   end
          end
       end
 
@@ -505,10 +512,10 @@ function cut.startmeup()
          end
       end
 
-      -- if we have Today Notoriety session data, we restore it in the Notoriety today pane
-      if cut.init.notorietytoday then
-         for currency, tbl in pairs(cut.save.notorietytoday) do
-            if tbl.stack   ~= 0  then  cut.updatenotorietytoday(currency, tbl.stack, tbl.id)   end
+      -- if we have Today Notoriety session data, we restore it in the Notoriety week pane
+      if cut.init.notorietyweek then
+         for currency, tbl in pairs(cut.save.notorietyweek) do
+            if tbl.stack   ~= 0  then  cut.updatenotorietyweek(currency, tbl.stack, tbl.id)   end
          end
       end
 
@@ -550,10 +557,10 @@ function cut.resizewindow(tracker, panel)
       local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
 
       if tracker == 1 and panel == 1 then if cut.shown.frames.last                 then bottom = cut.shown.frames.last:GetBottom()                   end end
-      if tracker == 1 and panel == 2 then if cut.shown.todayframes.last            then bottom = cut.shown.todayframes.last:GetBottom()              end end
+      if tracker == 1 and panel == 2 then if cut.shown.weekframes.last            then bottom = cut.shown.weekframes.last:GetBottom()              end end
       if tracker == 1 and panel == 3 then if cut.shown.weekframes.last             then bottom = cut.shown.weekframes.last:GetBottom()               end end
       if tracker == 2 and panel == 1 then if cut.shown.currentnotorietyframes.last then bottom = cut.shown.currentnotorietyframes.last:GetBottom()   end end
-      if tracker == 2 and panel == 2 then if cut.shown.todaynotorietyframes.last   then bottom = cut.shown.todaynotorietyframes.last:GetBottom()     end end
+      if tracker == 2 and panel == 2 then if cut.shown.weeknotorietyframes.last   then bottom = cut.shown.weeknotorietyframes.last:GetBottom()     end end
       if tracker == 2 and panel == 3 then if cut.shown.weeknotorietyframes.last    then bottom = cut.shown.weeknotorietyframes.last:GetBottom()      end end
 
       cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
@@ -587,3 +594,14 @@ function cut.notorietycolor(notoriety)
 
    return repstring, color, percent
 end
+
+--[[
+   Error: CuT/_cut_init.lua:370: attempt to index a nil value
+   In CuT / CuT Currency Event, event Event.Currency
+   stack traceback:
+   [C]: in function '__index'
+   CuT/_cut_init.lua:370: in function 'currencyevent'
+   CuT/_cut_init.lua:544: in function <CuT/_cut_init.lua:544>
+
+    ]]--
+

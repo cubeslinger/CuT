@@ -402,7 +402,7 @@ local function createnewcurrencyline(currency, value, panel, id)
    currencyvalue:SetText(string.format("%s", value), true)
    currencyvalue:SetLayer(3)
    currencyvalue:SetPoint("TOPRIGHT",   currencyicon, "TOPLEFT", -cut.gui.borders.right, -4)
-   cut.attachTT(currencyvalue, currency)
+   cut.attachTT(currencyvalue, currency, panel, id)
 
    local t  =  {  frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue }
    return t
@@ -602,7 +602,11 @@ function cut.updatenotorietyweek(notoriety, value, id)
 
    if cut.shown.weeknotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.weeknotorietytbl[notoriety].value, id)
-      updatenotorietystanding(id, cut.shown.weeknotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing, cut.shown.todaynotorietytbl[notoriety].percent)
+      updatenotorietystanding(   id,
+                                 cut.shown.weeknotorietytbl[notoriety].label,
+                                 cut.shown.todaynotorietytbl[notoriety].standing,
+                                 cut.shown.todaynotorietytbl[notoriety].percent
+                             )
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 6, id)
