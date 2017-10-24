@@ -55,7 +55,7 @@ local function _newTT()
    tttext2:SetText("", true)
    tttext2:SetLayer(10)
    tttext2:SetFontColor(1, 1, 1)
-   tttext2:SetPoint( "TOPLEFT", cut.ttframes.ttframe, "TOPLEFT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight() )
+   tttext2:SetPoint( "TOPLEFT", cut.ttframes.ttframe, "TOPLEFT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight() + cut.gui.borders.top)
    cut.ttframes.tttext2   =  tttext2
 
    -- TT In value
@@ -64,7 +64,7 @@ local function _newTT()
    tttext3:SetText("", true)
    tttext3:SetLayer(10)
    tttext3:SetFontColor(1, 1, 1)
-   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.ttframe, "TOPRIGHT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight() )
+   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.ttframe, "TOPRIGHT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()  + cut.gui.borders.top )
    cut.ttframes.tttext3   =  tttext3
 
    -- TT Out Label
@@ -84,7 +84,7 @@ local function _newTT()
    tttext5:SetLayer(10)
    tttext5:SetFontColor(1, 1, 1)
    tttext5:SetAllPoints(cut.ttframes.ttframe)
-   tttext5:SetPoint( "TOPRIGHT", cut.ttframes.tttext3, "TOPRIGHT")
+   tttext5:SetPoint( "TOPRIGHT", cut.ttframes.tttext3, "BOTTOMRIGHT")
    cut.ttframes.tttext5   =  tttext5
 
    -- TT Balance Label
