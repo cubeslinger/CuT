@@ -594,14 +594,3 @@ function cut.notorietycolor(notoriety)
 
    return repstring, color, percent
 end
-
---[[
-   Error: CuT/_cut_init.lua:370: attempt to index a nil value
-   In CuT / CuT Currency Event, event Event.Currency
-   stack traceback:
-   [C]: in function '__index'
-   CuT/_cut_init.lua:370: in function 'currencyevent'
-   CuT/_cut_init.lua:544: in function <CuT/_cut_init.lua:544>
-
-    ]]--
-
