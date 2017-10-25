@@ -22,10 +22,10 @@ cut.gui.minheight       =  20
 cut.gui.maxwidth        =  1000
 cut.gui.maxheight       =  500
 cut.gui.borders         =  {}
-cut.gui.borders.left    =  4
-cut.gui.borders.right   =  4
-cut.gui.borders.bottom  =  4
-cut.gui.borders.top     =  4
+cut.gui.borders.left    =  3
+cut.gui.borders.right   =  3
+cut.gui.borders.bottom  =  3
+cut.gui.borders.top     =  3
 cut.gui.window          =  nil
 cut.gui.font            =  {}
 cut.gui.font.size       =  12
@@ -240,6 +240,11 @@ function cut.loadvariables(_, addonname)
             cut.init.notorietyweek  =  true
             cut.save.notorietyweek  =  {}
          end
+
+         -- Load Balance for Tooltips
+         if balance then
+            cut.balance =  balance
+         end
       end
    end
 
@@ -317,9 +322,8 @@ function cut.savevariables(_, addonname)
       notorietyweek     =  tbl
       notorietyweekday  =  cut.weekday
 
-
+      -- Save Balance tables for value tooltips
       balance           =  cut.balance
-
    end
 
    return
@@ -360,7 +364,6 @@ function cut.currencyevent(handle, params)
 
                         -- Income/Outcome counters
                         local realdiff    =  newvalue - (cut.deltas[var] or 0)
---                         local realdiff    =  newvalue
                         local myin, myout =  0, 0
                         if realdiff > 0   then  myin = realdiff   myout  =  0
                         else                    myin = 0          myout  =  realdiff
@@ -476,7 +479,6 @@ function cut.startmeup()
          for currency, _ in pairs(Inspect.Currency.List()) do
             local detail = Inspect.Currency.Detail(currency)
             cut.coinbase[detail.name] = { stack=detail.stack, icon=detail.icon, id=detail.id, smax=detail.stackMax }
-            --       print(string.format("CuT: %s =>(%s) (%s) (%s) stackMax=%s", currency, detail.name, detail.stack, detail.icon, detail.stackMax))
             cut.coinname2idx[detail.name] =  currency
          end
 
@@ -558,12 +560,14 @@ function cut.resizewindow(tracker, panel)
    if table.contains(cut.gui, "window") then
       local bottom   =  cut.gui.window:GetTop() + cut.gui.font.size
 
-      if tracker == 1 and panel == 1 then if cut.shown.frames.last                 then bottom = cut.shown.frames.last:GetBottom()                   end end
-      if tracker == 1 and panel == 2 then if cut.shown.weekframes.last            then bottom = cut.shown.weekframes.last:GetBottom()              end end
-      if tracker == 1 and panel == 3 then if cut.shown.weekframes.last             then bottom = cut.shown.weekframes.last:GetBottom()               end end
-      if tracker == 2 and panel == 1 then if cut.shown.currentnotorietyframes.last then bottom = cut.shown.currentnotorietyframes.last:GetBottom()   end end
-      if tracker == 2 and panel == 2 then if cut.shown.weeknotorietyframes.last   then bottom = cut.shown.weeknotorietyframes.last:GetBottom()     end end
-      if tracker == 2 and panel == 3 then if cut.shown.weeknotorietyframes.last    then bottom = cut.shown.weeknotorietyframes.last:GetBottom()      end end
+      -- CuT
+      if tracker == 1 and panel == 1 then if cut.shown.frames.last                  then  bottom = cut.shown.frames.last:GetBottom()                  end end  -- current
+      if tracker == 1 and panel == 2 then if cut.shown.todayframes.last             then  bottom = cut.shown.todayframes.last:GetBottom()             end end  -- today
+      if tracker == 1 and panel == 3 then if cut.shown.weekframes.last              then  bottom = cut.shown.weekframes.last:GetBottom()              end end  -- week
+      -- NoT
+      if tracker == 2 and panel == 1 then if cut.shown.currentnotorietyframes.last  then  bottom = cut.shown.currentnotorietyframes.last:GetBottom()  end end  -- current
+      if tracker == 2 and panel == 2 then if cut.shown.todaynotorietyframes.last    then  bottom = cut.shown.todaynotorietyframes.last:GetBottom()    end end  -- today
+      if tracker == 2 and panel == 3 then if cut.shown.weeknotorietyframes.last     then  bottom = cut.shown.weeknotorietyframes.last:GetBottom()     end end  -- week
 
       cut.gui.window:SetHeight( (bottom - cut.gui.window:GetTop() ) + cut.gui.borders.top + cut.gui.borders.bottom*4)
    end

@@ -6,9 +6,6 @@
 
 local addon, cut = ...
 
-local tWINWIDTH   =  150
-local tWINHEIGHT  =  cut.gui.font.size * 8
-
 local function _newTT()
 
    --Global context (parent frame-thing).
@@ -16,8 +13,6 @@ local function _newTT()
    ttcontext:SetStrata("topmost")
 
    local ttwindow    =  UI.CreateFrame("Frame", "cut_ttip", ttcontext)
-   ttwindow:SetWidth(tWINWIDTH)
-   ttwindow:SetHeight(tWINHEIGHT)
    ttwindow:SetLayer(8)
    ttwindow:SetBackgroundColor(unpack(cut.color.black))
    cut.ttframes.ttwindow =  ttwindow
@@ -32,15 +27,6 @@ local function _newTT()
    ttframe:SetBackgroundColor(unpack(cut.color.darkgrey))
    cut.ttframes.ttframe  =	ttframe
 
---    -- TT Text Field
---    local tttext     =  UI.CreateFrame("Text", "cut_ttip_text_frame", cut.ttframes.ttframe)
---    tttext:SetFontSize(cut.gui.font.size)
---    tttext:SetText("", true)
---    tttext:SetLayer(10)
---    tttext:SetFontColor(1, 1, 1)
---    tttext:SetAllPoints(cut.ttframes.ttframe)
---    cut.ttframes.tttext   =  tttext
-
    -- TT Currency Name
    local tttext1     =  UI.CreateFrame("Text", "cut_ttip_text_1", cut.ttframes.ttframe)
    tttext1:SetFontSize(cut.gui.font.size)
@@ -50,13 +36,22 @@ local function _newTT()
    tttext1:SetPoint( "TOPCENTER", cut.ttframes.ttframe, "TOPCENTER")
    cut.ttframes.tttext1 =  tttext1
 
+   -- TT Line Saparator 0
+   local linesep0     =  UI.CreateFrame("Texture", "cut_ttip_separator_1", cut.ttframes.ttframe)
+   linesep0:SetTexture("Rift", "line_window_break.png.dds")
+   linesep0:SetHeight(cut.gui.font.size/2)
+   linesep0:SetLayer(10)
+   linesep0:SetPoint( "TOPLEFT",    cut.ttframes.ttframe, "TOPLEFT",    0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()   +  cut.gui.borders.top * 3)
+   linesep0:SetPoint( "TOPRIGHT",   cut.ttframes.ttframe, "TOPRIGHT",   0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()   +  cut.gui.borders.top * 3)
+   cut.ttframes.linesep0 =  linesep0
+
    -- TT In Label
    local tttext2     =  UI.CreateFrame("Text", "cut_ttip_text_2", cut.ttframes.ttframe)
    tttext2:SetFontSize(cut.gui.font.size)
    tttext2:SetText("", true)
    tttext2:SetLayer(10)
    tttext2:SetFontColor(1, 1, 1)
-   tttext2:SetPoint( "TOPLEFT", cut.ttframes.ttframe, "TOPLEFT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight() + cut.gui.borders.top * 8)
+   tttext2:SetPoint( "TOPLEFT", cut.ttframes.linesep0, "TOPLEFT")
    cut.ttframes.tttext2   =  tttext2
 
    -- TT In value
@@ -65,7 +60,7 @@ local function _newTT()
    tttext3:SetText("", true)
    tttext3:SetLayer(10)
    tttext3:SetFontColor(1, 1, 1)
-   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.ttframe, "TOPRIGHT", 0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()  + cut.gui.borders.top * 8)
+   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.linesep0, "TOPRIGHT")
    cut.ttframes.tttext3   =  tttext3
 
    -- TT Out Label
@@ -86,13 +81,22 @@ local function _newTT()
    tttext5:SetPoint( "TOPRIGHT", cut.ttframes.tttext3, "BOTTOMRIGHT")
    cut.ttframes.tttext5   =  tttext5
 
+   -- TT Line Saparator 1
+   local linesep1     =  UI.CreateFrame("Texture", "cut_ttip_separator_1", cut.ttframes.ttframe)
+   linesep1:SetTexture("Rift", "line_window_break.png.dds")
+   linesep1:SetHeight(cut.gui.font.size/2)
+   linesep1:SetLayer(10)
+   linesep1:SetPoint( "TOPLEFT",  cut.ttframes.tttext4, "BOTTOMLEFT",    0, 2)
+   linesep1:SetPoint( "TOPRIGHT", cut.ttframes.tttext5, "BOTTOMRIGHT",   0, 2)
+   cut.ttframes.linesep1 =  linesep1
+
    -- TT Balance Label
    local tttext6     =  UI.CreateFrame("Text", "cut_ttip_text_6", cut.ttframes.ttframe)
    tttext6:SetFontSize(cut.gui.font.size)
    tttext6:SetText("", true)
    tttext6:SetLayer(10)
    tttext6:SetFontColor(1, 1, 1)
-   tttext6:SetPoint( "TOPLEFT", cut.ttframes.tttext4, "BOTTOMLEFT")
+   tttext6:SetPoint( "TOPLEFT", cut.ttframes.linesep1, "BOTTOMLEFT")
    cut.ttframes.tttext6   =  tttext6
 
    -- TT Balance value
@@ -101,7 +105,7 @@ local function _newTT()
    tttext7:SetText("", true)
    tttext7:SetLayer(10)
    tttext7:SetFontColor(1, 1, 1)
-   tttext7:SetPoint( "TOPRIGHT", cut.ttframes.tttext5, "BOTTOMRIGHT")
+   tttext7:SetPoint( "TOPRIGHT", cut.ttframes.linesep1, "BOTTOMRIGHT")
    cut.ttframes.tttext7   =  tttext7
 
    cut.init.tt =  true
@@ -138,24 +142,6 @@ local function showTT(o, var, panel, id)
       cut.ttframes.tttext6:SetText("Bal:", true)
       cut.ttframes.tttext7:SetText("")
 
-
-      print("ID ["..id.."] panel["..panel.."]")
---       if id == 'coin'  then
---          tip   =  string.format( "%s\nIn: %s\nOut: %s\nBalance: %s",
---             var,
---             cut.printmoney(tips[tostring(panel)]["1"]),
---             cut.printmoney(tips[tostring(panel)]["2"]),
---             cut.printmoney(tips[tostring(panel)]["3"]) )
---       else
---          tip   =  string.format( "%s\nIn: %s\nOut: %s\nBalance: %s",
---             var,
---             tips[tostring(panel)]["1"],
---             tips[tostring(panel)]["2"],
---             tips[tostring(panel)]["3"] )
---       end
---
---       cut.ttframes.tttext:SetText( tip, true)
-
       if id == "coin"  then
          cut.ttframes.tttext3:SetText( cut.printmoney(tips[tostring(panel)]["1"]), true )
          cut.ttframes.tttext5:SetText( cut.printmoney(tips[tostring(panel)]["2"]), true )
@@ -168,8 +154,18 @@ local function showTT(o, var, panel, id)
 
 
 
---       -- resize tooltip
---       cut.gui.ttobj:SetHeight((cut.ttframes.tttext:GetBottom() - cut.ttframes.tttext:GetTop()) + cut.gui.borders.top + cut.gui.borders.bottom)
+      -- resize tooltip
+      -- Vertical
+      cut.gui.ttobj:SetHeight((cut.ttframes.tttext7:GetBottom() - cut.ttframes.tttext1:GetTop()) + (cut.gui.borders.top*2) + (cut.gui.borders.bottom))
+      -- Orizontal
+      local w  =  {  cut.ttframes.tttext1:GetWidth() + cut.gui.borders.left + (cut.gui.borders.left*2) + (cut.gui.borders.right*2),
+                     cut.ttframes.tttext2:GetWidth() + cut.ttframes.tttext3:GetWidth() + (cut.gui.borders.left*2) + (cut.gui.borders.right*2),
+                     cut.ttframes.tttext4:GetWidth() + cut.ttframes.tttext5:GetWidth() + (cut.gui.borders.left*2) + (cut.gui.borders.right*2),
+                     cut.ttframes.tttext6:GetWidth() + cut.ttframes.tttext7:GetWidth() + (cut.gui.borders.left*2) + (cut.gui.borders.right*2)
+                  }
+      local W  =  0
+      for _, width in ipairs(w) do  if width > W then W = width end end
+      cut.gui.ttobj:SetWidth(W)
 
       -- re-position tooltip
       local mouseData   =   Inspect.Mouse()

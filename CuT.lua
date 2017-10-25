@@ -184,22 +184,14 @@ function cut.createwindow()
    local titleframe =  UI.CreateFrame("Frame", "Cut_title_frame", cutwindow)
    titleframe:SetPoint("TOPLEFT",     cutwindow, "TOPLEFT")
    titleframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT")
---    titleframe:SetHeight(cut.gui.font.size * 2)
    titleframe:SetHeight(cut.gui.font.size)
    titleframe:SetBackgroundColor(unpack(cut.color.deepblack))
    titleframe:SetLayer(1)
---    -- Mouse Hover IN    => show Title Bar
---    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() showtilebar(true)    end, "cut_title_frame_Cursor.In_"  .. currencyframe:GetName())
---    -- Mouse Hover OUT   => hide Title Bar
---    currencyframe:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showtilebar(false)   end, "cut_title_frame_Cursor.Out_" .. currencyframe:GetName())
---    titleframe:SetVisible(false)
    cut.shown.titleframe =  titleframe
 
    -- Title Icon
    titleicon = UI.CreateFrame("Texture", "cut_tile_icon", titleframe)
    titleicon:SetTexture("Rift", "loot_gold_coins.dds")
---    titleicon:SetHeight(cut.gui.font.size)
---    titleicon:SetWidth(cut.gui.font.size)
    titleicon:SetHeight(cut.gui.font.size*.75)
    titleicon:SetWidth(cut.gui.font.size*.75)
    titleicon:SetLayer(3)
@@ -208,7 +200,6 @@ function cut.createwindow()
 
    -- Window Title
    local windowtitle =  UI.CreateFrame("Text", "window_title", titleframe)
---    windowtitle:SetFontSize(cut.gui.font.size )
    windowtitle:SetFontSize(cut.gui.font.size*.75)
    windowtitle:SetText(string.format("%s", cut.html.title[1]), true)
    windowtitle:SetLayer(3)
@@ -218,7 +209,6 @@ function cut.createwindow()
 
    -- CuT Version
    local titleversion =  UI.CreateFrame("Text", "cut_title_version", titleframe)
---    titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
    titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
    titleversion:SetText(string.format("%s", 'v.'..cut.version), true)
    titleversion:SetLayer(3)
@@ -229,8 +219,6 @@ function cut.createwindow()
    -- Iconize Button
    local iconizebutton = UI.CreateFrame("Texture", "cut_iconize button", titleframe)
    iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
---    iconizebutton:SetHeight(cut.gui.font.size)
---    iconizebutton:SetWidth(cut.gui.font.size)
    iconizebutton:SetHeight(cut.gui.font.size*.75)
    iconizebutton:SetWidth(cut.gui.font.size*.75)
    iconizebutton:SetLayer(3)
@@ -240,7 +228,6 @@ function cut.createwindow()
 
    -- Window Panel Info
    local windowinfo =  UI.CreateFrame("Text", "window_info", titleframe)
---    windowinfo:SetFontSize(cut.gui.font.size -2 )
    windowinfo:SetFontSize(cut.gui.font.size*.75)
    local panel =  cut.shown.panel
    if cut.shown.tracker == 2 then panel = panel + 3 end
@@ -309,13 +296,11 @@ function cut.createwindow()
    cut.frames.weeknotorietycontainer =  weekcutnotorietyframe
    cut.frames.weeknotorietycontainer:SetVisible(false)
 
-
    -- RESIZER WIDGET
    local corner=  UI.CreateFrame("Texture", "corner", cutwindow)
    corner:SetTexture("Rift", "chat_resize_(normal).png.dds")
    corner:SetHeight(cut.gui.font.size)
    corner:SetWidth(cut.gui.font.size)
---    corner:SetBackgroundColor(unpack(cut.color.deepblack))
    corner:SetLayer(4)
    corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT")
    corner:EventAttach(Event.UI.Input.Mouse.Left.Down,      function()  local mouse = Inspect.Mouse()
@@ -338,7 +323,6 @@ function cut.createwindow()
    corner:EventAttach(Event.UI.Input.Mouse.Left.Upoutside, function()  corner.pressed = false end, "Event.UI.Input.Mouse.Left.Upoutside")
    corner:EventAttach(Event.UI.Input.Mouse.Left.Up,        function()  corner.pressed = false end, "Event.UI.Input.Mouse.Left.Up")
 
-
    -- Enable Dragging
    Library.LibDraggable.draggify(cutwindow, updateguicoordinates)
 
@@ -348,24 +332,14 @@ end
 
 local function createnewcurrencyline(currency, value, panel, id)
    local flag           =  ""
-   local currencyframe  =  nil
+--    local currencyframe  =  nil
    local base           =  {}
-   if panel == 1 then
-      flag = "_current_"
-      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.container)      -- CUT currency container
-      base  =  cut.coinbase
-   end
-   if panel == 2 then
-      flag = "_today_"
-      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.todaycontainer)
-      base  =  cut.save.day
-   end
-   if panel == 3 then
-      flag = "_week_"
-      currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, cut.frames.weekcontainer)
-      base  =  cut.save.week
-   end
+   local container      =  nil
+   if panel == 1 then   flag = "_current_"   container   =  cut.frames.container       base  =  cut.coinbase   end
+   if panel == 2 then   flag = "_today_"     container   =  cut.frames.todaycontainer  base  =  cut.save.day   end
+   if panel == 3 then   flag = "_week_"      container   =  cut.frames.weekcontainer   base  =  cut.save.week  end
 
+   local currencyframe  =  UI.CreateFrame("Frame", "cut_currency_frame" .. flag, container)
    currencyframe:SetHeight(cut.gui.font.size)
    currencyframe:SetLayer(2)
 
@@ -382,6 +356,9 @@ local function createnewcurrencyline(currency, value, panel, id)
    currencyicon:SetLayer(3)
    currencyicon:SetPoint("TOPRIGHT",   currencyframe, "TOPRIGHT", -cut.gui.borders.right, 4)
 
+   -- come currencies don't have a Toooltip, usually the don't
+   -- have a "," in their ID, like: "coin", "affinity", "credits",
+   -- etc...
    if string.find(id, ',') then
       -- Mouse Hover IN    => show tooltip
       currencyicon:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() Command.Tooltip(id)    end, "Event.UI.Input.Mouse.Cursor.In_"  .. currencyicon:GetName())
@@ -405,6 +382,7 @@ local function createnewcurrencyline(currency, value, panel, id)
    cut.attachTT(currencyvalue, currency, panel, id)
 
    local t  =  {  frame=currencyframe, label=currencylabel, icon=currencyicon, value=currencyvalue }
+
    return t
 end
 
@@ -445,19 +423,16 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietystanding:SetWidth(cut.gui.font.size*5)
    notorietystanding:SetText(string.format("%s", (desc or '<unknown>')), true)
    notorietystanding:SetLayer(3)
---    notorietystanding:SetPoint("TOPRIGHT",  notorietyframe, "TOPRIGHT", -cut.gui.borders.right, 0)
    notorietystanding:SetPoint("CENTERRIGHT",  notorietyframe, "CENTERRIGHT", -cut.gui.borders.right, 0)
    --
    -- Notoriety Percent
    --
    local notorietypercent =  UI.CreateFrame("Text", "notoriety_percent_" .. flag .. notoriety, notorietyframe)
---    notorietypercent:SetFontSize(cut.gui.font.size - 2)
    notorietypercent:SetFontSize(cut.gui.font.size * .75)
    notorietypercent:SetFontColor(color.r, color.g, color.b)
    notorietypercent:SetWidth(cut.gui.font.size*3)
    notorietypercent:SetText(string.format("%s%%", percent), true)
    notorietypercent:SetLayer(3)
---    notorietypercent:SetPoint("TOPRIGHT",  notorietystanding, "TOPLEFT", -cut.gui.borders.right, 0)
    notorietypercent:SetPoint("CENTERRIGHT",  notorietystanding, "CENTERLEFT", -cut.gui.borders.right, 0)
    --
    -- Notoriety Value
@@ -470,7 +445,6 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    notorietyvalue:SetFontSize(cut.gui.font.size )
    notorietyvalue:SetText(string.format("%s", value), true)
    notorietyvalue:SetLayer(3)
---    notorietyvalue:SetPoint("TOPRIGHT",  notorietypercent, "TOPLEFT", -cut.gui.borders.right, 0)
    notorietyvalue:SetPoint("CENTERRIGHT",  notorietypercent, "CENTERLEFT", -cut.gui.borders.right, 0)
 
    local t  =  {  frame=notorietyframe, label=notorietylabel, value=notorietyvalue, standing=notorietystanding, percent=notorietypercent }
@@ -604,11 +578,8 @@ function cut.updatenotorietyweek(notoriety, value, id)
       updatenotorietyvalue(notoriety, value, cut.shown.weeknotorietytbl[notoriety].value, id)
       updatenotorietystanding(   id,
                                  cut.shown.weeknotorietytbl[notoriety].label,
---                                  cut.shown.todaynotorietytbl[notoriety].standing,
---                                  cut.shown.todaynotorietytbl[notoriety].percent
                                  cut.shown.weeknotorietytbl[notoriety].standing,
                                  cut.shown.weeknotorietytbl[notoriety].percent
-
                              )
    else
       local t  =  {}
@@ -628,7 +599,11 @@ function cut.updatenotorietytoday(notoriety, value, id)
 
    if cut.shown.todaynotorietytbl[notoriety] then
       updatenotorietyvalue(notoriety, value, cut.shown.todaynotorietytbl[notoriety].value, id)
-      updatenotorietystanding(id, cut.shown.todaynotorietytbl[notoriety].label, cut.shown.todaynotorietytbl[notoriety].standing, cut.shown.todaynotorietytbl[notoriety].percent)
+      updatenotorietystanding(   id,
+                                 cut.shown.todaynotorietytbl[notoriety].label,
+                                 cut.shown.todaynotorietytbl[notoriety].standing,
+                                 cut.shown.todaynotorietytbl[notoriety].percent
+                             )
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 5, id)
@@ -646,7 +621,11 @@ function cut.updatenotoriety(notoriety, value, id)
    if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
    if cut.shown.currentnotorietytbl[notoriety] then
-      updatenotorietyvalue(notoriety, value, cut.shown.currentnotorietytbl[notoriety].value, id)
+      updatenotorietyvalue(   notoriety,
+                              value,
+                              cut.shown.currentnotorietytbl[notoriety].value,
+                              id
+                          )
    else
       local t  =  {}
       t  =  createnewnotorietyline(notoriety, value, 4, id)
@@ -672,7 +651,6 @@ function cut.updatenotoriety(notoriety, value, id)
 
    return
 end
-
 
 -- Load/Save variable and Coinbases initialization -- begin
 Command.Event.Attach(Event.Unit.Availability.Full,          cut.startmeup,       "CuT: Init Coin Base")
