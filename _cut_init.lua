@@ -359,8 +359,8 @@ function cut.currencyevent(handle, params)
                         cut.updatecurrencies(var, newvalue, cut.coinbase[var].id)
 
                         -- Income/Outcome counters
---                         local realdiff    =  (cut.deltas[var] or 0) - val
-                        local realdiff    =  newvalue
+                        local realdiff    =  newvalue - (cut.deltas[var] or 0)
+--                         local realdiff    =  newvalue
                         local myin, myout =  0, 0
                         if realdiff > 0   then  myin = realdiff   myout  =  0
                         else                    myin = 0          myout  =  realdiff
