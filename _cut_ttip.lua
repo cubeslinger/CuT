@@ -14,7 +14,7 @@ local function _newTT()
 
    local ttwindow    =  UI.CreateFrame("Frame", "cut_ttip", ttcontext)
    ttwindow:SetLayer(8)
-   ttwindow:SetBackgroundColor(unpack(cut.color.black))
+   ttwindow:SetBackgroundColor(unpack(cut.color.deepblack))
    cut.ttframes.ttwindow =  ttwindow
 
    -- TT CONTAINER FRAME
@@ -36,7 +36,7 @@ local function _newTT()
    tttext1:SetPoint( "TOPCENTER", cut.ttframes.ttframe, "TOPCENTER")
    cut.ttframes.tttext1 =  tttext1
 
-   -- TT Line Saparator 0
+   -- TT Line Separator 0
    local linesep0     =  UI.CreateFrame("Texture", "cut_ttip_separator_1", cut.ttframes.ttframe)
    linesep0:SetTexture("Rift", "line_window_break.png.dds")
    linesep0:SetHeight(cut.gui.font.size/2)
@@ -81,7 +81,7 @@ local function _newTT()
    tttext5:SetPoint( "TOPRIGHT", cut.ttframes.tttext3, "BOTTOMRIGHT")
    cut.ttframes.tttext5   =  tttext5
 
-   -- TT Line Saparator 1
+   -- TT Line Separator 1
    local linesep1     =  UI.CreateFrame("Texture", "cut_ttip_separator_1", cut.ttframes.ttframe)
    linesep1:SetTexture("Rift", "line_window_break.png.dds")
    linesep1:SetHeight(cut.gui.font.size/2)
