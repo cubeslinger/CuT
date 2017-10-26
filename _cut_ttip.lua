@@ -115,6 +115,8 @@ local function _newTT()
 end
 
 local function showTT(o, var, panel, id)
+   
+   print(string.format("o=%s, var=%s, panel=%s id=%s", o, var, panel, id))
 
    if o and var then
 

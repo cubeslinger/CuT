@@ -162,12 +162,12 @@ function cut.loadvariables(_, addonname)
          local lastsession    =  nil
 
          -- Load Today session data only if we are in the same day
-         cut.week   =  dayoftheyear
-         if week then
-            lastsession =  week
+         cut.today   =  dayoftheyear
+         if today then
+            lastsession =  today
             if lastsession == dayoftheyear then
-               if weekbase then
-                  cut.save.day   =  weekbase
+               if todaybase then
+                  cut.save.day   =  todaybase
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.day) do flag = true break end
                   cut.init.day  =  flag
@@ -244,7 +244,9 @@ function cut.loadvariables(_, addonname)
 
          -- Load Balance for Tooltips
          if balance then
-            cut.balance =  balance
+            local t = balance
+            if lastsession == dayoftheyear            then  cut.balance.today =  t.today  end
+            if (dayoftheyear - notorietyweekday) <= 7 then  cut.balance.week  =  t.week   end
          end
       end
    end
@@ -369,9 +371,9 @@ function cut.currencyevent(handle, params)
                         if realdiff > 0   then  myin = realdiff   myout  =  0
                         else                    myin = 0          myout  =  realdiff
                         end
-                        if not cut.balance.current[var]  then cut.balance.current[var] =  {  income   = 0, outcome =  0 }  end
-                        if not cut.balance.today[var]    then cut.balance.today[var]   =  {  income   = 0, outcome =  0 }  end
-                        if not cut.balance.week[var]     then cut.balance.week[var]    =  {  income   = 0, outcome =  0 }  end
+--                         if not cut.balance.current[var]  then cut.balance.current[var] =  {  income   = 0, outcome =  0 }  end
+--                         if not cut.balance.today[var]    then cut.balance.today[var]   =  {  income   = 0, outcome =  0 }  end
+--                         if not cut.balance.week[var]     then cut.balance.week[var]    =  {  income   = 0, outcome =  0 }  end
                         cut.balance.current[var]   =  {  income   = (cut.balance.current[var].income or 0) + myin, outcome =  (cut.balance.current[var].outcome or 0)   + myout }
                         cut.balance.today[var]     =  {  income   = (cut.balance.today[var].income or 0)   + myin, outcome =  (cut.balance.today[var].outcome or 0)     + myout }
                         cut.balance.week[var]      =  {  income   = (cut.balance.week[var].income or 0)    + myin, outcome =  (cut.balance.week[var].outcome or 0)      + myout }
