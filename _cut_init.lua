@@ -326,7 +326,10 @@ function cut.savevariables(_, addonname)
       notorietyweekday  =  cut.weekday
 
       -- Save Balance tables for value tooltips
-      balance           =  cut.balance
+      local tbl   =  {}
+      tbl.today   =  cut.balance.today
+      tbl.week    =  cut.balance.week
+      balance     =  tbl
    end
 
    return
