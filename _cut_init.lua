@@ -374,9 +374,9 @@ function cut.currencyevent(handle, params)
                         if realdiff > 0   then  myin = realdiff   myout  =  0
                         else                    myin = 0          myout  =  realdiff
                         end
---                         if not cut.balance.current[var]  then cut.balance.current[var] =  {  income   = 0, outcome =  0 }  end
---                         if not cut.balance.today[var]    then cut.balance.today[var]   =  {  income   = 0, outcome =  0 }  end
---                         if not cut.balance.week[var]     then cut.balance.week[var]    =  {  income   = 0, outcome =  0 }  end
+                        if not cut.balance.current[var]  then cut.balance.current[var] =  {  income   = 0, outcome =  0 }  end
+                        if not cut.balance.today[var]    then cut.balance.today[var]   =  {  income   = 0, outcome =  0 }  end
+                        if not cut.balance.week[var]     then cut.balance.week[var]    =  {  income   = 0, outcome =  0 }  end
                         cut.balance.current[var]   =  {  income   = (cut.balance.current[var].income or 0) + myin, outcome =  (cut.balance.current[var].outcome or 0)   + myout }
                         cut.balance.today[var]     =  {  income   = (cut.balance.today[var].income or 0)   + myin, outcome =  (cut.balance.today[var].outcome or 0)     + myout }
                         cut.balance.week[var]      =  {  income   = (cut.balance.week[var].income or 0)    + myin, outcome =  (cut.balance.week[var].outcome or 0)      + myout }
