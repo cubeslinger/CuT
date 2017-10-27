@@ -121,17 +121,17 @@ local function showTT(o, var, panel, id)
    if o and var then
 
       local tip   =  ""
-      local tips  =  {  ["1"] =  {  ["1"] = (cut.balance.current[var].income  or 0),
-                                    ["2"] = (cut.balance.current[var].outcome or 0),
-                                    ["3"] = (cut.balance.current[var].income  or 0) + (cut.balance.current[var].outcome or 0)
+      local tips  =  {  ["1"] =  {  ["1"] = (0 or cut.balance.current[var].income),
+                                    ["2"] = (0 or cut.balance.current[var].outcome),
+                                    ["3"] = (0 or cut.balance.current[var].income) + (0 or cut.balance.current[var].outcome)
                                  },
-                        ["2"] =  {  ["1"] = (cut.balance.today[var].income    or 0),
-                                    ["2"] = (cut.balance.today[var].outcome   or 0),
-                                    ["3"] = (cut.balance.today[var].income    or 0) + (cut.balance.today[var].outcome   or 0)
+                        ["2"] =  {  ["1"] = (0 or cut.balance.today[var].income),
+                                    ["2"] = (0 or cut.balance.today[var].outcome),
+                                    ["3"] = (0 or cut.balance.today[var].income) + (0 or cut.balance.today[var].outcome)
                                  },
-                        ["3"] =  {  ["1"] = (cut.balance.week[var].income     or 0),
-                                    ["2"] = (cut.balance.week[var].outcome    or 0),
-                                    ["3"] = (cut.balance.week[var].income     or 0) + (cut.balance.week[var].outcome    or 0)
+                        ["3"] =  {  ["1"] = (0 or cut.balance.week[var].income),
+                                    ["2"] = (0 or cut.balance.week[var].outcome),
+                                    ["3"] = (0 or cut.balance.week[var].income) + (0 or cut.balance.week[var].outcome)
                                  }
                      }
 

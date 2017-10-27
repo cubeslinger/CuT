@@ -283,8 +283,8 @@ function cut.savevariables(_, addonname)
          end
       end
 
-      weekbase   =  tbl
-      week       =  getdayoftheyear()
+      todaybase   =  tbl
+      today       =  getdayoftheyear()
 
       -- Save Currencies Week Session data
       local tbl   =  {}
