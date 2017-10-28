@@ -511,7 +511,7 @@ function cut.startmeup()
       -- if we have Currencies Today session data, we restore it in the week pane
       if cut.init.day then
          for currency, tbl in pairs(cut.save.day) do
-            if tbl.stack   ~= 0  then  cut.updatecurrenciesweek(currency, tbl.stack, tbl.id)   end
+            if tbl.stack   ~= 0  then  cut.updatecurrenciestoday(currency, tbl.stack, tbl.id)   end
          end
       end
 
@@ -525,7 +525,7 @@ function cut.startmeup()
       -- if we have Today Notoriety session data, we restore it in the Notoriety week pane
       if cut.init.notorietyweek then
          for currency, tbl in pairs(cut.save.notorietyweek) do
-            if tbl.stack   ~= 0  then  cut.updatenotorietyweek(currency, tbl.stack, tbl.id)   end
+            if tbl.stack   ~= 0  then  cut.updatenotorietytoday(currency, tbl.stack, tbl.id)   end
          end
       end
 

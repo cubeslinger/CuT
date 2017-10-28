@@ -116,24 +116,24 @@ end
 
 local function showTT(o, var, panel, id)
    
-   print(string.format("o=%s, var=%s, panel=%s id=%s", o, var, panel, id))
+--    print(string.format("o=%s, var=%s, panel=%s id=%s", o, var, panel, id))
 
    if o and var then
 
       local tip   =  ""
-      local tips  =  {  ["1"] =  {  ["1"] = (0 or cut.balance.current[var].income),
-                                    ["2"] = (0 or cut.balance.current[var].outcome),
-                                    ["3"] = (0 or cut.balance.current[var].income) + (0 or cut.balance.current[var].outcome)
-                                 },
-                        ["2"] =  {  ["1"] = (0 or cut.balance.today[var].income),
-                                    ["2"] = (0 or cut.balance.today[var].outcome),
-                                    ["3"] = (0 or cut.balance.today[var].income) + (0 or cut.balance.today[var].outcome)
-                                 },
-                        ["3"] =  {  ["1"] = (0 or cut.balance.week[var].income),
-                                    ["2"] = (0 or cut.balance.week[var].outcome),
-                                    ["3"] = (0 or cut.balance.week[var].income) + (0 or cut.balance.week[var].outcome)
-                                 }
-                     }
+--       local tips  =  {  ["1"] =  {  ["1"] = (0 or cut.balance.current[var].income),
+--                                     ["2"] = (0 or cut.balance.current[var].outcome),
+--                                     ["3"] = (0 or cut.balance.current[var].income) + (0 or cut.balance.current[var].outcome)
+--                                  },
+--                         ["2"] =  {  ["1"] = (0 or cut.balance.today[var].income),
+--                                     ["2"] = (0 or cut.balance.today[var].outcome),
+--                                     ["3"] = (0 or cut.balance.today[var].income) + (0 or cut.balance.today[var].outcome)
+--                                  },
+--                         ["3"] =  {  ["1"] = (0 or cut.balance.week[var].income),
+--                                     ["2"] = (0 or cut.balance.week[var].outcome),
+--                                     ["3"] = (0 or cut.balance.week[var].income) + (0 or cut.balance.week[var].outcome)
+--                                  }
+--                      }
 
       -- update tooltip
       cut.ttframes.tttext1:SetText(var, true)
@@ -143,18 +143,30 @@ local function showTT(o, var, panel, id)
       cut.ttframes.tttext5:SetText("")
       cut.ttframes.tttext6:SetText("Bal:", true)
       cut.ttframes.tttext7:SetText("")
+      
+      local tbl   =  {}
+      local vals  =  {}
+      if panel == 1  then  tbl   =  cut.balance.current  end
+      if panel == 2  then  tbl   =  cut.balance.today    end
+      if panel == 3  then  tbl   =  cut.balance.week     end
+      
+      if tbl[var] then  
+         table.insert(vals, tbl[var].income)
+         table.insert(vals, tbl[var].outcome)
+         table.insert(vals, tbl[var].outcome + tbl[var].outcome)
+      else
+         vals  =  {  0, 0, 0  }
+      end         
 
       if id == "coin"  then
-         cut.ttframes.tttext3:SetText( cut.printmoney(tips[tostring(panel)]["1"]), true )
-         cut.ttframes.tttext5:SetText( cut.printmoney(tips[tostring(panel)]["2"]), true )
-         cut.ttframes.tttext7:SetText( cut.printmoney(tips[tostring(panel)]["3"]), true )
+         cut.ttframes.tttext3:SetText( cut.printmoney(vals[1]), true )
+         cut.ttframes.tttext5:SetText( cut.printmoney(vals[2]), true )
+         cut.ttframes.tttext7:SetText( cut.printmoney(vals[3]), true )
       else
-         cut.ttframes.tttext3:SetText( tostring(tips[tostring(panel)]["1"]), true )
-         cut.ttframes.tttext5:SetText( tostring(tips[tostring(panel)]["2"]), true )
-         cut.ttframes.tttext7:SetText( tostring(tips[tostring(panel)]["3"]), true )
+         cut.ttframes.tttext3:SetText( tostring(vals[1]), true )
+         cut.ttframes.tttext5:SetText( tostring(vals[2]), true )
+         cut.ttframes.tttext7:SetText( tostring(vals[3]), true )
       end
-
-
 
       -- resize tooltip
       -- Vertical
