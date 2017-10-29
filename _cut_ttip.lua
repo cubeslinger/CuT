@@ -41,8 +41,8 @@ local function _newTT()
    linesep0:SetTexture("Rift", "line_window_break.png.dds")
    linesep0:SetHeight(cut.gui.font.size/2)
    linesep0:SetLayer(10)
-   linesep0:SetPoint( "TOPLEFT",    cut.ttframes.ttframe, "TOPLEFT",    0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()   +  cut.gui.borders.top * 3)
-   linesep0:SetPoint( "TOPRIGHT",   cut.ttframes.ttframe, "TOPRIGHT",   0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()   +  cut.gui.borders.top * 3)
+   linesep0:SetPoint( "TOPLEFT",    cut.ttframes.ttframe, "TOPLEFT",    0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()   +  cut.gui.font.size*1.5)
+   linesep0:SetPoint( "TOPRIGHT",   cut.ttframes.ttframe, "TOPRIGHT",   0, cut.ttframes.ttframe:GetTop() + tttext1:GetHeight()   +  cut.gui.font.size*1.5)
    cut.ttframes.linesep0 =  linesep0
 
    -- TT In Label
@@ -51,7 +51,7 @@ local function _newTT()
    tttext2:SetText("", true)
    tttext2:SetLayer(10)
    tttext2:SetFontColor(1, 1, 1)
-   tttext2:SetPoint( "TOPLEFT", cut.ttframes.linesep0, "TOPLEFT")
+   tttext2:SetPoint( "TOPLEFT", cut.ttframes.linesep0, "TOPLEFT", 0, cut.gui.font.size)
    cut.ttframes.tttext2   =  tttext2
 
    -- TT In value
@@ -60,7 +60,7 @@ local function _newTT()
    tttext3:SetText("", true)
    tttext3:SetLayer(10)
    tttext3:SetFontColor(1, 1, 1)
-   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.linesep0, "TOPRIGHT")
+   tttext3:SetPoint( "TOPRIGHT", cut.ttframes.linesep0, "TOPRIGHT", 0, cut.gui.font.size)
    cut.ttframes.tttext3   =  tttext3
 
    -- TT Out Label
@@ -86,8 +86,8 @@ local function _newTT()
    linesep1:SetTexture("Rift", "line_window_break.png.dds")
    linesep1:SetHeight(cut.gui.font.size/2)
    linesep1:SetLayer(10)
-   linesep1:SetPoint( "TOPLEFT",  cut.ttframes.tttext4, "BOTTOMLEFT",    0, 2)
-   linesep1:SetPoint( "TOPRIGHT", cut.ttframes.tttext5, "BOTTOMRIGHT",   0, 2)
+   linesep1:SetPoint( "TOPLEFT",  cut.ttframes.tttext4, "BOTTOMLEFT",    0, cut.gui.font.size)
+   linesep1:SetPoint( "TOPRIGHT", cut.ttframes.tttext5, "BOTTOMRIGHT",   0, cut.gui.font.size)
    cut.ttframes.linesep1 =  linesep1
 
    -- TT Balance Label

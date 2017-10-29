@@ -429,7 +429,7 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    --
    local notorietypercent =  UI.CreateFrame("Text", "notoriety_percent_" .. flag .. notoriety, notorietyframe)
    notorietypercent:SetFontSize(cut.gui.font.size * .75)
-   notorietypercent:SetFontColor(color.r, color.g, color.b)
+--    notorietypercent:SetFontColor(color.r, color.g, color.b)
    notorietypercent:SetWidth(cut.gui.font.size*3)
    notorietypercent:SetText(string.format("%s%%", percent), true)
    notorietypercent:SetLayer(3)
@@ -437,12 +437,13 @@ local function createnewnotorietyline(notoriety, value, panel, id)
    --
    -- Notoriety Value
    --
-   if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
-   else                 value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
-   end
+--    if value < 0   then  value = "<font color=\'"..cut.html.red.."\'>"..value.."</font>"
+--    else                 value = "<font color=\'"..cut.html.green.."\'>"..value.."</font>"
+--    end
 
    local notorietyvalue  =  UI.CreateFrame("Text", "notoriety_value_" .. flag .. notoriety, notorietyframe)
    notorietyvalue:SetFontSize(cut.gui.font.size )
+   notorietyvalue:SetFontColor(unpack(cut.color.green))
    notorietyvalue:SetText(string.format("%s", value), true)
    notorietyvalue:SetLayer(3)
    notorietyvalue:SetPoint("CENTERRIGHT",  notorietypercent, "CENTERLEFT", -cut.gui.borders.right, 0)
