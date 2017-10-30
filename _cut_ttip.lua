@@ -115,7 +115,7 @@ local function _newTT()
 end
 
 local function showTT(o, var, panel, id)
-   
+
 --    print(string.format("o=%s, var=%s, panel=%s id=%s", o, var, panel, id))
 
    if o and var then
@@ -143,20 +143,20 @@ local function showTT(o, var, panel, id)
       cut.ttframes.tttext5:SetText("")
       cut.ttframes.tttext6:SetText("Bal:", true)
       cut.ttframes.tttext7:SetText("")
-      
+
       local tbl   =  {}
       local vals  =  {}
       if panel == 1  then  tbl   =  cut.balance.current  end
       if panel == 2  then  tbl   =  cut.balance.today    end
       if panel == 3  then  tbl   =  cut.balance.week     end
-      
-      if tbl[var] then  
+
+      if tbl[var] then
          table.insert(vals, tbl[var].income)
          table.insert(vals, tbl[var].outcome)
-         table.insert(vals, tbl[var].outcome + tbl[var].outcome)
+         table.insert(vals, tbl[var].outcome + tbl[var].income)
       else
          vals  =  {  0, 0, 0  }
-      end         
+      end
 
       if id == "coin"  then
          cut.ttframes.tttext3:SetText( cut.printmoney(vals[1]), true )

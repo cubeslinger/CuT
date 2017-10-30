@@ -9,8 +9,8 @@ cut.addon               =  Inspect.Addon.Detail(Inspect.Addon.Current())["name"]
 cut.version             =  Inspect.Addon.Detail(Inspect.Addon.Current())["toc"]["Version"]
 --
 local function getdayoftheyear()
-   local week = os.date("*t", os.time())
-   return(week.yday)
+   local today = os.date("*t", os.time())
+   return(today.yday)
 end
 --
 cut.gui                 =  {}
