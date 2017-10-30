@@ -5,14 +5,14 @@
 --
 local addon, cut = ...
 
--- local function showtitlebar(show)
---    print(string.format("showtilebar(%s)", show))
---    if show then   cut.shown.titleframe:SetVisible(true)
---    else           cut.shown.titleframe:SetVisible(false)
---    end
---
---    return
--- end
+local function showtitlebar()
+
+   local show  =  not cut.shown.titleframe:GetVisible()
+   cut.shown.titleframe:SetVisible(show)
+
+   return
+end
+
 
 local function updateguicoordinates(win, x, y)
    if win ~= nil then
@@ -182,9 +182,9 @@ function cut.createwindow()
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Back,    function() cut.changefontsize(-1)  end,  "cutwindow_wheel_backward")
 
    local titleframe =  UI.CreateFrame("Frame", "Cut_title_frame", cutwindow)
-   titleframe:SetPoint("TOPLEFT",     cutwindow, "TOPLEFT",    0, - cut.gui.font.size)
-   titleframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT",   0, - cut.gui.font.size)
-   titleframe:SetHeight(cut.gui.font.size)
+   titleframe:SetPoint("TOPLEFT",     cutwindow, "TOPLEFT",    0, -(cut.gui.font.size*1.5)+4)  -- move up, outside externalframe
+   titleframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT",   0, -(cut.gui.font.size*1.5)+4)  -- move up, outside externalframe
+   titleframe:SetHeight(cut.gui.font.size*1.5)
    titleframe:SetBackgroundColor(unpack(cut.color.deepblack))
    titleframe:SetLayer(1)
    titleframe:SetVisible(false)
@@ -193,15 +193,18 @@ function cut.createwindow()
       -- Title Icon
       titleicon = UI.CreateFrame("Texture", "cut_tile_icon", titleframe)
       titleicon:SetTexture("Rift", "loot_gold_coins.dds")
-      titleicon:SetHeight(cut.gui.font.size*.75)
-      titleicon:SetWidth(cut.gui.font.size*.75)
+--       titleicon:SetHeight(cut.gui.font.size*.75)
+--       titleicon:SetWidth(cut.gui.font.size*.75)
+      titleicon:SetHeight(cut.gui.font.size)
+      titleicon:SetWidth(cut.gui.font.size)
       titleicon:SetLayer(3)
-      titleicon:SetPoint("CENTERLEFT", titleframe, "CENTERLEFT", cut.gui.borders.left*2, 1)
+      titleicon:SetPoint("CENTERLEFT", titleframe, "CENTERLEFT", cut.gui.borders.left*2, 0)
       cut.shown.titleicon   =  titleicon
 
       -- Window Title
       local windowtitle =  UI.CreateFrame("Text", "window_title", titleframe)
-      windowtitle:SetFontSize(cut.gui.font.size*.75)
+--       windowtitle:SetFontSize(cut.gui.font.size*.75)
+      windowtitle:SetFontSize(cut.gui.font.size)
       windowtitle:SetText(string.format("%s", cut.html.title[1]), true)
       windowtitle:SetLayer(3)
       windowtitle:SetPoint("CENTERLEFT",   titleicon, "CENTERRIGHT", cut.gui.borders.left*2, 0)
@@ -210,7 +213,8 @@ function cut.createwindow()
 
       -- CuT Version
       local titleversion =  UI.CreateFrame("Text", "cut_title_version", titleframe)
-      titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
+--       titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
+      titleversion:SetFontSize(cut.round(cut.gui.font.size * .75))
       titleversion:SetText(string.format("%s", 'v.'..cut.version), true)
       titleversion:SetLayer(3)
       titleversion:SetPoint("CENTERLEFT", windowtitle, "CENTERRIGHT", cut.gui.borders.left*2, 0)
@@ -220,16 +224,19 @@ function cut.createwindow()
       -- Iconize Button
       local iconizebutton = UI.CreateFrame("Texture", "cut_iconize button", titleframe)
       iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
-      iconizebutton:SetHeight(cut.gui.font.size*.75)
-      iconizebutton:SetWidth(cut.gui.font.size*.75)
+--       iconizebutton:SetHeight(cut.gui.font.size*.75)
+--       iconizebutton:SetWidth(cut.gui.font.size*.75)
+      iconizebutton:SetHeight(cut.gui.font.size)
+      iconizebutton:SetWidth(cut.gui.font.size)
       iconizebutton:SetLayer(3)
       iconizebutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.showhidewindow() end, "CuT Iconize Button Pressed" )
-      iconizebutton:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right*2, 1)
+      iconizebutton:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right*2, 0)
       cut.shown.iconizebutton =  iconizebutton
 
       -- Window Panel Info
       local windowinfo =  UI.CreateFrame("Text", "window_info", titleframe)
-      windowinfo:SetFontSize(cut.gui.font.size*.75)
+--       windowinfo:SetFontSize(cut.gui.font.size*.75)
+      windowinfo:SetFontSize(cut.gui.font.size)
       local panel =  cut.shown.panel
       if cut.shown.tracker == 2 then panel = panel + 3 end
       local mylabel  =  cut.shown.panellabel[panel]
@@ -238,28 +245,20 @@ function cut.createwindow()
       end
       windowinfo:SetText(string.format("%s", mylabel), true)
       windowinfo:SetLayer(3)
-      windowinfo:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERLEFT", -cut.gui.borders.right*2, 1)
+      windowinfo:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERLEFT", -cut.gui.borders.right*2, 0)
       windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, managepanels, "Flip Panels" )
       cut.shown.windowinfo  =  windowinfo
 
    -- EXTERNAL CUT CONTAINER FRAME
    local externalcutframe =  UI.CreateFrame("Frame", "External_cut_frame", cutwindow)
-   externalcutframe:SetPoint("TOPLEFT",     titleframe, "BOTTOMLEFT",     cut.gui.borders.left,    cut.gui.borders.top)
-   externalcutframe:SetPoint("TOPRIGHT",    titleframe, "BOTTOMRIGHT",    - cut.gui.borders.right, cut.gui.borders.top)
+--    externalcutframe:SetPoint("TOPLEFT",     titleframe, "BOTTOMLEFT",     cut.gui.borders.left,    cut.gui.borders.top)
+--    externalcutframe:SetPoint("TOPRIGHT",    titleframe, "BOTTOMRIGHT",    - cut.gui.borders.right, cut.gui.borders.top)
+   externalcutframe:SetPoint("TOPLEFT",     titleframe, "BOTTOMLEFT",     cut.gui.borders.left,    0)
+   externalcutframe:SetPoint("TOPRIGHT",    titleframe, "BOTTOMRIGHT",    - cut.gui.borders.right, 0)
    externalcutframe:SetPoint("BOTTOMLEFT",  cutwindow, "BOTTOMLEFT",  cut.gui.borders.left,    - cut.gui.borders.bottom)
    externalcutframe:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", - cut.gui.borders.right, - cut.gui.borders.bottom)
    externalcutframe:SetBackgroundColor(unpack(cut.color.darkgrey))
    externalcutframe:SetLayer(1)
-
---    -- CLICK CATCHER FRAME 0.3.0
---    local clickcatcherframe =  UI.CreateFrame("Frame", "clickcatcher_cut_frame", cutwindow)
---    clickcatcherframe:SetAllPoints(cutwindow)
---    clickcatcherframe:SetLayer(4)
---    -- Mouse Hover IN    => show tooltip
---    clickcatcherframe:EventAttach(Event.UI.Input.Mouse.Cursor.In,   function() showtitlebar(true)    end, "Event.UI.Input.Mouse.Cursor.In_"  .. clickcatcherframe:GetName())
---    -- Mouse Hover OUT   => hide tooltip
---    clickcatcherframe:EventAttach(Event.UI.Input.Mouse.Cursor.Out,  function() showtitlebar(false)   end, "Event.UI.Input.Mouse.Cursor.Out_" .. clickcatcherframe:GetName())
-
 
    -- MASK FRAME
    local maskframe = UI.CreateFrame("Mask", "cut_mask_frame", externalcutframe)
@@ -309,7 +308,8 @@ function cut.createwindow()
 
    -- RESIZER WIDGET
    local corner=  UI.CreateFrame("Texture", "corner", cutwindow)
-   corner:SetTexture("Rift", "chat_resize_(normal).png.dds")
+--    corner:SetTexture("Rift", "chat_resize_(normal).png.dds")
+   corner:SetTexture("Rift", "chat_resize_(over).png.dds")
    corner:SetHeight(cut.gui.font.size)
    corner:SetWidth(cut.gui.font.size)
    corner:SetLayer(4)
@@ -318,6 +318,8 @@ function cut.createwindow()
                                                                         corner.pressed = true
                                                                         corner.basex   =  cutwindow:GetLeft()
                                                                         corner.basey   =  cutwindow:GetTop()
+
+                                                                        showtitlebar()
                                                             end,
                                                             "Event.UI.Input.Mouse.Left.Down")
    corner:EventAttach(Event.UI.Input.Mouse.Cursor.Move,    function()  if corner.pressed then
