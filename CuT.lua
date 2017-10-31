@@ -96,6 +96,10 @@ function cut.changefontsize(newfontsize)
       cut.shown.titleicon:SetWidth(cut.gui.font.size*.75)
       cut.shown.corner:SetHeight(cut.gui.font.size)
       cut.shown.corner:SetWidth(cut.gui.font.size)
+      cut.shown.lockbutton:SetHeight(cut.gui.font.size)
+      cut.shown.lockbutton:SetWidth(cut.gui.font.size)
+      cut.shown.iconizebutton:SetHeight(cut.gui.font.size)
+      cut.shown.iconizebutton:SetWidth(cut.gui.font.size)
       cut.resizewindow(cut.shown.tracker, cut.shown.panel)
    end
 
@@ -224,14 +228,11 @@ function cut.createwindow()
    titleframe:SetHeight(cut.gui.font.size*1.5)
    titleframe:SetBackgroundColor(unpack(cut.color.deepblack))
    titleframe:SetLayer(1)
-   titleframe:SetVisible(false)
    cut.shown.titleframe =  titleframe
 
       -- Title Icon
       titleicon = UI.CreateFrame("Texture", "cut_tile_icon", titleframe)
       titleicon:SetTexture("Rift", "loot_gold_coins.dds")
---       titleicon:SetHeight(cut.gui.font.size*.75)
---       titleicon:SetWidth(cut.gui.font.size*.75)
       titleicon:SetHeight(cut.gui.font.size)
       titleicon:SetWidth(cut.gui.font.size)
       titleicon:SetLayer(3)
@@ -250,7 +251,6 @@ function cut.createwindow()
 
       -- CuT Version
       local titleversion =  UI.CreateFrame("Text", "cut_title_version", titleframe)
---       titleversion:SetFontSize(cut.round(cut.gui.font.size/2))
       titleversion:SetFontSize(cut.round(cut.gui.font.size * .75))
       titleversion:SetText(string.format("%s", 'v.'..cut.version), true)
       titleversion:SetLayer(3)
@@ -260,15 +260,12 @@ function cut.createwindow()
 
       -- Iconize Button
       local iconizebutton = UI.CreateFrame("Texture", "cut_iconize_button", titleframe)
---       iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
       iconizebutton:SetTexture("Rift", "AlertTray_I54.dds")
---       iconizebutton:SetHeight(cut.gui.font.size*.75)
---       iconizebutton:SetWidth(cut.gui.font.size*.75)
       iconizebutton:SetHeight(cut.gui.font.size)
       iconizebutton:SetWidth(cut.gui.font.size)
       iconizebutton:SetLayer(3)
       iconizebutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.showhidewindow() end, "CuT Iconize Button Pressed" )
-      iconizebutton:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right*2, 0)
+      iconizebutton:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right, 0)
       cut.shown.iconizebutton =  iconizebutton
 
       -- Lock Button
@@ -282,10 +279,9 @@ function cut.createwindow()
       lockbutton:SetWidth(cut.gui.font.size)
       lockbutton:SetLayer(3)
       lockbutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() lockgui() end, "CuT Lock Gui Button Pressed" )
-      lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.borders.right*4, 0)
+--       lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.borders.right*4, 0)
+      lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.font.size, 0)
       cut.shown.lockbutton =  lockbutton
-
-
 
       -- Window Panel Info
       local windowinfo =  UI.CreateFrame("Text", "window_info", titleframe)
