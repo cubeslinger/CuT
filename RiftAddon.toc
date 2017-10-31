@@ -8,6 +8,14 @@ Website     =  "https://github.com/cubeslinger/CuT"
 Email       =  "marcob@marcob.org"
 Environment =  "4.0"
 
+Embed = {
+  LibDraggable = true,
+}
+
+Dependencies = {
+  LibDraggable = {"required", "before"},
+}
+
 RunOnStartup = {
    "_cut_init.lua",
    "_cut_utils.lua",
@@ -15,11 +23,6 @@ RunOnStartup = {
    "_cut_ttip.lua",
    "_cut_minimapbutton.lua",
    "CuT.lua",
-}
-
-
-Dependencies = {
-  LibDraggable = {"required", "before"},
 }
 
 SavedVariables = {

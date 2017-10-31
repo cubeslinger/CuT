@@ -36,6 +36,7 @@ cut.gui.visible         =  false
 cut.gui.mmbtnwidth      =  38
 cut.gui.mmbtnheight     =  38
 cut.gui.ttobj           =  nil
+cut.gui.locked          =  false
 --
 cut.init                =  {}
 cut.init.day            =  false

@@ -5,14 +5,6 @@
 --
 local addon, cut = ...
 
-local function showtitlebar()
-
-   local show  =  not cut.shown.titleframe:GetVisible()
-   cut.shown.titleframe:SetVisible(show)
-
-   return
-end
-
 
 local function updateguicoordinates(win, x, y)
    if win ~= nil then
@@ -24,6 +16,38 @@ local function updateguicoordinates(win, x, y)
    end
    return
 end
+
+local function lockgui(value)
+
+   if value then  cut.gui.locked =  value
+   else           cut.gui.locked =  not cut.gui.locked
+   end
+
+   local icon  =  nil
+
+   if cut.gui.locked then
+      icon  =  "lock_on.png.dds"
+      Library.LibDraggable.undraggify(cut.gui.window, updateguicoordinates)
+   else
+      icon  =  "lock_off.png.dds"
+      Library.LibDraggable.draggify(cut.gui.window, updateguicoordinates)
+   end
+
+   cut.shown.lockbutton:SetTexture("Rift", icon)
+
+   return
+end
+
+local function showtitlebar()
+
+   local show  =  not cut.shown.titleframe:GetVisible()
+   cut.shown.titleframe:SetVisible(show)
+
+   return
+end
+
+
+
 
 function cut.changefontsize(newfontsize)
 
@@ -193,6 +217,7 @@ function cut.createwindow()
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Forward, function() cut.changefontsize(1)   end,  "cutwindow_wheel_forward")
    cutwindow:EventAttach(Event.UI.Input.Mouse.Wheel.Back,    function() cut.changefontsize(-1)  end,  "cutwindow_wheel_backward")
 
+
    local titleframe =  UI.CreateFrame("Frame", "Cut_title_frame", cutwindow)
    titleframe:SetPoint("TOPLEFT",     cutwindow, "TOPLEFT",    0, -(cut.gui.font.size*1.5)+4)  -- move up, outside externalframe
    titleframe:SetPoint("TOPRIGHT",    cutwindow, "TOPRIGHT",   0, -(cut.gui.font.size*1.5)+4)  -- move up, outside externalframe
@@ -234,7 +259,7 @@ function cut.createwindow()
       cut.shown.cutversion   =  titleversion
 
       -- Iconize Button
-      local iconizebutton = UI.CreateFrame("Texture", "cut_iconize button", titleframe)
+      local iconizebutton = UI.CreateFrame("Texture", "cut_iconize_button", titleframe)
 --       iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
       iconizebutton:SetTexture("Rift", "AlertTray_I54.dds")
 --       iconizebutton:SetHeight(cut.gui.font.size*.75)
@@ -245,6 +270,22 @@ function cut.createwindow()
       iconizebutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.showhidewindow() end, "CuT Iconize Button Pressed" )
       iconizebutton:SetPoint("CENTERRIGHT",   titleframe, "CENTERRIGHT", -cut.gui.borders.right*2, 0)
       cut.shown.iconizebutton =  iconizebutton
+
+      -- Lock Button
+      local lockbutton = UI.CreateFrame("Texture", "cut_lock_gui_button", titleframe)
+      local icon  =  nil
+      if cut.gui.locked then  icon  =  "lock_on.png.dds"
+      else                    icon  =  "lock_off.png.dds"
+      end
+      lockbutton:SetTexture("Rift", icon)
+      lockbutton:SetHeight(cut.gui.font.size)
+      lockbutton:SetWidth(cut.gui.font.size)
+      lockbutton:SetLayer(3)
+      lockbutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() lockgui() end, "CuT Lock Gui Button Pressed" )
+      lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.borders.right*4, 0)
+      cut.shown.lockbutton =  lockbutton
+
+
 
       -- Window Panel Info
       local windowinfo =  UI.CreateFrame("Text", "window_info", titleframe)
@@ -258,7 +299,7 @@ function cut.createwindow()
       end
       windowinfo:SetText(string.format("%s", mylabel), true)
       windowinfo:SetLayer(3)
-      windowinfo:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERLEFT", -cut.gui.borders.right*2, 0)
+      windowinfo:SetPoint("CENTERRIGHT",   lockbutton, "CENTERLEFT", -cut.gui.borders.right*2, 0)
       windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, managepanels, "Flip Panels" )
       cut.shown.windowinfo  =  windowinfo
 
@@ -352,8 +393,10 @@ function cut.createwindow()
    corner:EventAttach(Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
    cut.shown.corner  =  corner
 
-   -- Enable Dragging
-   Library.LibDraggable.draggify(cutwindow, updateguicoordinates)
+--    -- Enable Dragging
+--    Library.LibDraggable.draggify(cutwindow, updateguicoordinates)
+
+   lockgui(cut.gui.locked)
 
    return cutwindow
 end
