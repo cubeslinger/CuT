@@ -60,7 +60,6 @@ function cut.changefontsize(newfontsize)
             tbl.label:SetFontSize(cut.gui.font.size)
             tbl.value:SetFontSize(cut.gui.font.size)
             tbl.standing:SetFontSize(cut.gui.font.size)
---             tbl.percent:SetFontSize(cut.gui.font.size - 2)
             tbl.percent:SetFontSize(cut.gui.font.size * .75)
          end
       end
@@ -71,6 +70,8 @@ function cut.changefontsize(newfontsize)
       cut.shown.windowinfo:SetFontSize(cut.gui.font.size*.75)
       cut.shown.titleicon:SetHeight(cut.gui.font.size*.75)
       cut.shown.titleicon:SetWidth(cut.gui.font.size*.75)
+      cut.shown.corner:SetHeight(cut.gui.font.size)
+      cut.shown.corner:SetWidth(cut.gui.font.size)
       cut.resizewindow(cut.shown.tracker, cut.shown.panel)
    end
 
@@ -142,12 +143,20 @@ end
 
 local function changetracker()
 
+   local icon  =  nil
    if cut.shown.tracker == 1 then
       cut.shown.tracker =  2
       cut.shown.panel   =  cut.shown.panel - 1
+--       icon  =  "reward_reputation.png.dds"
+--       icon  =  "1h_shield_405.dds"
+--       icon  =  "calendar_rep_token_pack.jpg"
+--       icon  =  "card20a.dds"
+      icon  =  "CharacterSheet_I1C4.dds"
+
    else
       cut.shown.tracker =  1
       cut.shown.panel   =  cut.shown.panel - 1
+      icon  =  "AuctionHouse_I91.dds"
    end
 
    -- change window Title
@@ -157,6 +166,9 @@ local function changetracker()
    local mylabel = cut.shown.panellabel[cut.shown.panel]
    if cut.shown.tracker == 2 then mylabel = cut.shown.panellabel[cut.shown.panel + 3] end
    cut.shown.windowinfo:SetText(string.format("%s", mylabel), true)
+
+   -- change corner icon
+   cut.shown.corner:SetTexture("Rift", icon)
 
    managepanels()
 
@@ -223,7 +235,8 @@ function cut.createwindow()
 
       -- Iconize Button
       local iconizebutton = UI.CreateFrame("Texture", "cut_iconize button", titleframe)
-      iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
+--       iconizebutton:SetTexture("Rift", "splitbtn_arrow_D_(normal).png.dds")
+      iconizebutton:SetTexture("Rift", "AlertTray_I54.dds")
 --       iconizebutton:SetHeight(cut.gui.font.size*.75)
 --       iconizebutton:SetWidth(cut.gui.font.size*.75)
       iconizebutton:SetHeight(cut.gui.font.size)
@@ -309,19 +322,20 @@ function cut.createwindow()
    -- RESIZER WIDGET
    local corner=  UI.CreateFrame("Texture", "corner", cutwindow)
 --    corner:SetTexture("Rift", "chat_resize_(normal).png.dds")
-   corner:SetTexture("Rift", "chat_resize_(over).png.dds")
+--    corner:SetTexture("Rift", "chat_resize_(over).png.dds")
+   corner:SetTexture("Rift", "AuctionHouse_I91.dds")
    corner:SetHeight(cut.gui.font.size)
    corner:SetWidth(cut.gui.font.size)
    corner:SetLayer(4)
-   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT")
-   corner:EventAttach(Event.UI.Input.Mouse.Left.Down,      function()  local mouse = Inspect.Mouse()
+   corner:SetPoint("BOTTOMRIGHT", cutwindow, "BOTTOMRIGHT", cut.gui.font.size/2, cut.gui.font.size/2)
+   corner:EventAttach(Event.UI.Input.Mouse.Right.Down,      function()  local mouse = Inspect.Mouse()
                                                                         corner.pressed = true
                                                                         corner.basex   =  cutwindow:GetLeft()
                                                                         corner.basey   =  cutwindow:GetTop()
 
                                                                         showtitlebar()
                                                             end,
-                                                            "Event.UI.Input.Mouse.Left.Down")
+                                                            "Event.UI.Input.Mouse.Right.Down")
    corner:EventAttach(Event.UI.Input.Mouse.Cursor.Move,    function()  if corner.pressed then
                                                                            local mouse = Inspect.Mouse()
                                                                            cut.gui.width  = cut.round(mouse.x - corner.basex)
@@ -333,8 +347,10 @@ function cut.createwindow()
                                                             end,
                                                             "Event.UI.Input.Mouse.Cursor.Move")
 
-   corner:EventAttach(Event.UI.Input.Mouse.Left.Upoutside, function()  corner.pressed = false end, "Event.UI.Input.Mouse.Left.Upoutside")
-   corner:EventAttach(Event.UI.Input.Mouse.Left.Up,        function()  corner.pressed = false end, "Event.UI.Input.Mouse.Left.Up")
+   corner:EventAttach(Event.UI.Input.Mouse.Right.Upoutside, function()  corner.pressed = false end, "Event.UI.Input.Mouse.Right.Upoutside")
+   corner:EventAttach(Event.UI.Input.Mouse.Right.Up,        function()  corner.pressed = false end, "Event.UI.Input.Mouse.Right.Up")
+   corner:EventAttach(Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
+   cut.shown.corner  =  corner
 
    -- Enable Dragging
    Library.LibDraggable.draggify(cutwindow, updateguicoordinates)

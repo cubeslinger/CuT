@@ -121,19 +121,8 @@ local function showTT(o, var, panel, id)
    if o and var then
 
       local tip   =  ""
---       local tips  =  {  ["1"] =  {  ["1"] = (0 or cut.balance.current[var].income),
---                                     ["2"] = (0 or cut.balance.current[var].outcome),
---                                     ["3"] = (0 or cut.balance.current[var].income) + (0 or cut.balance.current[var].outcome)
---                                  },
---                         ["2"] =  {  ["1"] = (0 or cut.balance.today[var].income),
---                                     ["2"] = (0 or cut.balance.today[var].outcome),
---                                     ["3"] = (0 or cut.balance.today[var].income) + (0 or cut.balance.today[var].outcome)
---                                  },
---                         ["3"] =  {  ["1"] = (0 or cut.balance.week[var].income),
---                                     ["2"] = (0 or cut.balance.week[var].outcome),
---                                     ["3"] = (0 or cut.balance.week[var].income) + (0 or cut.balance.week[var].outcome)
---                                  }
---                      }
+      local tbl   =  {}
+      local vals  =  {}
 
       -- update tooltip
       cut.ttframes.tttext1:SetText(var, true)
@@ -144,8 +133,6 @@ local function showTT(o, var, panel, id)
       cut.ttframes.tttext6:SetText("Bal:", true)
       cut.ttframes.tttext7:SetText("")
 
-      local tbl   =  {}
-      local vals  =  {}
       if panel == 1  then  tbl   =  cut.balance.current  end
       if panel == 2  then  tbl   =  cut.balance.today    end
       if panel == 3  then  tbl   =  cut.balance.week     end
