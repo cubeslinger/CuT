@@ -544,6 +544,9 @@ function cut.startmeup()
       -- so i resize it accordingly
       if cut.gui.window then cut.resizewindow(cut.shown.tracker, cut.shown.panel) end
 
+      -- Restore Lock/Unlocked state
+      cut.lockgui(cut.gui.locked)
+
       -- say "Hello World"
       Command.Console.Display("general", true, string.format("%s - v.%s", cut.html.title[1] .. " & " .. cut.html.title[2], cut.version), true)
 

@@ -17,15 +17,15 @@ local function updateguicoordinates(win, x, y)
    return
 end
 
-local function lockgui(value)
+function cut.lockgui(value)
 
-   if value then  cut.gui.locked =  value
-   else           cut.gui.locked =  not cut.gui.locked
+   if value == true or value == false then   cut.gui.locked =  value
+   else                                      cut.gui.locked =  not cut.gui.locked
    end
 
    local icon  =  nil
 
-   if cut.gui.locked then
+   if cut.gui.locked == true then
       icon  =  "lock_on.png.dds"
       Library.LibDraggable.undraggify(cut.gui.window, updateguicoordinates)
    else
@@ -34,6 +34,8 @@ local function lockgui(value)
    end
 
    cut.shown.lockbutton:SetTexture("Rift", icon)
+
+--    print(string.format("value=(%s) cut.gui.locked=(%s)", value, cut.gui.locked))
 
    return
 end
@@ -278,7 +280,7 @@ function cut.createwindow()
       lockbutton:SetHeight(cut.gui.font.size)
       lockbutton:SetWidth(cut.gui.font.size)
       lockbutton:SetLayer(3)
-      lockbutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() lockgui() end, "CuT Lock Gui Button Pressed" )
+      lockbutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.lockgui() end, "CuT Lock Gui Button Pressed" )
 --       lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.borders.right*4, 0)
       lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.font.size, 0)
       cut.shown.lockbutton =  lockbutton
@@ -392,7 +394,7 @@ function cut.createwindow()
 --    -- Enable Dragging
 --    Library.LibDraggable.draggify(cutwindow, updateguicoordinates)
 
-   lockgui(cut.gui.locked)
+--    lockgui(cut.gui.locked)
 
    return cutwindow
 end
