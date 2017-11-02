@@ -108,7 +108,7 @@ function cut.changefontsize(newfontsize)
    return
 end
 
-local function managepanels()
+local function managepanels(tracker2set, panel2set)
 
    local init  =  false
    local a, b  =  nil, nil
@@ -116,8 +116,13 @@ local function managepanels()
 
    if init then
 
-      cut.shown.panel   =  cut.shown.panel + 1
-      if cut.shown.panel > 3 then   cut.shown.panel = 1  end
+      if tracker2set ~= nil and panel2set ~= nil then
+         cut.shown.tracker =  tracker2set
+         cut.shown.panel   =  panel2set
+      else
+         cut.shown.panel   =  cut.shown.panel + 1
+         if cut.shown.panel > 3 then   cut.shown.panel = 1  end
+      end
 
       -- Hide everything
       cut.frames.container:SetVisible(false)
@@ -128,7 +133,6 @@ local function managepanels()
       cut.frames.todaynotorietycontainer:SetVisible(false)
       cut.frames.weeknotorietycontainer:SetVisible(false)
 
-
       local table =  nil
       for _, table in ipairs( {  cut.shown.currenttbl, cut.shown.todaytbl, cut.shown.weektbl, cut.shown.currentnotorietytbl, cut.shown.todaynotorietytbl, cut.shown.weeknotorietytbl  }) do
          local var, val = nil
@@ -137,6 +141,7 @@ local function managepanels()
          end
       end
 
+      -- Show the Containing Frame...
       if cut.shown.panel == 1 and cut.shown.tracker == 1 then  table =  cut.shown.currenttbl          cut.frames.container:SetVisible(true)                 end
       if cut.shown.panel == 2 and cut.shown.tracker == 1 then  table =  cut.shown.todaytbl            cut.frames.todaycontainer:SetVisible(true)            end
       if cut.shown.panel == 3 and cut.shown.tracker == 1 then  table =  cut.shown.weektbl             cut.frames.weekcontainer:SetVisible(true)             end
@@ -144,6 +149,7 @@ local function managepanels()
       if cut.shown.panel == 2 and cut.shown.tracker == 2 then  table =  cut.shown.todaynotorietytbl   cut.frames.todaynotorietycontainer:SetVisible(true)   end
       if cut.shown.panel == 3 and cut.shown.tracker == 2 then  table =  cut.shown.weeknotorietytbl    cut.frames.weeknotorietycontainer:SetVisible(true)    end
 
+      -- ..and all its contained frames.
       local a, b, flag  =  nil, nil, false
       if table then
          for a, b in pairs (table)  do flag = true break end
@@ -158,7 +164,10 @@ local function managepanels()
       cut.resizewindow(cut.shown.tracker, cut.shown.panel)
 
       local panel =  cut.shown.panel
-      if cut.shown.tracker == 2 then panel = panel + 3 end
+
+--       if panel2set == nil then
+         if cut.shown.tracker == 2 then panel = panel + 3 end
+--       end
 
       local mylabel  =  cut.shown.panellabel[panel]
       if panel == 3 or panel == 6 then
@@ -171,22 +180,33 @@ local function managepanels()
    return
 end
 
-local function changetracker()
+
+function cut.changetracker(tracker2set, panel2set)
 
    local icon  =  nil
-   if cut.shown.tracker == 1 then
-      cut.shown.tracker =  2
-      cut.shown.panel   =  cut.shown.panel - 1
---       icon  =  "reward_reputation.png.dds"
---       icon  =  "1h_shield_405.dds"
---       icon  =  "calendar_rep_token_pack.jpg"
---       icon  =  "card20a.dds"
-      icon  =  "CharacterSheet_I1C4.dds"
 
+   if tracker2set ~= nil and panel2set ~= nil then
+
+--       print(string.format("cut.changetracker(tracker2set=(%s), panel2set=(%s))", tracker2set, panel2set))
+
+      cut.shown.tracker =  tracker2set
+      cut.shown.panel   =  panel2set
+
+      if tracker2set == 1 then
+         icon  =  "CharacterSheet_I1C4.dds"
+      else
+         icon  =  "AuctionHouse_I91.dds"
+      end
    else
-      cut.shown.tracker =  1
-      cut.shown.panel   =  cut.shown.panel - 1
-      icon  =  "AuctionHouse_I91.dds"
+      if cut.shown.tracker == 1 then
+         cut.shown.tracker =  2
+         cut.shown.panel   =  cut.shown.panel - 1
+         icon  =  "CharacterSheet_I1C4.dds"
+      else
+         cut.shown.tracker =  1
+         cut.shown.panel   =  cut.shown.panel - 1
+         icon  =  "AuctionHouse_I91.dds"
+      end
    end
 
    -- change window Title
@@ -194,16 +214,17 @@ local function changetracker()
 
    -- change Displayed Panel Name
    local mylabel = cut.shown.panellabel[cut.shown.panel]
-   if cut.shown.tracker == 2 then mylabel = cut.shown.panellabel[cut.shown.panel + 3] end
+   if cut.shown.tracker == 2 and panel2set == nil then mylabel = cut.shown.panellabel[cut.shown.panel + 3] end
    cut.shown.windowinfo:SetText(string.format("%s", mylabel), true)
 
    -- change corner icon
    cut.shown.corner:SetTexture("Rift", icon)
 
-   managepanels()
+   managepanels(tracker2set, panel2set)
 
    return
 end
+
 
 
 function cut.createwindow()
@@ -243,12 +264,12 @@ function cut.createwindow()
 
       -- Window Title
       local windowtitle =  UI.CreateFrame("Text", "window_title", titleframe)
---       windowtitle:SetFontSize(cut.gui.font.size*.75)
       windowtitle:SetFontSize(cut.gui.font.size)
-      windowtitle:SetText(string.format("%s", cut.html.title[1]), true)
+--       windowtitle:SetText(string.format("%s", cut.html.title[1]), true)
+      windowtitle:SetText(string.format("%s", cut.html.title[cut.shown.tracker]), true)
       windowtitle:SetLayer(3)
       windowtitle:SetPoint("CENTERLEFT",   titleicon, "CENTERRIGHT", cut.gui.borders.left*2, 0)
-      windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
+      windowtitle:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.changetracker(nil, nil) end, "Change Tracker" )
       cut.shown.windowtitle   =  windowtitle
 
       -- CuT Version
@@ -257,7 +278,7 @@ function cut.createwindow()
       titleversion:SetText(string.format("%s", 'v.'..cut.version), true)
       titleversion:SetLayer(3)
       titleversion:SetPoint("CENTERLEFT", windowtitle, "CENTERRIGHT", cut.gui.borders.left*2, 0)
-      titleversion:EventAttach( Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
+      titleversion:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.changetracker(nil, nil) end, "Change Tracker" )
       cut.shown.cutversion   =  titleversion
 
       -- Iconize Button
@@ -281,13 +302,11 @@ function cut.createwindow()
       lockbutton:SetWidth(cut.gui.font.size)
       lockbutton:SetLayer(3)
       lockbutton:EventAttach( Event.UI.Input.Mouse.Left.Click, function() cut.lockgui() end, "CuT Lock Gui Button Pressed" )
---       lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.borders.right*4, 0)
       lockbutton:SetPoint("CENTERRIGHT",   iconizebutton, "CENTERRIGHT", -cut.gui.font.size, 0)
       cut.shown.lockbutton =  lockbutton
 
       -- Window Panel Info
       local windowinfo =  UI.CreateFrame("Text", "window_info", titleframe)
---       windowinfo:SetFontSize(cut.gui.font.size*.75)
       windowinfo:SetFontSize(cut.gui.font.size)
       local panel =  cut.shown.panel
       if cut.shown.tracker == 2 then panel = panel + 3 end
@@ -298,7 +317,7 @@ function cut.createwindow()
       windowinfo:SetText(string.format("%s", mylabel), true)
       windowinfo:SetLayer(3)
       windowinfo:SetPoint("CENTERRIGHT",   lockbutton, "CENTERLEFT", -cut.gui.borders.right*2, 0)
-      windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, managepanels, "Flip Panels" )
+      windowinfo:EventAttach( Event.UI.Input.Mouse.Left.Click, function() managepanels(nil, nil) end, "Flip Panels" )
       cut.shown.windowinfo  =  windowinfo
 
    -- EXTERNAL CUT CONTAINER FRAME
@@ -388,7 +407,7 @@ function cut.createwindow()
 
    corner:EventAttach(Event.UI.Input.Mouse.Right.Upoutside, function()  corner.pressed = false end, "Event.UI.Input.Mouse.Right.Upoutside")
    corner:EventAttach(Event.UI.Input.Mouse.Right.Up,        function()  corner.pressed = false end, "Event.UI.Input.Mouse.Right.Up")
-   corner:EventAttach(Event.UI.Input.Mouse.Left.Click, changetracker, "Change Tracker" )
+   corner:EventAttach(Event.UI.Input.Mouse.Left.Click, function() cut.changetracker(nil, nil) end, "Change Tracker" )
    cut.shown.corner  =  corner
 
 --    -- Enable Dragging

@@ -37,6 +37,8 @@ cut.gui.mmbtnwidth      =  38
 cut.gui.mmbtnheight     =  38
 cut.gui.ttobj           =  nil
 cut.gui.locked          =  false
+cut.gui.lasttracker     =  nil
+cut.gui.lastpanel       =  nil
 --
 cut.init                =  {}
 cut.init.day            =  false
@@ -153,7 +155,7 @@ function cut.loadvariables(_, addonname)
                            key ~= height      and  key ~= mmbtnobj   and key ~= mmbtnheight and key ~= mmbtnwidth and
                            key ~= ttobj   then
                   cut.gui[key]   =  val
-   --                print(string.format("Importing %s: %s", key, val))
+--                   print(string.format("Importing %s: %s", key, val))
                end
             end
             cut.gui.window =  nil
@@ -270,6 +272,12 @@ function cut.savevariables(_, addonname)
       a.mmbtnheight  =  nil
       a.mmbtnwidth   =  nil
       a.ttobj        =  nil
+
+      -- Save User status about current Tracker
+      -- and visualized Panel to restore them on
+      -- restart
+      a["lasttracker"]  =  cut.shown.tracker
+      a["lastpanel"]    =  cut.shown.panel
 
       -- Save Window position, size, ...
       guidata     =  a
@@ -538,11 +546,19 @@ function cut.startmeup()
       end
 
       -- create window if needed
+--       if cut.gui.window == nil then cut.gui.window = cut.createwindow() end
       if not cut.gui.window then cut.gui.window = cut.createwindow() end
 
-      -- since Today and Week Panes start hidden, the shown empty window would be too tall.
-      -- so i resize it accordingly
-      if cut.gui.window then cut.resizewindow(cut.shown.tracker, cut.shown.panel) end
+      -- If we have a saved state we restore the last used tracker
+      -- and it's panel, then we resize it accordingly
+      if cut.gui.window then
+         if cut.gui.lasttracker and cut.gui.lastpanel then
+            cut.shown.tracker =  cut.gui.lasttracker
+            cut.shown.panel   =  cut.gui.lastpanel
+         end
+
+         cut.changetracker(cut.shown.tracker, cut.shown.panel)
+      end
 
       -- Restore Lock/Unlocked state
       cut.lockgui(cut.gui.locked)
