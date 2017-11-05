@@ -208,20 +208,20 @@ function cut.loadvariables(_, addonname)
          -- Load Today Notoriety session data only if we are in the same day
          if notorietyday then
             lastsession =  notorietyday
-            if lastsession == cut.week then
-               if notorietyweek then
-                  cut.save.notorietyweek   =  notorietyweek
+            if lastsession == cut.today then
+               if notorietytoday then
+                  cut.save.notorietytoday   =  notorietytoday
                   local flag, a, b = false, nil, nil
-                  for a,b in pairs(cut.save.notorietyweek) do flag = true break end
-                  cut.init.notorietyweek  =  flag
+                  for a,b in pairs(cut.save.notorietytoday) do flag = true break end
+                  cut.init.notorietytoday  =  flag
                end
             else
-               cut.save.notorietyweek =  {}
-               cut.init.notorietyweek =  true
+               cut.save.notorietytoday =  {}
+               cut.init.notorietytoday =  true
             end
          else
-            cut.save.notorietyweek   =  {}
-            cut.init.notorietyweek   =  true
+            cut.save.notorietytoday   =  {}
+            cut.init.notorietytoday   =  true
          end
 
          -- Load Notoriety Week session data only if we are in the same week
@@ -311,14 +311,14 @@ function cut.savevariables(_, addonname)
       -- Save Notorieties Today Session data
       local tbl   =  {}
       local a,b   =  nil, nil
-      for a,b in pairs(cut.save.notorietyweek) do
+      for a,b in pairs(cut.save.notorietytoday) do
          tbl[a]   =  b
          if cut.notorietydeltas[a] then
             tbl[a].stack = tbl[a].stack + cut.notorietydeltas[a]
          end
       end
 
-      notorietyweek =  tbl
+      notorietytoday =  tbl
       notorietyday   =  getdayoftheyear()
 
       -- Save Notorieties Week Session data
@@ -532,8 +532,8 @@ function cut.startmeup()
       end
 
       -- if we have Today Notoriety session data, we restore it in the Notoriety week pane
-      if cut.init.notorietyweek then
-         for currency, tbl in pairs(cut.save.notorietyweek) do
+      if cut.init.notorietytoday then
+         for currency, tbl in pairs(cut.save.notorietytoday) do
             if tbl.stack   ~= 0  then  cut.updatenotorietytoday(currency, tbl.stack, tbl.id)   end
          end
       end
