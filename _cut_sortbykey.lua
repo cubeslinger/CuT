@@ -17,7 +17,7 @@ function cut.sortbykey(parent, tbl, tracker, panel)
       obj.frame:SetHeight(height)
 
       -- we hide them while we re-assemble the list
-      obj.frame:SetVisible(false)
+--       obj.frame:SetVisible(false)
    end
 
    local keys  =  {}
@@ -35,11 +35,11 @@ function cut.sortbykey(parent, tbl, tracker, panel)
          tbl[keys[idx]].frame:SetPoint("TOPRIGHT",  parent,   "TOPRIGHT", -cut.gui.borders.right, cut.gui.borders.top)
 
          LASTOBJ = tbl[keys[idx]].frame
-         tbl[keys[idx]].frame:SetVisible(true)
+--          tbl[keys[idx]].frame:SetVisible(true)
       else
          tbl[keys[idx]].frame:SetPoint("TOPLEFT",   LASTOBJ, "BOTTOMLEFT",   0, cut.gui.borders.top)
          tbl[keys[idx]].frame:SetPoint("TOPRIGHT",  LASTOBJ, "BOTTOMRIGHT",  0, cut.gui.borders.top)
-         tbl[keys[idx]].frame:SetVisible(true)
+--          tbl[keys[idx]].frame:SetVisible(true)
          LASTOBJ = tbl[keys[idx]].frame
       end
    end
