@@ -14,12 +14,6 @@ local function getdayoftheyear()
    return(today.yday)
 end
 
-local function getweekday()
-   local today = os.date("*t", os.time())
-   return(today.wday)
-end
-
-
 --
 cut.gui                 =  {}
 cut.gui.x               =  nil
@@ -193,25 +187,48 @@ function cut.loadvariables(_, addonname)
          end
 
          -- Load Week session data only if we are in the same week
+--          if weekday then
+--             if (dayoftheyear - weekday) <= 7 then
+--                if weekbase then
+--                   cut.save.week   =  weekbase
+--                   local flag, a, b = false, nil, nil
+--                   for a,b in pairs(cut.save.week) do flag = true break end
+--                   cut.init.week   =  flag
+--                end
+--                cut.weekday =  weekday
+--             else
+--                cut.weekday    =  getdayoftheyear()
+--                cut.init.week  =  true
+--                cut.save.week  =  {}
+--             end
+--          else
+--             cut.weekday    =  getdayoftheyear()
+--             cut.init.week  =  true
+--             cut.save.week  =  {}
+--          end
+
+
          if weekday then
-            if (dayoftheyear - weekday) <= 7 then
+            if (dayoftheyear - weekday) <= 7 and (weekday < dayoftheyear) then
                if weekbase then
                   cut.save.week   =  weekbase
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.week) do flag = true break end
                   cut.init.week   =  flag
                end
-               cut.weekday =  weekday
+               cut.weekday =  dayoftheyear
             else
-               cut.weekday    =  getdayoftheyear()
+               cut.weekday    =  dayoftheyear
                cut.init.week  =  true
                cut.save.week  =  {}
             end
          else
-            cut.weekday    =  getdayoftheyear()
+            cut.weekday    =  dayoftheyear
             cut.init.week  =  true
             cut.save.week  =  {}
          end
+
+
 
          -- Load Today Notoriety session data only if we are in the same day
          if notorietyday then
@@ -233,22 +250,42 @@ function cut.loadvariables(_, addonname)
          end
 
          -- Load Notoriety Week session data only if we are in the same week
+--          if notorietyweekday then
+--             if (dayoftheyear - notorietyweekday) <= 7 then
+--                if notorietyweek then
+--                   cut.save.notorietyweek   =  notorietyweek
+--                   local flag, a, b = false, nil, nil
+--                   for a,b in pairs(cut.save.notorietyweek) do flag = true break end
+--                   cut.init.notorietyweek   =  flag
+--                end
+--                cut.notorietyweekday    =  notorietyweekday
+--             else
+--                cut.notorietyweekday    =  getdayoftheyear()
+--                cut.init.notorietyweek  =  true
+--                cut.save.notorietyweek  =  {}
+--             end
+--          else
+--             cut.notorietyweekday    =  getdayoftheyear()
+--             cut.init.notorietyweek  =  true
+--             cut.save.notorietyweek  =  {}
+--         end
+
          if notorietyweekday then
-            if (dayoftheyear - notorietyweekday) <= 7 then
+            if (dayoftheyear - notorietyweekday) <= 7 and (notorietyweekday < dayoftheyear) then
                if notorietyweek then
                   cut.save.notorietyweek   =  notorietyweek
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.notorietyweek) do flag = true break end
                   cut.init.notorietyweek   =  flag
                end
-               cut.notorietyweekday    =  notorietyweekday
+               cut.notorietyweekday    =  dayoftheyear
             else
-               cut.notorietyweekday    =  getdayoftheyear()
+               cut.notorietyweekday    =  dayoftheyear
                cut.init.notorietyweek  =  true
                cut.save.notorietyweek  =  {}
             end
          else
-            cut.notorietyweekday    =  getdayoftheyear()
+            cut.notorietyweekday    =  dayoftheyear
             cut.init.notorietyweek  =  true
             cut.save.notorietyweek  =  {}
          end
@@ -257,7 +294,8 @@ function cut.loadvariables(_, addonname)
          if balance then
             local t = balance
             if lastsession == dayoftheyear            then  cut.balance.today =  t.today  end
-            if (dayoftheyear - notorietyweekday) <= 7 then  cut.balance.week  =  t.week   end
+--             if (dayoftheyear - notorietyweekday) <= 7 then  cut.balance.week  =  t.week   end
+            if (dayoftheyear - notorietyweekday) <= 7 and (notorietyweekday < dayoftheyear) then  cut.balance.week  =  t.week   end
          end
       end
    end
@@ -314,8 +352,7 @@ function cut.savevariables(_, addonname)
       end
 
       weekbase =  tbl
---       weekday  =  cut.weekday
-      weekday  =  getweekday()
+      weekday  =  cut.weekday
 
       -- Save Notorieties Today Session data
       local tbl   =  {}
@@ -341,8 +378,7 @@ function cut.savevariables(_, addonname)
       end
 
       notorietyweek     =  tbl
---       notorietyweekday  =  cut.weekday
-      notorietyweekday  =  getweekday()
+      notorietyweekday  =  cut.weekday
 
       -- Save Balance tables for value tooltips
       local tbl   =  {}
