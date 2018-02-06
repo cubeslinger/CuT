@@ -10,8 +10,16 @@ cut.version             =  Inspect.Addon.Detail(Inspect.Addon.Current())["toc"][
 --
 local function getdayoftheyear()
    local today = os.date("*t", os.time())
+--    print(string.format("CuT: Today is day: %s, weekday is: %s", today.yday, today.wday))
    return(today.yday)
 end
+
+local function getweekday()
+   local today = os.date("*t", os.time())
+   return(today.wday)
+end
+
+
 --
 cut.gui                 =  {}
 cut.gui.x               =  nil
@@ -306,7 +314,8 @@ function cut.savevariables(_, addonname)
       end
 
       weekbase =  tbl
-      weekday  =  cut.weekday
+--       weekday  =  cut.weekday
+      weekday  =  getweekday()
 
       -- Save Notorieties Today Session data
       local tbl   =  {}
@@ -332,7 +341,8 @@ function cut.savevariables(_, addonname)
       end
 
       notorietyweek     =  tbl
-      notorietyweekday  =  cut.weekday
+--       notorietyweekday  =  cut.weekday
+      notorietyweekday  =  getweekday()
 
       -- Save Balance tables for value tooltips
       local tbl   =  {}
