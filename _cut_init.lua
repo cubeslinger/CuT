@@ -216,7 +216,8 @@ function cut.loadvariables(_, addonname)
                   for a,b in pairs(cut.save.week) do flag = true break end
                   cut.init.week   =  flag
                end
-               cut.weekday =  dayoftheyear
+--                cut.weekday =  dayoftheyear
+               cut.weekday =  weekday               
             else
                cut.weekday    =  dayoftheyear
                cut.init.week  =  true
@@ -278,7 +279,8 @@ function cut.loadvariables(_, addonname)
                   for a,b in pairs(cut.save.notorietyweek) do flag = true break end
                   cut.init.notorietyweek   =  flag
                end
-               cut.notorietyweekday    =  dayoftheyear
+--                cut.notorietyweekday    =  dayoftheyear
+               cut.notorietyweekday    =  notorietyweekday
             else
                cut.notorietyweekday    =  dayoftheyear
                cut.init.notorietyweek  =  true
