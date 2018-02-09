@@ -187,48 +187,27 @@ function cut.loadvariables(_, addonname)
          end
 
          -- Load Week session data only if we are in the same week
---          if weekday then
---             if (dayoftheyear - weekday) <= 7 then
---                if weekbase then
---                   cut.save.week   =  weekbase
---                   local flag, a, b = false, nil, nil
---                   for a,b in pairs(cut.save.week) do flag = true break end
---                   cut.init.week   =  flag
---                end
---                cut.weekday =  weekday
---             else
---                cut.weekday    =  getdayoftheyear()
---                cut.init.week  =  true
---                cut.save.week  =  {}
---             end
---          else
---             cut.weekday    =  getdayoftheyear()
---             cut.init.week  =  true
---             cut.save.week  =  {}
---          end
-
-
          if weekday then
-            if (dayoftheyear - weekday) <= 7 and (weekday < dayoftheyear) then
+            if (dayoftheyear - weekday) <= 7 and dayoftheyear ~= 1 then
                if weekbase then
                   cut.save.week   =  weekbase
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.week) do flag = true break end
                   cut.init.week   =  flag
                end
---                cut.weekday =  dayoftheyear
-               cut.weekday =  weekday               
+               cut.weekday =  weekday
             else
+--                cut.weekday    =  getdayoftheyear()
                cut.weekday    =  dayoftheyear
                cut.init.week  =  true
                cut.save.week  =  {}
             end
          else
+--             cut.weekday    =  getdayoftheyear()
             cut.weekday    =  dayoftheyear
             cut.init.week  =  true
             cut.save.week  =  {}
          end
-
 
 
          -- Load Today Notoriety session data only if we are in the same day
@@ -251,54 +230,27 @@ function cut.loadvariables(_, addonname)
          end
 
          -- Load Notoriety Week session data only if we are in the same week
---          if notorietyweekday then
---             if (dayoftheyear - notorietyweekday) <= 7 then
---                if notorietyweek then
---                   cut.save.notorietyweek   =  notorietyweek
---                   local flag, a, b = false, nil, nil
---                   for a,b in pairs(cut.save.notorietyweek) do flag = true break end
---                   cut.init.notorietyweek   =  flag
---                end
---                cut.notorietyweekday    =  notorietyweekday
---             else
---                cut.notorietyweekday    =  getdayoftheyear()
---                cut.init.notorietyweek  =  true
---                cut.save.notorietyweek  =  {}
---             end
---          else
---             cut.notorietyweekday    =  getdayoftheyear()
---             cut.init.notorietyweek  =  true
---             cut.save.notorietyweek  =  {}
---         end
-
          if notorietyweekday then
-            if (dayoftheyear - notorietyweekday) <= 7 and (notorietyweekday < dayoftheyear) then
+            if (dayoftheyear - notorietyweekday) <= 7  and dayoftheyear ~= 1 then
                if notorietyweek then
                   cut.save.notorietyweek   =  notorietyweek
                   local flag, a, b = false, nil, nil
                   for a,b in pairs(cut.save.notorietyweek) do flag = true break end
                   cut.init.notorietyweek   =  flag
                end
---                cut.notorietyweekday    =  dayoftheyear
                cut.notorietyweekday    =  notorietyweekday
             else
+--                cut.notorietyweekday    =  getdayoftheyear()
                cut.notorietyweekday    =  dayoftheyear
                cut.init.notorietyweek  =  true
                cut.save.notorietyweek  =  {}
             end
          else
+--             cut.notorietyweekday    =  getdayoftheyear()
             cut.notorietyweekday    =  dayoftheyear
             cut.init.notorietyweek  =  true
             cut.save.notorietyweek  =  {}
-         end
-
-         -- Load Balance for Tooltips
-         if balance then
-            local t = balance
-            if lastsession == dayoftheyear            then  cut.balance.today =  t.today  end
---             if (dayoftheyear - notorietyweekday) <= 7 then  cut.balance.week  =  t.week   end
-            if (dayoftheyear - notorietyweekday) <= 7 and (notorietyweekday < dayoftheyear) then  cut.balance.week  =  t.week   end
-         end
+        end
       end
    end
 
