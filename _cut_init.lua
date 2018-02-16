@@ -188,7 +188,8 @@ function cut.loadvariables(_, addonname)
 
          -- Load Week session data only if we are in the same week
          if weekday then
-            if (dayoftheyear - weekday) <= 7 and dayoftheyear ~= 1 then
+--             if (dayoftheyear - weekday) <= 7 and dayoftheyear ~= 1 then
+            if (dayoftheyear - weekday) < 8 and (dayoftheyear - weekday) > 0 then
                if weekbase then
                   cut.save.week   =  weekbase
                   local flag, a, b = false, nil, nil
@@ -231,7 +232,8 @@ function cut.loadvariables(_, addonname)
 
          -- Load Notoriety Week session data only if we are in the same week
          if notorietyweekday then
-            if (dayoftheyear - notorietyweekday) <= 7  and dayoftheyear ~= 1 then
+--             if (dayoftheyear - notorietyweekday) <= 7  and dayoftheyear ~= 1 then
+            if (dayoftheyear - notorietyweekday) < 8  and (dayoftheyear - notorietyweekday) > 0   then
                if notorietyweek then
                   cut.save.notorietyweek   =  notorietyweek
                   local flag, a, b = false, nil, nil
