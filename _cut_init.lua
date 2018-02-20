@@ -253,6 +253,14 @@ function cut.loadvariables(_, addonname)
             cut.init.notorietyweek  =  true
             cut.save.notorietyweek  =  {}
         end
+
+        -- Load Balance for Tooltips
+        if balance then
+           local t = balance
+           if lastsession == dayoftheyear            then  cut.balance.today =  t.today  end
+--         if (dayoftheyear - notorietyweekday) <= 7 then  cut.balance.week  =  t.week   end
+           if (dayoftheyear - notorietyweekday) < 8 and (dayoftheyear - notorietyweekday) > 0 then cut.balance.week  =  t.week   end
+        end
       end
    end
 
